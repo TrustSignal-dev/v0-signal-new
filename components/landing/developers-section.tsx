@@ -1,95 +1,73 @@
 "use client";
 
 import { useState, useEffect, useRef } from "react";
-import { Copy, Check } from "lucide-react";
+import { Copy, Check, Code2, Shield, Zap, Lock, FlaskConical, Cpu } from "lucide-react";
 
-const codeExamples = [
-  {
-    label: "Install",
-    code: `npm install @optimus/sdk
-
-# or
-yarn add @optimus/sdk
-pnpm add @optimus/sdk`,
+const techSpecs = [
+  { 
+    icon: Shield,
+    title: "EVM Anchoring", 
+    description: "Sepolia and Polygon testnets for standardized infrastructure."
   },
-  {
-    label: "Initialize",
-    code: `import { Optimus } from '@optimus/sdk'
-
-const optimus = new Optimus({
-  apiKey: process.env.OPTIMUS_KEY
-})`,
+  { 
+    icon: Zap,
+    title: "Sub-3s Proofs", 
+    description: "Generates cryptographic proofs in under 3 seconds."
   },
-  {
-    label: "Deploy",
-    code: `const app = await optimus.deploy({
-  name: 'my-app',
-  region: 'auto',
-  scaling: {
-    min: 1,
-    max: 100
+  { 
+    icon: Lock,
+    title: "Halo2 Circuits", 
+    description: "Merkle-based exclusion proofs for tamper detection."
+  },
+  { 
+    icon: FlaskConical,
+    title: "Poseidon Nullifiers", 
+    description: "Dynamic revocation capabilities for evidence lifecycle."
+  },
+  { 
+    icon: Cpu,
+    title: "AI ZKML Oracle", 
+    description: "ezkl-powered verifiable fraud scoring."
+  },
+  { 
+    icon: Code2,
+    title: "99.34% Coverage", 
+    description: "Evaluated across 64 comprehensive tests."
+  },
+];
+
+const codeExample = `import { TrustSignal } from '@trustsignal/sdk'
+
+const ts = new TrustSignal({
+  apiKey: process.env.TRUSTSIGNAL_KEY,
+  network: 'polygon' // or 'sepolia'
+})
+
+// Generate receipt at ingestion
+const receipt = await ts.ingest({
+  artifact: documentBuffer,
+  metadata: {
+    type: 'compliance_evidence',
+    source: 'vanta_integration'
   }
 })
 
-console.log('Live at:', app.url)`,
-  },
-];
+// Later: verify integrity
+const verification = await ts.verify({
+  artifact: documentBuffer,
+  receipt: receipt.id
+})
 
-const features = [
-  { 
-    title: "TypeScript native", 
-    description: "Full type safety with auto-generated types."
-  },
-  { 
-    title: "Zero config", 
-    description: "Sensible defaults that just work."
-  },
-  { 
-    title: "Edge-ready", 
-    description: "Runs anywhere: Node, Deno, Bun, browsers."
-  },
-  { 
-    title: "12KB gzipped", 
-    description: "Lightweight with zero dependencies."
-  },
-];
-
-const codeAnimationStyles = `
-  .dev-code-line {
-    opacity: 0;
-    transform: translateX(-8px);
-    animation: devLineReveal 0.4s cubic-bezier(0.22, 1, 0.36, 1) forwards;
-  }
-  
-  @keyframes devLineReveal {
-    to {
-      opacity: 1;
-      transform: translateX(0);
-    }
-  }
-  
-  .dev-code-char {
-    opacity: 0;
-    filter: blur(8px);
-    animation: devCharReveal 0.3s cubic-bezier(0.22, 1, 0.36, 1) forwards;
-  }
-  
-  @keyframes devCharReveal {
-    to {
-      opacity: 1;
-      filter: blur(0);
-    }
-  }
-`;
+console.log(verification.status) // 'CLEAN' or 'FAILURE'
+console.log(verification.proof)  // ZK proof data`;
 
 export function DevelopersSection() {
-  const [activeTab, setActiveTab] = useState(0);
   const [copied, setCopied] = useState(false);
   const [isVisible, setIsVisible] = useState(false);
   const sectionRef = useRef<HTMLElement>(null);
 
   const handleCopy = () => {
-    navigator.clipboard.writeText(codeExamples[activeTab].code);
+    navigator.clipboard.writeText(codeExample);
     setCopied(true);
     setTimeout(() => setCopied(false), 2000);
   };
@@ -107,8 +85,7 @@ export function DevelopersSection() {
   }, []);
 
   return (
-    <section id="developers" ref={sectionRef} className="relative py-24 lg:py-32 overflow-hidden">
-      <style dangerouslySetInnerHTML={{ __html: codeAnimationStyles }} />
+    <section id="architecture" ref={sectionRef} className="relative py-24 lg:py-32 overflow-hidden">
       <div className="max-w-[1400px] mx-auto px-6 lg:px-12">
         <div className="grid lg:grid-cols-2 gap-16 lg:gap-24 items-start">
           {/* Left: Content */}
@@ -118,33 +95,39 @@ export function DevelopersSection() {
             }`}
           >
             <span className="inline-flex items-center gap-3 text-sm font-mono text-muted-foreground mb-6">
-              <span className="w-8 h-px bg-foreground/30" />
-              For developers
+              <Code2 className="w-4 h-4" />
+              For Developers
             </span>
             <h2 className="text-4xl lg:text-6xl font-display tracking-tight mb-8">
-              Built by devs.
+              Standardized
               <br />
-              <span className="text-muted-foreground">For devs.</span>
+              <span className="text-muted-foreground">infrastructure.</span>
             </h2>
             <p className="text-xl text-muted-foreground mb-12 leading-relaxed">
-              A thoughtfully designed SDK that gets out of your way. 
-              Ship faster with intuitive APIs and exceptional documentation.
+              Built on proven cryptographic primitives and blockchain anchoring. 
+              Production-ready with comprehensive test coverage.
             </p>
             
-            {/* Features */}
+            {/* Tech Specs Grid */}
             <div className="grid grid-cols-2 gap-6">
-              {features.map((feature, index) => (
-                <div
-                  key={feature.title}
-                  className={`transition-all duration-500 ${
-                    isVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-4"
-                  }`}
-                  style={{ transitionDelay: `${index * 50 + 200}ms` }}
-                >
-                  <h3 className="font-medium mb-1">{feature.title}</h3>
-                  <p className="text-sm text-muted-foreground">{feature.description}</p>
-                </div>
-              ))}
+              {techSpecs.map((spec, index) => {
+                const Icon = spec.icon;
+                return (
+                  <div
+                    key={spec.title}
+                    className={`transition-all duration-500 ${
+                      isVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-4"
+                    }`}
+                    style={{ transitionDelay: `${index * 50 + 200}ms` }}
+                  >
+                    <div className="flex items-center gap-2 mb-2">
+                      <Icon className="w-4 h-4 text-muted-foreground" />
+                      <h3 className="font-medium">{spec.title}</h3>
+                    </div>
+                    <p className="text-sm text-muted-foreground">{spec.description}</p>
+                  </div>
+                );
+              })}
             </div>
           </div>
           
@@ -155,30 +138,13 @@ export function DevelopersSection() {
             }`}
           >
             <div className="border border-foreground/10">
-              {/* Tabs */}
-              <div className="flex items-center border-b border-foreground/10">
-                {codeExamples.map((example, idx) => (
-                  <button
-                    key={example.label}
-                    type="button"
-                    onClick={() => setActiveTab(idx)}
-                    className={`px-6 py-4 text-sm font-mono transition-colors relative ${
-                      activeTab === idx
-                        ? "text-foreground"
-                        : "text-muted-foreground hover:text-foreground"
-                    }`}
-                  >
-                    {example.label}
-                    {activeTab === idx && (
-                      <span className="absolute bottom-0 left-0 right-0 h-px bg-foreground" />
-                    )}
-                  </button>
-                ))}
-                <div className="flex-1" />
+              {/* Header */}
+              <div className="flex items-center justify-between border-b border-foreground/10 px-6 py-4">
+                <span className="text-sm font-mono text-muted-foreground">trustsignal.ts</span>
                 <button
                   type="button"
                   onClick={handleCopy}
-                  className="px-4 py-4 text-muted-foreground hover:text-foreground transition-colors"
+                  className="text-muted-foreground hover:text-foreground transition-colors"
                   aria-label="Copy code"
                 >
                   {copied ? (
@@ -190,27 +156,12 @@ export function DevelopersSection() {
               </div>
               
               {/* Code content */}
-              <div className="p-8 font-mono text-sm bg-foreground/[0.01] min-h-[220px]">
-                <pre className="text-foreground/80">
-                  {codeExamples[activeTab].code.split('\n').map((line, lineIndex) => (
-                    <div 
-                      key={`${activeTab}-${lineIndex}`} 
-                      className="leading-loose dev-code-line"
-                      style={{ animationDelay: `${lineIndex * 80}ms` }}
-                    >
-                      <span className="inline-flex">
-                        {line.split('').map((char, charIndex) => (
-                          <span
-                            key={`${activeTab}-${lineIndex}-${charIndex}`}
-                            className="dev-code-char"
-                            style={{
-                              animationDelay: `${lineIndex * 80 + charIndex * 15}ms`,
-                            }}
-                          >
-                            {char === ' ' ? '\u00A0' : char}
-                          </span>
-                        ))}
-                      </span>
+              <div className="p-6 font-mono text-sm bg-foreground/[0.01] overflow-x-auto">
+                <pre className="text-foreground/80 whitespace-pre">
+                  {codeExample.split('\n').map((line, i) => (
+                    <div key={i} className="leading-relaxed">
+                      <span className="text-foreground/20 select-none w-8 inline-block">{i + 1}</span>
+                      <span>{line}</span>
                     </div>
                   ))}
                 </pre>
