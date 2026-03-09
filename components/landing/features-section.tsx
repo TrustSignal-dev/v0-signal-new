@@ -80,6 +80,16 @@ function DeployVisual() {
   );
 }
 
+// Pre-calculated positions for 6 nodes at 60-degree intervals around center (100, 80) with radius 50
+const aiNodePositions = [
+  { x: 150, y: 80 },    // 0°
+  { x: 125, y: 123 },   // 60°
+  { x: 75, y: 123 },    // 120°
+  { x: 50, y: 80 },     // 180°
+  { x: 75, y: 37 },     // 240°
+  { x: 125, y: 37 },    // 300°
+];
+
 function AIVisual() {
   return (
     <svg viewBox="0 0 200 160" className="w-full h-full">
@@ -89,50 +99,46 @@ function AIVisual() {
       </circle>
       
       {/* Orbiting nodes */}
-      {[0, 1, 2, 3, 4, 5].map((i) => {
-        const angle = (i * 60) * (Math.PI / 180);
-        const radius = 50;
-        return (
-          <g key={i}>
-            {/* Connection line */}
-            <line
-              x1="100"
-              y1="80"
-              x2={100 + Math.cos(angle) * radius}
-              y2={80 + Math.sin(angle) * radius}
-              stroke="currentColor"
-              strokeWidth="1"
-              opacity="0.3"
-            >
-              <animate
-                attributeName="opacity"
-                values="0.3;0.8;0.3"
-                dur="2s"
-                begin={`${i * 0.3}s`}
-                repeatCount="indefinite"
-              />
-            </line>
-            
-            {/* Outer node */}
-            <circle
-              cx={100 + Math.cos(angle) * radius}
-              cy={80 + Math.sin(angle) * radius}
-              r="6"
-              fill="none"
-              stroke="currentColor"
-              strokeWidth="2"
-            >
-              <animate
-                attributeName="r"
-                values="6;8;6"
-                dur="2s"
-                begin={`${i * 0.3}s`}
-                repeatCount="indefinite"
-              />
-            </circle>
-          </g>
-        );
-      })}
+      {aiNodePositions.map((pos, i) => (
+        <g key={i}>
+          {/* Connection line */}
+          <line
+            x1="100"
+            y1="80"
+            x2={pos.x}
+            y2={pos.y}
+            stroke="currentColor"
+            strokeWidth="1"
+            opacity="0.3"
+          >
+            <animate
+              attributeName="opacity"
+              values="0.3;0.8;0.3"
+              dur="2s"
+              begin={`${i * 0.3}s`}
+              repeatCount="indefinite"
+            />
+          </line>
+          
+          {/* Outer node */}
+          <circle
+            cx={pos.x}
+            cy={pos.y}
+            r="6"
+            fill="none"
+            stroke="currentColor"
+            strokeWidth="2"
+          >
+            <animate
+              attributeName="r"
+              values="6;8;6"
+              dur="2s"
+              begin={`${i * 0.3}s`}
+              repeatCount="indefinite"
+            />
+          </circle>
+        </g>
+      ))}
       
       {/* Pulse rings */}
       <circle cx="100" cy="80" r="30" fill="none" stroke="currentColor" strokeWidth="1" opacity="0">
