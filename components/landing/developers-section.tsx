@@ -2,6 +2,7 @@
 
 import { useState, useEffect, useRef } from "react";
 import { Copy, Check, Code2, Shield, Zap, Lock, FlaskConical, Cpu } from "lucide-react";
+import { TRUSTSIGNAL_REVIEW_REPO_URL } from "@/lib/site";
 
 const techSpecs = [
   { 
@@ -170,11 +171,21 @@ export function DevelopersSection() {
             
             {/* Links */}
             <div className="mt-6 flex items-center gap-6 text-sm">
-              <a href="#" className="text-foreground hover:underline underline-offset-4">
+              <a
+                href={TRUSTSIGNAL_REVIEW_REPO_URL}
+                target="_blank"
+                rel="noreferrer"
+                className="text-foreground hover:underline underline-offset-4"
+              >
                 Read the docs
               </a>
               <span className="text-foreground/20">|</span>
-              <a href="#" className="text-muted-foreground hover:text-foreground">
+              <a
+                href={TRUSTSIGNAL_REVIEW_REPO_URL}
+                target="_blank"
+                rel="noreferrer"
+                className="text-muted-foreground hover:text-foreground"
+              >
                 View on GitHub
               </a>
             </div>

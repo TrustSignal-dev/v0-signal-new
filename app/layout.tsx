@@ -21,9 +21,17 @@ const jetbrainsMono = JetBrains_Mono({
 });
 
 export const metadata: Metadata = {
+  metadataBase: new URL("https://trustsignal.dev"),
   title: 'TrustSignal - Evidence Integrity Infrastructure',
   description: 'Evidence integrity infrastructure without workflow changes. Generate signed cryptographic receipts to mathematically prove compliance records remain unchanged.',
-  generator: 'v0.app',
+  applicationName: "TrustSignal",
+  icons: {
+    icon: [
+      { url: "/icon.svg", type: "image/svg+xml" },
+      { url: "/icon-light-32x32.png", sizes: "32x32", type: "image/png" },
+    ],
+    apple: "/apple-icon.png",
+  },
 }
 
 export default function RootLayout({

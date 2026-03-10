@@ -88,18 +88,22 @@ export function HeroSection() {
             }`}
           >
             <Button 
+              asChild
               size="lg" 
               className="bg-foreground hover:bg-foreground/90 text-background px-8 h-14 text-base rounded-full group"
             >
-              Request a Lightweight Pilot
-              <ArrowRight className="w-4 h-4 ml-2 transition-transform group-hover:translate-x-1" />
+              <a href="#pilot-request">
+                Request a Lightweight Pilot
+                <ArrowRight className="w-4 h-4 ml-2 transition-transform group-hover:translate-x-1" />
+              </a>
             </Button>
             <Button 
+              asChild
               size="lg" 
               variant="outline" 
               className="h-14 px-8 text-base rounded-full border-foreground/20 hover:bg-foreground/5"
             >
-              Align on Integration
+              <a href="#pilot-request">Align on Integration</a>
             </Button>
           </div>
         </div>

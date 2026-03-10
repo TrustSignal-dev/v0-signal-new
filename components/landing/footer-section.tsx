@@ -2,36 +2,35 @@
 
 import { ArrowUpRight } from "lucide-react";
 import { AnimatedWave } from "./animated-wave";
+import {
+  CONTACT_EMAIL,
+  PRIMARY_NAV_LINKS,
+  TRUSTSIGNAL_REVIEW_REPO_URL,
+} from "@/lib/site";
 
 const footerLinks = {
-  Product: [
-    { name: "Problem", href: "#problem" },
-    { name: "Demo", href: "#demo" },
-    { name: "Integration", href: "#integration" },
-    { name: "Architecture", href: "#architecture" },
-  ],
+  Product: PRIMARY_NAV_LINKS,
   Developers: [
-    { name: "Documentation", href: "#" },
-    { name: "API Reference", href: "#" },
-    { name: "SDK", href: "#" },
-    { name: "Status", href: "#" },
+    { name: "Documentation", href: TRUSTSIGNAL_REVIEW_REPO_URL, external: true },
+    { name: "Public Review Repo", href: TRUSTSIGNAL_REVIEW_REPO_URL, external: true },
+    { name: "Security Overview", href: "/security" },
+    { name: "Contact TrustSignal", href: `mailto:${CONTACT_EMAIL}`, external: true },
   ],
   Company: [
-    { name: "About", href: "#" },
-    { name: "Blog", href: "#" },
-    { name: "Contact", href: "#" },
+    { name: "About", href: "#problem" },
+    { name: "Pilot Request", href: "#pilot-request" },
+    { name: "Contact", href: `mailto:${CONTACT_EMAIL}`, external: true },
   ],
   Legal: [
-    { name: "Privacy", href: "#" },
-    { name: "Terms", href: "#" },
-    { name: "Security", href: "#" },
+    { name: "Privacy", href: "/privacy" },
+    { name: "Terms", href: "/terms" },
+    { name: "Security", href: "/security" },
   ],
 };
 
 const socialLinks = [
-  { name: "Twitter", href: "#" },
-  { name: "GitHub", href: "#" },
-  { name: "LinkedIn", href: "#" },
+  { name: "GitHub", href: TRUSTSIGNAL_REVIEW_REPO_URL, external: true },
+  { name: "Email", href: `mailto:${CONTACT_EMAIL}`, external: true },
 ];
 
 export function FooterSection() {
@@ -48,7 +47,7 @@ export function FooterSection() {
           <div className="grid grid-cols-2 md:grid-cols-6 gap-12 lg:gap-8">
             {/* Brand Column */}
             <div className="col-span-2">
-              <a href="#" className="inline-flex items-center gap-2 mb-6">
+              <a href="#top" className="inline-flex items-center gap-2 mb-6">
                 <span className="text-2xl font-display">TrustSignal</span>
               </a>
 
@@ -62,6 +61,8 @@ export function FooterSection() {
                   <a
                     key={link.name}
                     href={link.href}
+                    target={link.external ? "_blank" : undefined}
+                    rel={link.external ? "noreferrer" : undefined}
                     className="text-sm text-muted-foreground hover:text-foreground transition-colors flex items-center gap-1 group"
                   >
                     {link.name}
@@ -80,6 +81,8 @@ export function FooterSection() {
                     <li key={link.name}>
                       <a
                         href={link.href}
+                        target={"external" in link && link.external ? "_blank" : undefined}
+                        rel={"external" in link && link.external ? "noreferrer" : undefined}
                         className="text-sm text-muted-foreground hover:text-foreground transition-colors inline-flex items-center gap-2"
                       >
                         {link.name}

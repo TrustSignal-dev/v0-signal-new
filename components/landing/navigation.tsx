@@ -3,13 +3,7 @@
 import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Menu, X } from "lucide-react";
-
-const navLinks = [
-  { name: "Problem", href: "#problem" },
-  { name: "Demo", href: "#demo" },
-  { name: "Integration", href: "#integration" },
-  { name: "Architecture", href: "#architecture" },
-];
+import { PRIMARY_NAV_LINKS } from "@/lib/site";
 
 export function Navigation() {
   const [isScrolled, setIsScrolled] = useState(false);
@@ -44,13 +38,13 @@ export function Navigation() {
           }`}
         >
           {/* Logo */}
-          <a href="#" className="flex items-center gap-2 group">
-            <span className={`font-display tracking-tight transition-all duration-500 ${isScrolled ? "text-xl" : "text-2xl"}`}>TrustSignal</span>
-          </a>
+            <a href="#top" className="flex items-center gap-2 group">
+              <span className={`font-display tracking-tight transition-all duration-500 ${isScrolled ? "text-xl" : "text-2xl"}`}>TrustSignal</span>
+            </a>
 
           {/* Desktop Navigation */}
           <div className="hidden md:flex items-center gap-12">
-            {navLinks.map((link) => (
+            {PRIMARY_NAV_LINKS.map((link) => (
               <a
                 key={link.name}
                 href={link.href}
@@ -65,10 +59,11 @@ export function Navigation() {
           {/* Desktop CTA */}
           <div className="hidden md:flex items-center gap-4">
             <Button
+              asChild
               size="sm"
               className={`bg-foreground hover:bg-foreground/90 text-background rounded-full transition-all duration-500 ${isScrolled ? "px-4 h-8 text-xs" : "px-6"}`}
             >
-              Request Pilot
+              <a href="#pilot-request">Request Pilot</a>
             </Button>
           </div>
 
@@ -100,7 +95,7 @@ export function Navigation() {
         <div className="flex flex-col h-full px-8 pt-28 pb-8">
           {/* Navigation Links */}
           <div className="flex-1 flex flex-col justify-center gap-8">
-            {navLinks.map((link, i) => (
+            {PRIMARY_NAV_LINKS.map((link, i) => (
               <a
                 key={link.name}
                 href={link.href}
@@ -126,10 +121,11 @@ export function Navigation() {
           style={{ transitionDelay: isMobileMenuOpen ? "300ms" : "0ms" }}
           >
             <Button 
+              asChild
               className="flex-1 bg-foreground text-background rounded-full h-14 text-base"
               onClick={() => setIsMobileMenuOpen(false)}
             >
-              Request Pilot
+              <a href="#pilot-request">Request Pilot</a>
             </Button>
           </div>
         </div>
