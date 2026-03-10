@@ -54,7 +54,7 @@ export function PilotRequestSection() {
       form.reset();
     } catch {
       setSubmitError(
-        "The request could not be sent right now. Email info@trustsignal.dev and we will respond manually.",
+        "The request could not be saved right now. Email info@trustsignal.dev and we will respond manually.",
       );
     } finally {
       setIsSubmitting(false);
@@ -81,7 +81,7 @@ export function PilotRequestSection() {
           </p>
           <div className="mt-10 space-y-4 text-sm text-muted-foreground">
             <p>Responses are reviewed directly by the TrustSignal team.</p>
-            <p>Submissions are sent to {CONTACT_EMAIL}.</p>
+            <p>Submissions are stored privately for TrustSignal review and follow-up.</p>
             <p>No payment or system access is requested through this form.</p>
           </div>
         </div>
