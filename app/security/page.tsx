@@ -1,3 +1,19 @@
+import type { Metadata } from "next";
+import { createPageMetadata } from "@/lib/seo";
+
+export const metadata: Metadata = createPageMetadata({
+  title: "Security Posture",
+  description:
+    "Review the TrustSignal security posture, hosting safeguards, TLS handling, pilot request validation, and public site access boundaries.",
+  path: "/security",
+  keywords: [
+    "TrustSignal security",
+    "security posture",
+    "public site security",
+    "pilot request validation",
+  ],
+});
+
 export default function SecurityPage() {
   return (
     <main className="mx-auto max-w-4xl px-6 py-20 lg:px-12 lg:py-28">

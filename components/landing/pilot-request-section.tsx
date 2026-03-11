@@ -75,9 +75,9 @@ export function PilotRequestSection() {
             Start a lightweight pilot or align on integration.
           </h2>
           <p className="max-w-2xl text-lg leading-relaxed text-muted-foreground lg:text-xl">
-            Share the basics and TrustSignal will follow up with next steps for a
-            pilot or integration discussion. Outside reviewers can look through
-            the site, but all operational access stays private.
+            Share the basics and TrustSignal will follow up with next steps for
+            a pilot or integration discussion. Operational access and private
+            verification workflows remain restricted to TrustSignal review.
           </p>
           <div className="mt-10 space-y-4 text-sm text-muted-foreground">
             <p>Responses are reviewed directly by the TrustSignal team.</p>

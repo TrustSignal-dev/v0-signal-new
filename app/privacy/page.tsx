@@ -1,3 +1,18 @@
+import type { Metadata } from "next";
+import { createPageMetadata } from "@/lib/seo";
+
+export const metadata: Metadata = createPageMetadata({
+  title: "Privacy Notice",
+  description:
+    "Read the TrustSignal privacy notice for pilot inquiries, including contact data collection, usage, retention, and access controls.",
+  path: "/privacy",
+  keywords: [
+    "TrustSignal privacy",
+    "pilot inquiry privacy",
+    "contact data retention",
+  ],
+});
+
 export default function PrivacyPage() {
   return (
     <main className="mx-auto max-w-4xl px-6 py-20 lg:px-12 lg:py-28">

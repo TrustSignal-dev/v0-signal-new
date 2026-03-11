@@ -12,12 +12,13 @@ const footerLinks = {
   Product: PRIMARY_NAV_LINKS,
   Developers: [
     { name: "Documentation", href: TRUSTSIGNAL_REVIEW_REPO_URL, external: true },
-    { name: "Public Review Repo", href: TRUSTSIGNAL_REVIEW_REPO_URL, external: true },
+    { name: "GitHub Repository", href: TRUSTSIGNAL_REVIEW_REPO_URL, external: true },
     { name: "Security Overview", href: "/security" },
     { name: "Contact TrustSignal", href: `mailto:${CONTACT_EMAIL}`, external: true },
   ],
   Company: [
-    { name: "About", href: "#problem" },
+    { name: "About", href: "#workflows" },
+    { name: "What is TrustSignal?", href: "/what-is-trustsignal" },
     { name: "Pilot Request", href: "#pilot-request" },
     { name: "Contact", href: `mailto:${CONTACT_EMAIL}`, external: true },
   ],
@@ -52,7 +53,9 @@ export function FooterSection() {
               </a>
 
               <p className="text-muted-foreground leading-relaxed mb-8 max-w-xs">
-                Evidence integrity infrastructure. Cryptographic receipts that mathematically prove compliance records remain unchanged.
+                Evidence integrity infrastructure. Signed cryptographic receipts
+                for compliance artifacts that support later verification without
+                replacing the workflow that collected them.
               </p>
 
               {/* Social Links */}
@@ -98,13 +101,13 @@ export function FooterSection() {
         {/* Bottom Bar */}
         <div className="py-8 border-t border-foreground/10 flex flex-col md:flex-row items-center justify-between gap-4">
           <p className="text-sm text-muted-foreground">
-            2025 TrustSignal. All rights reserved.
+            2026 TrustSignal. All rights reserved.
           </p>
 
           <div className="flex items-center gap-4 text-sm text-muted-foreground">
             <span className="flex items-center gap-2">
-              <span className="w-2 h-2 rounded-full bg-green-500" />
-              All systems operational
+              <span className="w-2 h-2 rounded-full bg-foreground/35" />
+              Documentation and pilot intake available
             </span>
           </div>
         </div>

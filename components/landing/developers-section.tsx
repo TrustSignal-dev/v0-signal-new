@@ -1,66 +1,69 @@
 "use client";
 
 import { useState, useEffect, useRef } from "react";
-import { Copy, Check, Code2, Shield, Zap, Lock, FlaskConical, Cpu } from "lucide-react";
+import {
+  Check,
+  Code2,
+  Copy,
+  FileCheck2,
+  Layers3,
+  Route,
+  ScrollText,
+  Shield,
+} from "lucide-react";
 import { TRUSTSIGNAL_REVIEW_REPO_URL } from "@/lib/site";
 
 const techSpecs = [
   { 
     icon: Shield,
-    title: "EVM Anchoring", 
-    description: "Sepolia and Polygon testnets for standardized infrastructure."
+    title: "Signed Receipts", 
+    description: "Signed receipts record the artifact hash, source, and timestamp captured at ingestion."
   },
   { 
-    icon: Zap,
-    title: "Sub-3s Proofs", 
-    description: "Generates cryptographic proofs in under 3 seconds."
+    icon: FileCheck2,
+    title: "Verification Lifecycle", 
+    description: "Later checks confirm whether the current artifact still matches the receipted record."
   },
   { 
-    icon: Lock,
-    title: "Halo2 Circuits", 
-    description: "Merkle-based exclusion proofs for tamper detection."
+    icon: Layers3,
+    title: "Verifiable Provenance", 
+    description: "Receipt metadata preserves source, control, and timestamp context for review workflows."
   },
   { 
-    icon: FlaskConical,
-    title: "Poseidon Nullifiers", 
-    description: "Dynamic revocation capabilities for evidence lifecycle."
+    icon: Route,
+    title: "Low-Friction Integration", 
+    description: "TrustSignal fits behind an existing workflow through a single ingestion point."
   },
   { 
-    icon: Cpu,
-    title: "AI ZKML Oracle", 
-    description: "ezkl-powered verifiable fraud scoring."
+    icon: ScrollText,
+    title: "Documentation and Repository", 
+    description: "Technical documentation and GitHub materials support partner, security, and integration review."
   },
   { 
     icon: Code2,
-    title: "99.34% Coverage", 
-    description: "Evaluated across 64 comprehensive tests."
+    title: "Cryptographic Detail", 
+    description: "Additional implementation detail is available for teams that need a closer review of the verification stack."
   },
 ];
 
-const codeExample = `import { TrustSignal } from '@trustsignal/sdk'
-
-const ts = new TrustSignal({
-  apiKey: process.env.TRUSTSIGNAL_KEY,
-  network: 'polygon' // or 'sepolia'
-})
-
-// Generate receipt at ingestion
-const receipt = await ts.ingest({
-  artifact: documentBuffer,
-  metadata: {
-    type: 'compliance_evidence',
-    source: 'vanta_integration'
+const codeExample = `// Receipt model
+const auditReadyReceipt = {
+  receipt_id: "tsig_rcpt_01JTQY8N1Q0M4F4F5T4J4B8Y9R",
+  source: "vanta",
+  artifact_hash: "sha256:93f6f35a550cbe1c3f0b5f0c12b9f0d62f3f9c6f8c6a4eddd8fa1fbfd4654af1",
+  control_id: "CC6.1",
+  timestamp: "2026-03-11T21:00:00Z",
+  receipt_status: "signed",
+  verification_status: "match",
+  provenance: {
+    artifact_type: "compliance_evidence",
+    collector: "aws-config-snapshot"
   }
-})
+}
 
-// Later: verify integrity
-const verification = await ts.verify({
-  artifact: documentBuffer,
-  receipt: receipt.id
-})
-
-console.log(verification.status) // 'CLEAN' or 'FAILURE'
-console.log(verification.proof)  // ZK proof data`;
+// TrustSignal sits behind the system that collected
+// the record. The source platform remains in place
+// while the receipt carries integrity and provenance.`;
 
 export function DevelopersSection() {
   const [copied, setCopied] = useState(false);
@@ -97,16 +100,18 @@ export function DevelopersSection() {
           >
             <span className="inline-flex items-center gap-3 text-sm font-mono text-muted-foreground mb-6">
               <Code2 className="w-4 h-4" />
-              For Developers
+              Documentation and architecture
             </span>
             <h2 className="text-4xl lg:text-6xl font-display tracking-tight mb-8">
-              Standardized
+              Technical detail
               <br />
-              <span className="text-muted-foreground">infrastructure.</span>
+              <span className="text-muted-foreground">for evaluators.</span>
             </h2>
             <p className="text-xl text-muted-foreground mb-12 leading-relaxed">
-              Built on proven cryptographic primitives and blockchain anchoring. 
-              Production-ready with comprehensive test coverage.
+              Technical evaluators can inspect the receipt model, verification
+              states, and provenance fields behind a TrustSignal integration.
+              Documentation and GitHub materials remain available for teams that
+              want a deeper view of the verification architecture.
             </p>
             
             {/* Tech Specs Grid */}
@@ -141,7 +146,7 @@ export function DevelopersSection() {
             <div className="border border-foreground/10">
               {/* Header */}
               <div className="flex items-center justify-between border-b border-foreground/10 px-6 py-4">
-                <span className="text-sm font-mono text-muted-foreground">trustsignal.ts</span>
+                <span className="text-sm font-mono text-muted-foreground">receipt-model.ts</span>
                 <button
                   type="button"
                   onClick={handleCopy}
@@ -159,7 +164,7 @@ export function DevelopersSection() {
               {/* Code content */}
               <div className="p-6 font-mono text-sm bg-foreground/[0.01] overflow-x-auto">
                 <pre className="text-foreground/80 whitespace-pre">
-                  {codeExample.split('\n').map((line, i) => (
+                  {codeExample.split("\n").map((line, i) => (
                     <div key={i} className="leading-relaxed">
                       <span className="text-foreground/20 select-none w-8 inline-block">{i + 1}</span>
                       <span>{line}</span>
@@ -168,6 +173,17 @@ export function DevelopersSection() {
                 </pre>
               </div>
             </div>
+
+            <details className="mt-6 border border-foreground/10 bg-foreground/[0.02] p-5">
+              <summary className="cursor-pointer list-none font-medium">
+                Cryptographic implementation detail
+              </summary>
+              <p className="mt-4 text-sm leading-relaxed text-muted-foreground">
+                TrustSignal documentation can go deeper into digest handling,
+                proof systems, or anchoring strategies for teams that need that
+                level of review.
+              </p>
+            </details>
             
             {/* Links */}
             <div className="mt-6 flex items-center gap-6 text-sm">
@@ -177,7 +193,7 @@ export function DevelopersSection() {
                 rel="noreferrer"
                 className="text-foreground hover:underline underline-offset-4"
               >
-                Read the docs
+                Read documentation
               </a>
               <span className="text-foreground/20">|</span>
               <a

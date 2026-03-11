@@ -63,8 +63,9 @@ export function CtaSection() {
                 </h2>
 
                 <p className="text-xl text-muted-foreground mb-12 leading-relaxed max-w-xl">
-                  Start with a lightweight pilot. Integrate TrustSignal into your existing 
-                  compliance workflow with near-zero process changes.
+                  Start with a lightweight pilot and connect TrustSignal to your
+                  existing compliance workflow with a low-friction integration
+                  path.
                 </p>
 
                 <div className="flex flex-col sm:flex-row items-start gap-4">
@@ -89,7 +90,7 @@ export function CtaSection() {
                 </div>
 
                 <p className="text-sm text-muted-foreground mt-8 font-mono">
-                  Integration in days, not months
+                  Low-friction onboarding for pilot teams
                 </p>
               </div>
 

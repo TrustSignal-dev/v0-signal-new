@@ -1,32 +1,46 @@
 "use client";
 
-import { useEffect, useState, useRef } from "react";
-import { Shield, Lock, Eye, FileCheck } from "lucide-react";
+import { useEffect, useRef, useState } from "react";
+import {
+  FileCheck2,
+  Fingerprint,
+  Lock,
+  Route,
+  Shield,
+} from "lucide-react";
 
-const securityFeatures = [
+const trustSignals = [
   {
     icon: Shield,
-    title: "SOC 2 Type II",
-    description: "Independently audited security controls with continuous monitoring.",
+    title: "Signed receipts",
+    description:
+      "Each attestation returns a signed cryptographic receipt that can be stored beside the original artifact.",
+  },
+  {
+    icon: FileCheck2,
+    title: "Tamper-evident audit trail",
+    description:
+      "Later verification shows whether the current artifact still matches the receipted record.",
   },
   {
     icon: Lock,
-    title: "End-to-end encryption",
-    description: "AES-256 encryption for data at rest and TLS 1.3 in transit.",
+    title: "TLS in transit",
+    description:
+      "Receipt requests travel over standard encrypted transport instead of introducing a custom workflow channel.",
   },
   {
-    icon: Eye,
-    title: "Zero-trust architecture",
-    description: "Every request is authenticated and authorized. No exceptions.",
+    icon: Route,
+    title: "Minimal workflow change",
+    description:
+      "TrustSignal integrates at ingestion through a single API call or webhook rather than replacing the evidence platform.",
   },
   {
-    icon: FileCheck,
-    title: "GDPR & HIPAA",
-    description: "Full compliance with data protection and healthcare regulations.",
+    icon: Fingerprint,
+    title: "Verifiable provenance",
+    description:
+      "Source, control, and timestamp metadata remain attached to the receipt for audit-ready review.",
   },
-];
-
-const certifications = ["SOC 2", "ISO 27001", "HIPAA", "GDPR", "CCPA"];
+] as const;
 
 export function SecuritySection() {
   const [isVisible, setIsVisible] = useState(false);
@@ -37,7 +51,7 @@ export function SecuritySection() {
       ([entry]) => {
         if (entry.isIntersecting) setIsVisible(true);
       },
-      { threshold: 0.1 }
+      { threshold: 0.1 },
     );
 
     if (sectionRef.current) observer.observe(sectionRef.current);
@@ -45,69 +59,75 @@ export function SecuritySection() {
   }, []);
 
   return (
-    <section id="security" ref={sectionRef} className="relative py-24 lg:py-32 bg-foreground/[0.02] overflow-hidden">
-      <div className="max-w-[1400px] mx-auto px-6 lg:px-12">
-        <div className="grid lg:grid-cols-2 gap-16 lg:gap-24">
-          {/* Left: Content */}
-          <div
-            className={`transition-all duration-700 ${
-              isVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-8"
+    <section
+      id="security"
+      ref={sectionRef}
+      className="relative overflow-hidden border-y border-foreground/10 bg-foreground/[0.015] py-24 lg:py-32"
+    >
+      <div className="absolute inset-0 pointer-events-none opacity-[0.04]">
+        <div
+          className="absolute inset-0"
+          style={{
+            backgroundImage:
+              "linear-gradient(to right, currentColor 1px, transparent 1px), linear-gradient(to bottom, currentColor 1px, transparent 1px)",
+            backgroundSize: "56px 56px",
+          }}
+        />
+      </div>
+
+      <div className="relative z-10 mx-auto max-w-[1400px] px-6 lg:px-12">
+        <div className="mx-auto max-w-3xl text-center">
+          <span
+            className={`mb-6 inline-flex items-center gap-3 font-mono text-sm text-muted-foreground transition-all duration-700 ${
+              isVisible ? "translate-y-0 opacity-100" : "translate-y-4 opacity-0"
             }`}
           >
-            <span className="inline-flex items-center gap-3 text-sm font-mono text-muted-foreground mb-6">
-              <span className="w-8 h-px bg-foreground/30" />
-              Security
-            </span>
-            <h2 className="text-4xl lg:text-6xl font-display tracking-tight mb-8">
-              Trust is
-              <br />
-              non-negotiable.
-            </h2>
-            <p className="text-xl text-muted-foreground leading-relaxed mb-12">
-              Enterprise-grade security isn&apos;t optional. It&apos;s built into every layer 
-              of our platform, from infrastructure to application.
-            </p>
+            <Shield className="h-4 w-4" />
+            Security and trust signals
+          </span>
+          <h2
+            className={`text-4xl font-display tracking-tight transition-all duration-700 lg:text-6xl ${
+              isVisible ? "translate-y-0 opacity-100" : "translate-y-4 opacity-0"
+            }`}
+          >
+            Visible safeguards without workflow sprawl.
+          </h2>
+          <p
+            className={`mt-8 text-lg leading-relaxed text-muted-foreground transition-all duration-700 delay-100 lg:text-xl ${
+              isVisible ? "translate-y-0 opacity-100" : "translate-y-4 opacity-0"
+            }`}
+          >
+            TrustSignal is designed to be straightforward to evaluate. The core
+            trust signals show up in the signed receipt, the audit trail, and
+            the provenance fields reviewers can inspect later.
+          </p>
+        </div>
 
-            {/* Certifications */}
-            <div className="flex flex-wrap gap-3">
-              {certifications.map((cert, index) => (
-                <span
-                  key={cert}
-                  className={`px-4 py-2 border border-foreground/10 text-sm font-mono transition-all duration-500 ${
-                    isVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-4"
-                  }`}
-                  style={{ transitionDelay: `${index * 50 + 200}ms` }}
-                >
-                  {cert}
-                </span>
-              ))}
-            </div>
-          </div>
+        <div className="mt-16 grid gap-6 md:grid-cols-2 xl:grid-cols-5">
+          {trustSignals.map((signal, index) => {
+            const Icon = signal.icon;
 
-          {/* Right: Features */}
-          <div className="grid gap-6">
-            {securityFeatures.map((feature, index) => (
+            return (
               <div
-                key={feature.title}
-                className={`p-6 border border-foreground/10 hover:border-foreground/20 transition-all duration-500 group ${
-                  isVisible ? "opacity-100 translate-x-0" : "opacity-0 translate-x-8"
+                key={signal.title}
+                className={`group relative border border-foreground/10 bg-background/90 p-6 shadow-[0_20px_60px_rgba(0,0,0,0.04)] transition-all duration-500 hover:-translate-y-1 hover:border-foreground/20 ${
+                  isVisible ? "translate-y-0 opacity-100" : "translate-y-8 opacity-0"
                 }`}
-                style={{ transitionDelay: `${index * 100}ms` }}
+                style={{ transitionDelay: `${index * 80 + 160}ms` }}
               >
-                <div className="flex items-start gap-4">
-                  <div className="shrink-0 w-10 h-10 flex items-center justify-center border border-foreground/10 group-hover:bg-foreground group-hover:text-background transition-colors duration-300">
-                    <feature.icon className="w-5 h-5" />
-                  </div>
-                  <div>
-                    <h3 className="text-lg font-medium mb-1 group-hover:translate-x-1 transition-transform duration-300">
-                      {feature.title}
-                    </h3>
-                    <p className="text-muted-foreground">{feature.description}</p>
-                  </div>
+                <div className="flex h-11 w-11 items-center justify-center border border-foreground/15 bg-foreground/[0.03]">
+                  <Icon className="h-5 w-5 text-foreground/70" />
                 </div>
+                <h3 className="mt-5 text-xl font-display leading-tight">
+                  {signal.title}
+                </h3>
+                <p className="mt-4 text-sm leading-relaxed text-muted-foreground">
+                  {signal.description}
+                </p>
+                <div className="absolute right-0 top-0 h-8 w-8 border-b border-l border-foreground/10 transition-colors group-hover:border-foreground/25" />
               </div>
-            ))}
-          </div>
+            );
+          })}
         </div>
       </div>
     </section>

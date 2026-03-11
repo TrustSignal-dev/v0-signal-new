@@ -1,4 +1,6 @@
+import type { Metadata } from "next";
 import { get, list } from "@vercel/blob";
+import { createPageMetadata } from "@/lib/seo";
 
 type Submission = {
   pathname: string;
@@ -11,6 +13,14 @@ type Submission = {
 };
 
 export const dynamic = "force-dynamic";
+export const metadata: Metadata = createPageMetadata({
+  title: "Private Review Access",
+  description:
+    "Private access point for TrustSignal pilot request review.",
+  path: "/review",
+  keywords: ["private review", "pilot request review"],
+  noIndex: true,
+});
 
 export default async function ReviewPage({
   searchParams,
@@ -29,11 +39,11 @@ export default async function ReviewPage({
           Private Review
         </p>
         <h1 className="mb-6 text-4xl font-display tracking-tight">
-          Submission review access
+          Pilot request review access
         </h1>
         <p className="mb-10 text-base leading-relaxed text-muted-foreground">
-          Enter the review access code to inspect pilot requests stored in Vercel
-          Blob.
+          Enter the access code to inspect pilot requests submitted through the
+          public site.
         </p>
         <form className="space-y-4 border border-foreground/10 bg-background p-8">
           <label className="block space-y-2">
@@ -43,16 +53,17 @@ export default async function ReviewPage({
               type="password"
               className="h-12 w-full border border-foreground/15 bg-background px-4 text-sm outline-none transition focus:border-foreground"
               placeholder="Review access code"
+              autoComplete="current-password"
             />
           </label>
           <button
             type="submit"
             className="h-12 w-full rounded-full bg-foreground px-6 text-sm font-medium text-background hover:bg-foreground/90"
           >
-            Unlock review dashboard
+            Open review dashboard
           </button>
           <p className="text-xs text-muted-foreground">
-            Set <code>REVIEW_DASHBOARD_TOKEN</code> in Vercel to enable access.
+            Access is limited to TrustSignal operators.
           </p>
         </form>
       </main>
@@ -95,7 +106,7 @@ export default async function ReviewPage({
           </p>
           <h1 className="text-4xl font-display tracking-tight">Pilot request submissions</h1>
           <p className="mt-3 text-base text-muted-foreground">
-            Latest requests stored privately in Vercel Blob.
+            Recent pilot requests available for TrustSignal review.
           </p>
         </div>
         <a
@@ -135,7 +146,7 @@ export default async function ReviewPage({
                   <strong className="text-foreground">Address:</strong> {submission.address}
                 </p>
                 <p className="break-all">
-                  <strong className="text-foreground">Blob path:</strong> {submission.pathname}
+                  <strong className="text-foreground">Submission ID:</strong> {submission.pathname}
                 </p>
               </div>
             </article>

@@ -1,3 +1,18 @@
+import type { Metadata } from "next";
+import { createPageMetadata } from "@/lib/seo";
+
+export const metadata: Metadata = createPageMetadata({
+  title: "Terms of Use",
+  description:
+    "Read the TrustSignal website terms covering site usage, ownership, pilot discussions, and intellectual property rights.",
+  path: "/terms",
+  keywords: [
+    "TrustSignal terms",
+    "website terms of use",
+    "pilot evaluation terms",
+  ],
+});
+
 export default function TermsPage() {
   return (
     <main className="mx-auto max-w-4xl px-6 py-20 lg:px-12 lg:py-28">

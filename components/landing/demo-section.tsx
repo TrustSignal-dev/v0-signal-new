@@ -4,28 +4,25 @@ import { useEffect, useRef, useState } from "react";
 import { CheckCircle2, XCircle, Terminal } from "lucide-react";
 
 const validTerminalLines = [
-  { text: "$ trustsignal ingest artifact.pdf", type: "command" },
-  { text: "Generating cryptographic receipt...", type: "process" },
-  { text: "Anchoring to blockchain...", type: "process" },
-  { text: "Receipt issued: 0x7f3a...9c2d", type: "success" },
+  { text: "Artifact received for attestation", type: "command" },
+  { text: "Issuing signed integrity receipt...", type: "process" },
+  { text: "Receipt issued: rcpt_7f3a...9c2d", type: "success" },
   { text: "", type: "empty" },
-  { text: "$ trustsignal verify artifact.pdf", type: "command" },
-  { text: "Comparing hash signatures...", type: "process" },
-  { text: "Verification: CLEAN", type: "clean" },
-  { text: "Artifact matches original record", type: "info" },
+  { text: "Later verification requested", type: "command" },
+  { text: "Comparing current digest to receipted digest...", type: "process" },
+  { text: "Verification: RECEIPT MATCH", type: "clean" },
+  { text: "Artifact matches the originally receipted record", type: "info" },
 ];
 
 const tamperedTerminalLines = [
-  { text: "$ trustsignal ingest modified_artifact.pdf", type: "command" },
-  { text: "Generating cryptographic receipt...", type: "process" },
-  { text: "Receipt issued: 0x8b4c...1e5f", type: "success" },
+  { text: "Later verification requested", type: "command" },
+  { text: "Loading existing receipt rcpt_7f3a...9c2d", type: "process" },
   { text: "", type: "empty" },
-  { text: "$ trustsignal verify modified_artifact.pdf", type: "command" },
-  { text: "Comparing hash signatures...", type: "process" },
-  { text: "Verification: FAILURE ALERT", type: "failure" },
-  { text: "File drift detected from receipted evidence", type: "warning" },
-  { text: "Original hash: 0x7f3a...9c2d", type: "info" },
-  { text: "Current hash:  0x8b4c...1e5f", type: "info" },
+  { text: "Comparing current digest to receipted digest...", type: "process" },
+  { text: "Verification: DRIFT DETECTED", type: "failure" },
+  { text: "Current artifact no longer matches the receipted record", type: "warning" },
+  { text: "Receipted digest: sha256:7f3a...9c2d", type: "info" },
+  { text: "Current digest:  sha256:8b4c...1e5f", type: "info" },
 ];
 
 function TerminalPanel({ 
@@ -139,16 +136,16 @@ export function DemoSection() {
         <div className="mb-16 lg:mb-24 text-center">
           <span className="inline-flex items-center gap-3 text-sm font-mono text-muted-foreground mb-6">
             <Terminal className="w-4 h-4" />
-            The &quot;Aha!&quot; Moment
+            Verification
           </span>
           <h2
             className={`text-4xl lg:text-6xl font-display tracking-tight transition-all duration-700 ${
               isVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-4"
             }`}
           >
-            Mathematical proof.
+            Audit-ready verification.
             <br />
-            <span className="text-muted-foreground">Not just process controls.</span>
+            <span className="text-muted-foreground">Clear signal when a record drifts.</span>
           </h2>
         </div>
 
@@ -157,10 +154,10 @@ export function DemoSection() {
           <div>
             <div className="mb-4 flex items-center gap-2">
               <CheckCircle2 className="w-5 h-5 text-green-500" />
-              <span className="font-mono text-sm text-muted-foreground">Valid Case</span>
+              <span className="font-mono text-sm text-muted-foreground">Receipt Match</span>
             </div>
             <TerminalPanel 
-              title="verification_valid.sh"
+              title="receipt_match.log"
               lines={validTerminalLines}
               isSuccess={true}
               isVisible={isVisible}
@@ -171,10 +168,10 @@ export function DemoSection() {
           <div>
             <div className="mb-4 flex items-center gap-2">
               <XCircle className="w-5 h-5 text-red-500" />
-              <span className="font-mono text-sm text-muted-foreground">Tampered Case</span>
+              <span className="font-mono text-sm text-muted-foreground">Drift Detected</span>
             </div>
             <TerminalPanel 
-              title="verification_tampered.sh"
+              title="drift_detected.log"
               lines={tamperedTerminalLines}
               isSuccess={false}
               isVisible={isVisible}
@@ -188,9 +185,10 @@ export function DemoSection() {
           isVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-4"
         }`}>
           <p className="text-lg text-muted-foreground leading-relaxed">
-            TrustSignal generates cryptographic receipts at ingestion. Any modification to the evidence 
-            produces a different hash, providing <strong className="text-foreground">mathematical proof</strong> that 
-            the file has drifted from the original record.
+            TrustSignal issues a signed receipt at ingestion and can later
+            compare the current artifact against the receipted digest. That
+            gives reviewers a fast, audit-ready signal when a record no longer
+            matches the original intake.
           </p>
         </div>
       </div>
