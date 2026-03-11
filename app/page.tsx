@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { Navigation } from "@/components/landing/navigation";
 import { HeroSection } from "@/components/landing/hero-section";
+import { EvidenceFlowMarqueeSection } from "@/components/landing/evidence-flow-marquee-section";
 import { ComplianceWorkflowsSection } from "@/components/landing/compliance-workflows-section";
 import { DemoSection } from "@/components/landing/demo-section";
 import { IntegrationsSection } from "@/components/landing/integrations-section";
@@ -30,6 +31,9 @@ export default function Home() {
     <main id="top" className="relative min-h-screen overflow-x-hidden noise-overlay">
       <Navigation />
       <HeroSection />
+      <RevealOnScroll delayMs={40}>
+        <EvidenceFlowMarqueeSection />
+      </RevealOnScroll>
       <RevealOnScroll>
         <ComplianceWorkflowsSection />
       </RevealOnScroll>
