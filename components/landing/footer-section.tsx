@@ -1,9 +1,12 @@
 "use client";
 
+import Link from "next/link";
+import { usePathname } from "next/navigation";
 import { ArrowUpRight } from "lucide-react";
 import { AnimatedWave } from "./animated-wave";
 import {
   CONTACT_EMAIL,
+  TRUSTSIGNAL_GITHUB_URL,
   PRIMARY_NAV_LINKS,
   TRUSTSIGNAL_REVIEW_REPO_URL,
 } from "@/lib/site";
@@ -12,7 +15,7 @@ const footerLinks = {
   Product: PRIMARY_NAV_LINKS,
   Developers: [
     { name: "Documentation", href: TRUSTSIGNAL_REVIEW_REPO_URL, external: true },
-    { name: "GitHub Repository", href: TRUSTSIGNAL_REVIEW_REPO_URL, external: true },
+    { name: "GitHub", href: TRUSTSIGNAL_GITHUB_URL, external: true },
     { name: "Security Overview", href: "/security" },
     { name: "Contact TrustSignal", href: `mailto:${CONTACT_EMAIL}`, external: true },
   ],
@@ -30,11 +33,18 @@ const footerLinks = {
 };
 
 const socialLinks = [
-  { name: "GitHub", href: TRUSTSIGNAL_REVIEW_REPO_URL, external: true },
+  { name: "GitHub", href: TRUSTSIGNAL_GITHUB_URL, external: true },
   { name: "Email", href: `mailto:${CONTACT_EMAIL}`, external: true },
 ];
 
 export function FooterSection() {
+  const pathname = usePathname();
+
+  const resolveHomeHref = (hash?: string) => {
+    if (!hash) return pathname === "/" ? "#top" : "/";
+    return pathname === "/" ? hash : `/${hash}`;
+  };
+
   return (
     <footer className="relative border-t border-foreground/10">
       {/* Animated wave background */}
@@ -48,9 +58,9 @@ export function FooterSection() {
           <div className="grid grid-cols-2 md:grid-cols-6 gap-12 lg:gap-8">
             {/* Brand Column */}
             <div className="col-span-2">
-              <a href="#top" className="inline-flex items-center gap-2 mb-6">
+              <Link href={resolveHomeHref()} className="inline-flex items-center gap-2 mb-6">
                 <span className="text-2xl font-display">TrustSignal</span>
-              </a>
+              </Link>
 
               <p className="text-muted-foreground leading-relaxed mb-8 max-w-xs">
                 Evidence integrity infrastructure. Signed cryptographic receipts
@@ -60,8 +70,8 @@ export function FooterSection() {
 
               {/* Social Links */}
               <div className="flex gap-6">
-                {socialLinks.map((link) => (
-                  <a
+                  {socialLinks.map((link) => (
+                    <a
                     key={link.name}
                     href={link.href}
                     target={link.external ? "_blank" : undefined}
@@ -82,14 +92,23 @@ export function FooterSection() {
                 <ul className="space-y-4">
                   {links.map((link) => (
                     <li key={link.name}>
-                      <a
-                        href={link.href}
-                        target={"external" in link && link.external ? "_blank" : undefined}
-                        rel={"external" in link && link.external ? "noreferrer" : undefined}
-                        className="text-sm text-muted-foreground hover:text-foreground transition-colors inline-flex items-center gap-2"
-                      >
-                        {link.name}
-                      </a>
+                      {"external" in link && link.external ? (
+                        <a
+                          href={link.href}
+                          target="_blank"
+                          rel="noreferrer"
+                          className="text-sm text-muted-foreground hover:text-foreground transition-colors inline-flex items-center gap-2"
+                        >
+                          {link.name}
+                        </a>
+                      ) : (
+                        <Link
+                          href={link.href.startsWith("#") ? resolveHomeHref(link.href) : link.href}
+                          className="text-sm text-muted-foreground hover:text-foreground transition-colors inline-flex items-center gap-2"
+                        >
+                          {link.name}
+                        </Link>
+                      )}
                     </li>
                   ))}
                 </ul>

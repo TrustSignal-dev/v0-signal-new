@@ -1,6 +1,8 @@
 "use client";
 
 import { useState, useEffect } from "react";
+import Link from "next/link";
+import { usePathname } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { Menu, X } from "lucide-react";
 import { PRIMARY_NAV_LINKS } from "@/lib/site";
@@ -8,6 +10,12 @@ import { PRIMARY_NAV_LINKS } from "@/lib/site";
 export function Navigation() {
   const [isScrolled, setIsScrolled] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+  const pathname = usePathname();
+
+  const resolveHomeHref = (hash?: string) => {
+    if (!hash) return pathname === "/" ? "#top" : "/";
+    return pathname === "/" ? hash : `/${hash}`;
+  };
 
   useEffect(() => {
     const handleScroll = () => {
@@ -38,21 +46,25 @@ export function Navigation() {
           }`}
         >
           {/* Logo */}
-            <a href="#top" className="flex items-center gap-2 group">
+            <Link
+              href={resolveHomeHref()}
+              className="flex items-center gap-2 group"
+              onClick={() => setIsMobileMenuOpen(false)}
+            >
               <span className={`font-display tracking-tight transition-all duration-500 ${isScrolled ? "text-xl" : "text-2xl"}`}>TrustSignal</span>
-            </a>
+            </Link>
 
           {/* Desktop Navigation */}
           <div className="hidden md:flex items-center gap-12">
             {PRIMARY_NAV_LINKS.map((link) => (
-              <a
+              <Link
                 key={link.name}
-                href={link.href}
+                href={resolveHomeHref(link.href)}
                 className="text-sm text-foreground/70 hover:text-foreground transition-colors duration-300 relative group"
               >
                 {link.name}
                 <span className="absolute -bottom-1 left-0 w-0 h-px bg-foreground transition-all duration-300 group-hover:w-full" />
-              </a>
+              </Link>
             ))}
           </div>
 
@@ -63,7 +75,7 @@ export function Navigation() {
               size="sm"
               className={`bg-foreground hover:bg-foreground/90 text-background rounded-full transition-all duration-500 ${isScrolled ? "px-4 h-8 text-xs" : "px-6"}`}
             >
-              <a href="#pilot-request">Request Pilot</a>
+              <Link href={resolveHomeHref("#pilot-request")}>Request Pilot</Link>
             </Button>
           </div>
 
@@ -96,9 +108,9 @@ export function Navigation() {
           {/* Navigation Links */}
           <div className="flex-1 flex flex-col justify-center gap-8">
             {PRIMARY_NAV_LINKS.map((link, i) => (
-              <a
+              <Link
                 key={link.name}
-                href={link.href}
+                href={resolveHomeHref(link.href)}
                 onClick={() => setIsMobileMenuOpen(false)}
                 className={`text-5xl font-display text-foreground hover:text-muted-foreground transition-all duration-500 ${
                   isMobileMenuOpen 
@@ -108,7 +120,7 @@ export function Navigation() {
                 style={{ transitionDelay: isMobileMenuOpen ? `${i * 75}ms` : "0ms" }}
               >
                 {link.name}
-              </a>
+              </Link>
             ))}
           </div>
           
@@ -125,7 +137,7 @@ export function Navigation() {
               className="flex-1 bg-foreground text-background rounded-full h-14 text-base"
               onClick={() => setIsMobileMenuOpen(false)}
             >
-              <a href="#pilot-request">Request Pilot</a>
+              <Link href={resolveHomeHref("#pilot-request")}>Request Pilot</Link>
             </Button>
           </div>
         </div>
