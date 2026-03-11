@@ -60,39 +60,39 @@ function TerminalPanel({
   }, [isVisible, lines.length, delay]);
 
   return (
-    <div className={`border border-foreground/10 transition-all duration-700 ${
+    <div className={`border border-background/12 bg-background/[0.02] transition-all duration-700 ${
       isVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-8"
     }`}>
       {/* Terminal header */}
-      <div className="px-6 py-4 border-b border-foreground/10 flex items-center justify-between">
+      <div className="px-6 py-4 border-b border-background/12 flex items-center justify-between">
         <div className="flex items-center gap-3">
           <div className="flex gap-2">
-            <div className="w-3 h-3 rounded-full bg-foreground/20" />
-            <div className="w-3 h-3 rounded-full bg-foreground/20" />
-            <div className="w-3 h-3 rounded-full bg-foreground/20" />
+            <div className="w-3 h-3 rounded-full bg-background/20" />
+            <div className="w-3 h-3 rounded-full bg-background/20" />
+            <div className="w-3 h-3 rounded-full bg-background/20" />
           </div>
-          <span className="text-sm font-mono text-muted-foreground">{title}</span>
+          <span className="text-sm font-mono text-background/60">{title}</span>
         </div>
         {isSuccess ? (
-          <CheckCircle2 className="w-5 h-5 text-green-500" />
+          <CheckCircle2 className="w-5 h-5 text-emerald-400" />
         ) : (
-          <XCircle className="w-5 h-5 text-red-500" />
+          <XCircle className="w-5 h-5 text-red-400" />
         )}
       </div>
       
       {/* Terminal content */}
-      <div className="p-6 font-mono text-sm bg-foreground/[0.02] min-h-[320px]">
+      <div className="min-h-[320px] bg-background/[0.04] p-6 font-mono text-sm">
         {lines.map((line, index) => {
           if (index >= visibleLines) return null;
           
-          let colorClass = "text-foreground/70";
-          if (line.type === "command") colorClass = "text-foreground";
-          if (line.type === "process") colorClass = "text-muted-foreground";
+          let colorClass = "text-background/68";
+          if (line.type === "command") colorClass = "text-background";
+          if (line.type === "process") colorClass = "text-background/58";
           if (line.type === "success") colorClass = "text-blue-400";
-          if (line.type === "clean") colorClass = "text-green-400 font-bold";
+          if (line.type === "clean") colorClass = "text-emerald-400 font-bold";
           if (line.type === "failure") colorClass = "text-red-400 font-bold";
           if (line.type === "warning") colorClass = "text-red-300";
-          if (line.type === "info") colorClass = "text-foreground/50";
+          if (line.type === "info") colorClass = "text-background/45";
           
           return (
             <div 
@@ -103,7 +103,7 @@ function TerminalPanel({
             </div>
           );
         })}
-        <span className="inline-block w-2 h-4 bg-foreground/60 animate-pulse" />
+        <span className="inline-block w-2 h-4 bg-background/60 animate-pulse" />
       </div>
     </div>
   );
@@ -129,12 +129,26 @@ export function DemoSection() {
     <section
       id="demo"
       ref={sectionRef}
-      className="relative py-24 lg:py-32 overflow-hidden"
+      className="relative overflow-hidden border-y border-foreground/10 bg-foreground py-24 text-background lg:py-32"
     >
+      <div className="absolute inset-0 bg-[radial-gradient(circle_at_top,rgba(255,255,255,0.08),transparent_38%)] pointer-events-none" />
+      <div className="absolute inset-0 opacity-20 pointer-events-none">
+        {[...Array(8)].map((_, i) => (
+          <div
+            key={`demo-h-${i}`}
+            className="absolute h-px bg-background/10"
+            style={{
+              top: `${12.5 * (i + 1)}%`,
+              left: 0,
+              right: 0,
+            }}
+          />
+        ))}
+      </div>
       <div className="max-w-[1400px] mx-auto px-6 lg:px-12">
         {/* Header */}
         <div className="mb-16 lg:mb-24 text-center">
-          <span className="inline-flex items-center gap-3 text-sm font-mono text-muted-foreground mb-6">
+          <span className="inline-flex items-center gap-3 text-sm font-mono text-background/60 mb-6">
             <Terminal className="w-4 h-4" />
             Verification
           </span>
@@ -145,7 +159,7 @@ export function DemoSection() {
           >
             Audit-ready verification.
             <br />
-            <span className="text-muted-foreground">Clear signal when a record drifts.</span>
+            <span className="text-background/62">Clear signal when a record drifts.</span>
           </h2>
         </div>
 
@@ -153,8 +167,8 @@ export function DemoSection() {
         <div className="grid lg:grid-cols-2 gap-8 lg:gap-12">
           <div>
             <div className="mb-4 flex items-center gap-2">
-              <CheckCircle2 className="w-5 h-5 text-green-500" />
-              <span className="font-mono text-sm text-muted-foreground">Receipt Match</span>
+              <CheckCircle2 className="w-5 h-5 text-emerald-400" />
+              <span className="font-mono text-sm text-background/60">Receipt Match</span>
             </div>
             <TerminalPanel 
               title="receipt_match.log"
@@ -167,8 +181,8 @@ export function DemoSection() {
           
           <div>
             <div className="mb-4 flex items-center gap-2">
-              <XCircle className="w-5 h-5 text-red-500" />
-              <span className="font-mono text-sm text-muted-foreground">Drift Detected</span>
+              <XCircle className="w-5 h-5 text-red-400" />
+              <span className="font-mono text-sm text-background/60">Drift Detected</span>
             </div>
             <TerminalPanel 
               title="drift_detected.log"
@@ -184,7 +198,7 @@ export function DemoSection() {
         <div className={`mt-16 text-center max-w-2xl mx-auto transition-all duration-700 delay-500 ${
           isVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-4"
         }`}>
-          <p className="text-lg text-muted-foreground leading-relaxed">
+          <p className="text-lg leading-relaxed text-background/65">
             TrustSignal issues a signed receipt at ingestion and can later
             compare the current artifact against the receipted digest. That
             gives reviewers a fast, audit-ready signal when a record no longer
