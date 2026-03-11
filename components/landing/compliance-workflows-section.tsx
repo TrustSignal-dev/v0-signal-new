@@ -92,10 +92,10 @@ export function ComplianceWorkflowsSection() {
               Built for compliance evidence workflows.
             </h2>
             <p className="mt-8 max-w-3xl text-lg leading-relaxed text-muted-foreground lg:text-xl">
-              TrustSignal sits behind the system that collected the artifact,
-              fits alongside platforms like Vanta and Drata, and returns signed
-              cryptographic receipts that can be verified later during audit or
-              partner review.
+              TrustSignal evidence integrity infrastructure sits behind the
+              system that collected the artifact, fits alongside platforms like
+              Vanta and Drata, and returns signed cryptographic receipts that
+              can be verified later during audit or partner review.
             </p>
           </div>
 

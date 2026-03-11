@@ -72,7 +72,7 @@ export function HeroSection() {
         >
           <span className="inline-flex items-center gap-3 text-sm font-mono text-muted-foreground">
             <Shield className="w-4 h-4" />
-            Evidence integrity infrastructure
+            TrustSignal evidence integrity infrastructure
           </span>
         </div>
         
@@ -96,8 +96,9 @@ export function HeroSection() {
               isVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-4"
             }`}
           >
-            TrustSignal attests compliance artifacts at ingestion, returns
-            signed cryptographic receipts, and gives reviewers verifiable audit
+            TrustSignal is evidence integrity infrastructure for compliance
+            artifacts. It attests artifacts at ingestion, returns signed
+            cryptographic receipts, and gives reviewers verifiable audit
             evidence without replacing the collection workflow they already
             trust.
           </p>

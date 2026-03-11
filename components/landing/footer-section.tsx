@@ -63,9 +63,10 @@ export function FooterSection() {
               </Link>
 
               <p className="text-muted-foreground leading-relaxed mb-8 max-w-xs">
-                Evidence integrity infrastructure. Signed cryptographic receipts
-                for compliance artifacts that support later verification without
-                replacing the workflow that collected them.
+                TrustSignal evidence integrity infrastructure issues signed
+                cryptographic receipts for compliance artifacts and supports
+                later verification without replacing the workflow that
+                collected them.
               </p>
 
               {/* Social Links */}
