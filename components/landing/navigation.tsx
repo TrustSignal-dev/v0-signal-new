@@ -55,12 +55,12 @@ export function Navigation() {
             </Link>
 
           {/* Desktop Navigation */}
-          <div className="hidden md:flex items-center gap-12">
+          <div className="hidden md:flex items-center gap-10">
             {PRIMARY_NAV_LINKS.map((link) => (
               <Link
                 key={link.name}
                 href={resolveHomeHref(link.href)}
-                className="text-sm text-foreground/70 hover:text-foreground transition-colors duration-300 relative group"
+                className="relative whitespace-nowrap text-sm text-foreground/70 transition-colors duration-300 hover:text-foreground group"
               >
                 {link.name}
                 <span className="absolute -bottom-1 left-0 w-0 h-px bg-foreground transition-all duration-300 group-hover:w-full" />

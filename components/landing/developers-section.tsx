@@ -41,8 +41,8 @@ const techSpecs = [
   },
   { 
     icon: Code2,
-    title: "Implementation Detail", 
-    description: "Technical documentation supports teams that need a deeper review of verification behavior."
+    title: "Deeper Technical Review", 
+    description: "Documentation and repository materials are available for teams that need a deeper review of integration patterns, lifecycle behavior, and public API expectations."
   },
 ];
 

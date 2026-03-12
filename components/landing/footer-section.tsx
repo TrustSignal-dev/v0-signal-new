@@ -127,7 +127,7 @@ export function FooterSection() {
           <div className="flex items-center gap-4 text-sm text-muted-foreground">
             <span className="flex items-center gap-2">
               <span className="w-2 h-2 rounded-full bg-foreground/35" />
-              Documentation and pilot intake available
+              Documentation, security materials, and pilot intake available
             </span>
           </div>
         </div>

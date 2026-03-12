@@ -152,11 +152,11 @@ export function IntegrationsSection() {
             <div className="border border-background/10 bg-background/[0.02] shadow-[0_32px_80px_rgba(0,0,0,0.18)]">
               <div className="flex items-center justify-between border-b border-background/10 px-6 py-4">
                 <span className="text-sm font-mono text-background/45">
-                  attest-evidence.http
+                  verification-example.http
                 </span>
                 <span className="inline-flex items-center gap-2 text-xs text-background/40">
                   <ArrowRight className="h-3.5 w-3.5" />
-                  Request and response
+                  Verification request and response
                 </span>
               </div>
               <div className="overflow-x-auto p-6 font-mono text-sm">

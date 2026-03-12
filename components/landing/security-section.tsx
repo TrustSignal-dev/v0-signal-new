@@ -14,7 +14,7 @@ const trustSignals = [
     icon: Shield,
     title: "Signed receipts",
     description:
-      "Each attestation returns a signed cryptographic receipt that can be stored beside the original artifact.",
+      "Each attestation returns a signed verification receipt that can be stored beside the original artifact.",
   },
   {
     icon: FileCheck2,

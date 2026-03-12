@@ -5,7 +5,7 @@ export const DEFAULT_KEYWORDS = [
   "TrustSignal",
   "evidence integrity infrastructure",
   "compliance artifacts",
-  "signed cryptographic receipts",
+  "signed verification receipts",
   "verifiable provenance",
   "tamper-evident audit trail",
   "audit-ready verification",
