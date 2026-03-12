@@ -42,7 +42,7 @@ const techSpecs = [
   },
   { 
     icon: Code2,
-    title: "Deeper Technical Review", 
+    title: "Technical Review Path", 
     description: "Documentation and repository materials are available for teams that need a deeper review of integration patterns, lifecycle behavior, and public API expectations."
   },
 ];
