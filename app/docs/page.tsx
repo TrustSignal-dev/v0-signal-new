@@ -3,8 +3,8 @@ import Link from "next/link";
 import { ArrowUpRight, Shield } from "lucide-react";
 import { TRUSTSIGNAL_GITHUB_URL } from "@/lib/site";
 import { createPageMetadata } from "@/lib/seo";
-import { ARTIFACT_LINKS, DEVELOPER_JOURNEY } from "./content";
-import { ClaimsBoundaryPanel, DOCS_NAV, DocsIndexCard, DiagramPanel, ResourceGrid, SectionBlock } from "./_components";
+import { ARTIFACT_LINKS, DEVELOPER_JOURNEY, LIFECYCLE_STEPS } from "./content";
+import { ClaimsBoundaryPanel, DOCS_NAV, DocsIndexCard, DiagramPanel, LifecycleCards, ResourceGrid, SectionBlock } from "./_components";
 
 export const metadata: Metadata = createPageMetadata({
   title: "Developer Documentation",
@@ -26,9 +26,9 @@ const concepts = [
       "High-loss workflows need a way to detect evidence tampering, artifact substitution, provenance loss, and stale evidence after collection.",
   },
   {
-    title: "Integrity Model",
+    title: "Verification Lifecycle",
     description:
-      "TrustSignal adds signed verification receipts, verification signals, verifiable provenance, and later verification without replacing the system of record.",
+      "TrustSignal accepts a verification request, returns verification signals, issues signed verification receipts, and supports later verification.",
   },
   {
     title: "Demo",
@@ -67,6 +67,8 @@ export default function DocsPage() {
 
       <DiagramPanel title="Developer Journey Flow" steps={[...DEVELOPER_JOURNEY]} />
 
+      <LifecycleCards title="Verification Lifecycle" steps={LIFECYCLE_STEPS} />
+
       <SectionBlock
         title="Why This Problem Exists"
         description="Evidence risk usually appears after collection. Review, audit, and partner workflows often rely on artifacts that have been moved, copied, or resubmitted over time."
@@ -79,6 +81,11 @@ export default function DocsPage() {
           <li>Documentation chains that cannot be verified later</li>
         </ul>
       </SectionBlock>
+
+      <SectionBlock
+        title="Integration Boundary"
+        description="TrustSignal does not replace the system of record. It adds verifiable provenance and later verification capability."
+      />
 
       <section>
         <p className="mb-4 font-mono text-xs uppercase tracking-[0.18em] text-muted-foreground">Documentation Pages</p>

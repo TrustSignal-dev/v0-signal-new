@@ -119,12 +119,46 @@ export function DiagramPanel({
   return (
     <section className="border border-foreground/10 bg-foreground/[0.02] p-6">
       <p className="font-mono text-xs uppercase tracking-[0.18em] text-muted-foreground">{title}</p>
-      <div className="mt-5 grid gap-3 md:grid-cols-[repeat(4,minmax(0,1fr))]">
+      <div className="mt-5 grid gap-3 md:grid-cols-2 xl:grid-cols-3">
         {steps.map((step, index) => (
-          <div key={step} className="relative border border-foreground/12 bg-background px-4 py-4 text-sm">
+          <div
+            key={step}
+            className="relative border border-foreground/12 bg-background px-4 py-4 text-sm transition-transform duration-200 hover:-translate-y-0.5"
+          >
             <p className="font-mono text-[11px] uppercase tracking-[0.16em] text-muted-foreground">0{index + 1}</p>
             <p className="mt-2 leading-relaxed text-foreground/85">{step}</p>
           </div>
+        ))}
+      </div>
+    </section>
+  );
+}
+
+export function LifecycleCards({
+  title,
+  steps,
+}: {
+  title: string;
+  steps: ReadonlyArray<{ title: string; description: string }>;
+}) {
+  return (
+    <section className="border border-foreground/10 bg-foreground/[0.02] p-6 lg:p-7">
+      <p className="font-mono text-xs uppercase tracking-[0.18em] text-muted-foreground">{title}</p>
+      <div className="mt-5 grid gap-4 md:grid-cols-2 xl:grid-cols-3">
+        {steps.map((step, index) => (
+          <article
+            key={step.title}
+            className="group border border-foreground/10 bg-background p-5 transition-all duration-200 hover:-translate-y-1 hover:border-foreground/20"
+          >
+            <div className="flex items-center justify-between gap-4">
+              <p className="font-mono text-[11px] uppercase tracking-[0.18em] text-muted-foreground">
+                Step 0{index + 1}
+              </p>
+              <ArrowRight className="h-4 w-4 text-muted-foreground transition-transform duration-200 group-hover:translate-x-0.5" />
+            </div>
+            <h3 className="mt-3 text-xl font-display tracking-tight">{step.title}</h3>
+            <p className="mt-2 text-sm leading-relaxed text-muted-foreground">{step.description}</p>
+          </article>
         ))}
       </div>
     </section>

@@ -25,10 +25,37 @@ export const ARTIFACT_LINKS = [
 
 export const DEVELOPER_JOURNEY = [
   "Problem",
-  "Integrity Model",
+  "Verification Lifecycle",
   "Demo",
   "API Example",
   "Developer Docs"
+] as const;
+
+export const LIFECYCLE_STEPS = [
+  {
+    title: "Submit Artifact",
+    description: "The external workflow sends an artifact-derived verification request through the TrustSignal API boundary."
+  },
+  {
+    title: "Verification Result",
+    description: "TrustSignal returns verification signals that summarize the verification outcome for downstream workflow logic."
+  },
+  {
+    title: "Signed Receipt",
+    description: "The system issues a signed verification receipt that binds the verification outcome and verifiable provenance."
+  },
+  {
+    title: "Store Receipt",
+    description: "The workflow stores the receipt with its own record so the system of record retains the integrity-layer output."
+  },
+  {
+    title: "Later Verification",
+    description: "Before audit review or another high-trust step, the workflow can request later verification against stored receipt state."
+  },
+  {
+    title: "Tamper Detection",
+    description: "If the artifact or stored state has drifted, later verification returns a mismatch signal instead of silently reusing the earlier result."
+  }
 ] as const;
 
 export const CURL_EXAMPLE = `curl -X POST "https://api.trustsignal.dev/api/v1/verify" \\

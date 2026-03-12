@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import { createPageMetadata } from "@/lib/seo";
-import { ARTIFACT_LINKS } from "../content";
-import { CodePanel, DiagramPanel, DocsShell, ResourceGrid, SectionBlock } from "../_components";
+import { ARTIFACT_LINKS, LIFECYCLE_STEPS } from "../content";
+import { CodePanel, DiagramPanel, DocsShell, LifecycleCards, ResourceGrid, SectionBlock } from "../_components";
 
 export const metadata: Metadata = createPageMetadata({
   title: "Architecture",
@@ -38,6 +38,8 @@ export default function ArchitecturePage() {
         ]}
       />
 
+      <LifecycleCards title="Lifecycle Through The Architecture" steps={LIFECYCLE_STEPS} />
+
       <SectionBlock title="Trust-Boundary Diagram">
         <div className="grid gap-4 lg:grid-cols-3">
           <div className="border border-foreground/10 bg-foreground/[0.02] p-4">
@@ -64,6 +66,11 @@ export default function ArchitecturePage() {
       <SectionBlock
         title="Workflow Fit"
         description="TrustSignal is not a workflow replacement. It integrates at defined boundaries so compliance, audit evidence pipelines, and systems of record can continue operating as they do today."
+      />
+
+      <SectionBlock
+        title="System-of-Record Boundary"
+        description="TrustSignal does not replace the system of record. It adds verifiable provenance and later verification capability."
       />
 
       <CodePanel label="Integration Snippet" code={integrationSnippet} />

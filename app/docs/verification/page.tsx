@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import { createPageMetadata } from "@/lib/seo";
-import { CURL_EXAMPLE, RECEIPT_EXAMPLE, STATUS_EXAMPLE, TAMPERED_REJECTION } from "../content";
-import { CodePanel, DiagramPanel, DocsShell, SectionBlock } from "../_components";
+import { CURL_EXAMPLE, LIFECYCLE_STEPS, RECEIPT_EXAMPLE, STATUS_EXAMPLE, TAMPERED_REJECTION } from "../content";
+import { CodePanel, DiagramPanel, DocsShell, LifecycleCards, SectionBlock } from "../_components";
 
 export const metadata: Metadata = createPageMetadata({
   title: "Quick Verification",
@@ -28,12 +28,14 @@ export default function VerificationPage() {
       <DiagramPanel
         title="Try the Verification Lifecycle"
         steps={[
-          "Submit artifact hash and source metadata",
+          "Submit artifact",
           "Receive signed verification receipt",
-          "Store receipt with system-of-record entry",
-          "Run later verification before relying on prior results",
+          "Store receipt",
+          "Run later verification",
         ]}
       />
+
+      <LifecycleCards title="Lifecycle Steps" steps={LIFECYCLE_STEPS} />
 
       <SectionBlock
         title="Copy-Paste Request"
@@ -65,6 +67,11 @@ export default function VerificationPage() {
       >
         <CodePanel label="Verification Status" code={STATUS_EXAMPLE} />
       </SectionBlock>
+
+      <SectionBlock
+        title="Integration Boundary"
+        description="TrustSignal does not replace the system of record. It adds verifiable provenance and later verification capability."
+      />
 
       <SectionBlock
         title="Tampered Artifact Rejection"
