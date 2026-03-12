@@ -59,7 +59,7 @@ export default function SecurityPage() {
 
       <SectionBlock
         title="Intentionally Not Exposed"
-        description="Public documentation does not disclose signing key storage details, internal service topology, proof internals, or model architecture details."
+        description="Public documentation does not disclose private infrastructure details, proof internals, or model architecture details."
       />
 
       <SectionBlock title="Claims Boundary">

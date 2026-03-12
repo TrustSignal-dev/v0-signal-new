@@ -14,7 +14,7 @@ import {
 const footerLinks = {
   Product: PRIMARY_NAV_LINKS,
   Developers: [
-    { name: "Documentation", href: TRUSTSIGNAL_REVIEW_REPO_URL, external: true },
+    { name: "Documentation", href: "/docs" },
     { name: "GitHub", href: TRUSTSIGNAL_GITHUB_URL, external: true },
     { name: "Security Overview", href: "/security" },
     { name: "Contact TrustSignal", href: `mailto:${CONTACT_EMAIL}`, external: true },
