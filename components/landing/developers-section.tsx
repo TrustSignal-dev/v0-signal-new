@@ -11,7 +11,7 @@ import {
   ScrollText,
   Shield,
 } from "lucide-react";
-import { TRUSTSIGNAL_REVIEW_REPO_URL } from "@/lib/site";
+import { TRUSTSIGNAL_GITHUB_URL, TRUSTSIGNAL_REVIEW_REPO_URL } from "@/lib/site";
 
 const techSpecs = [
   { 
@@ -130,6 +130,22 @@ export function DevelopersSection() {
               >
                 Threat Model
               </a>
+              <a
+                href={TRUSTSIGNAL_GITHUB_URL}
+                target="_blank"
+                rel="noreferrer"
+                className="border border-foreground/10 bg-foreground/[0.02] px-4 py-3 hover:border-foreground/20"
+              >
+                GitHub Repository
+              </a>
+              <a
+                href={TRUSTSIGNAL_REVIEW_REPO_URL}
+                target="_blank"
+                rel="noreferrer"
+                className="border border-foreground/10 bg-foreground/[0.02] px-4 py-3 hover:border-foreground/20"
+              >
+                Documentation
+              </a>
             </div>
             
             {/* Tech Specs Grid */}
@@ -215,7 +231,7 @@ export function DevelopersSection() {
               </a>
               <span className="text-foreground/20">|</span>
               <a
-                href={TRUSTSIGNAL_REVIEW_REPO_URL}
+                href={TRUSTSIGNAL_GITHUB_URL}
                 target="_blank"
                 rel="noreferrer"
                 className="text-muted-foreground hover:text-foreground"
