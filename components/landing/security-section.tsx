@@ -32,7 +32,7 @@ const trustSignals = [
     icon: Route,
     title: "Minimal workflow change",
     description:
-      "TrustSignal integrates at ingestion through a single API call or webhook rather than replacing the evidence platform.",
+      "TrustSignal integrates at ingestion through a low-friction API boundary or webhook without replacing the evidence platform.",
   },
   {
     icon: Fingerprint,

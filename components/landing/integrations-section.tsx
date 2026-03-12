@@ -10,14 +10,14 @@ const integrationSteps = [
       "Keep your existing platform, collector, or internal workflow as the source of truth for the artifact.",
   },
   {
-    title: "Call TrustSignal at ingestion",
+    title: "Send verification requests at the workflow boundary",
     description:
-      "Send the source, artifact hash, control ID, and timestamp through one API call or webhook.",
+      "Submit source metadata, artifact hash, control context, and timestamps through a low-friction API boundary integration.",
   },
   {
-    title: "Store the receipt with the review record",
+    title: "Store receipts in your system of record",
     description:
-      "Receipts and provenance metadata can sit beside the original evidence for later audit or partner review.",
+      "Keep signed receipts and verification signals beside the original evidence for later review, audits, and partner checks.",
   },
 ] as const;
 
@@ -94,18 +94,17 @@ export function IntegrationsSection() {
           >
             <span className="mb-6 inline-flex items-center gap-3 text-sm font-mono text-background/50">
               <Workflow className="w-4 h-4" />
-              Integration
+              Integration fit
             </span>
             <h2 className="text-4xl lg:text-6xl font-display tracking-tight">
-              Near-zero workflow change.
+              Fits existing systems of record.
               <br />
-              <span className="text-background/50">Attestation at the handoff point.</span>
+              <span className="text-background/50">Adds integrity at evidence handoff points.</span>
             </h2>
             <p className="mt-8 text-lg text-background/60 leading-relaxed lg:text-xl">
-              TrustSignal is designed to sit behind an existing compliance
-              motion. Collect evidence where you already do, attest it at
-              ingestion, and keep the signed receipt beside the artifact for
-              later verification.
+              TrustSignal is an integrity layer for compliance workflows and
+              audit evidence pipelines. It integrates at clear API boundaries
+              while your existing collection and review systems remain in place.
             </p>
 
             <div className="mt-10 space-y-4">
@@ -171,6 +170,11 @@ export function IntegrationsSection() {
               The same fields can be emitted from a webhook if your evidence
               platform already has an event-driven collection flow.
             </p>
+            <p className="mt-3 border border-background/10 bg-background/[0.04] px-4 py-3 text-sm leading-relaxed text-background/55">
+              Production note: plan for authentication, environment
+              configuration, receipt lifecycle checks, and verification status
+              monitoring in your deployment workflow.
+            </p>
           </div>
         </div>
 
@@ -180,13 +184,13 @@ export function IntegrationsSection() {
           }`}
         >
           <div className="border border-background/10 bg-background/[0.04] px-5 py-4 text-sm leading-relaxed text-background/55">
-            No system migration required.
+            No workflow replacement required.
           </div>
           <div className="border border-background/10 bg-background/[0.04] px-5 py-4 text-sm leading-relaxed text-background/55">
             Evidence stays in the workflow your team already trusts.
           </div>
           <div className="border border-background/10 bg-background/[0.04] px-5 py-4 text-sm leading-relaxed text-background/55">
-            TrustSignal adds provenance and receipt integrity at the edge of review.
+            TrustSignal adds verifiable provenance and signed receipts at the edge of review.
           </div>
         </div>
       </div>

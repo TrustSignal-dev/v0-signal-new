@@ -32,7 +32,7 @@ const techSpecs = [
   { 
     icon: Route,
     title: "Low-Friction Integration", 
-    description: "TrustSignal fits behind an existing workflow through a single ingestion point."
+    description: "TrustSignal fits behind an existing workflow through a clear verification boundary."
   },
   { 
     icon: ScrollText,
@@ -41,8 +41,8 @@ const techSpecs = [
   },
   { 
     icon: Code2,
-    title: "Cryptographic Detail", 
-    description: "Additional implementation detail is available for teams that need a closer review of the verification stack."
+    title: "Implementation Detail", 
+    description: "Technical documentation supports teams that need a deeper review of verification behavior."
   },
 ];
 
@@ -89,7 +89,7 @@ export function DevelopersSection() {
   }, []);
 
   return (
-    <section id="architecture" ref={sectionRef} className="relative py-24 lg:py-32 overflow-hidden">
+    <section id="developers" ref={sectionRef} className="relative py-24 lg:py-32 overflow-hidden">
       <div className="max-w-[1400px] mx-auto px-6 lg:px-12">
         <div className="grid lg:grid-cols-2 gap-16 lg:gap-24 items-start">
           {/* Left: Content */}
@@ -100,19 +100,37 @@ export function DevelopersSection() {
           >
             <span className="inline-flex items-center gap-3 text-sm font-mono text-muted-foreground mb-6">
               <Code2 className="w-4 h-4" />
-              Documentation and architecture
+              For Developers
             </span>
             <h2 className="text-4xl lg:text-6xl font-display tracking-tight mb-8">
-              Technical detail
-              <br />
-              <span className="text-muted-foreground">for evaluators.</span>
+              For Developers
             </h2>
             <p className="text-xl text-muted-foreground mb-12 leading-relaxed">
-              Technical evaluators can inspect the receipt model, verification
-              states, and provenance fields behind a TrustSignal integration.
-              Documentation and GitHub materials remain available for teams that
-              want a deeper view of the verification architecture.
+              TrustSignal exposes a straightforward API surface for
+              verification, receipt retrieval, status checks, and lifecycle
+              actions. This section is the transition point from buyer-facing
+              messaging to technical materials.
             </p>
+
+            <div className="mb-10 grid gap-3 text-sm">
+              <a href="#integration" className="border border-foreground/10 bg-foreground/[0.02] px-4 py-3 hover:border-foreground/20">
+                API Overview
+              </a>
+              <a href="#demo" className="border border-foreground/10 bg-foreground/[0.02] px-4 py-3 hover:border-foreground/20">
+                Quick Verification Example
+              </a>
+              <a href="/security" className="border border-foreground/10 bg-foreground/[0.02] px-4 py-3 hover:border-foreground/20">
+                Security Model
+              </a>
+              <a
+                href={TRUSTSIGNAL_REVIEW_REPO_URL}
+                target="_blank"
+                rel="noreferrer"
+                className="border border-foreground/10 bg-foreground/[0.02] px-4 py-3 hover:border-foreground/20"
+              >
+                Threat Model
+              </a>
+            </div>
             
             {/* Tech Specs Grid */}
             <div className="grid grid-cols-2 gap-6">
@@ -176,12 +194,12 @@ export function DevelopersSection() {
 
             <details className="mt-6 border border-foreground/10 bg-foreground/[0.02] p-5">
               <summary className="cursor-pointer list-none font-medium">
-                Cryptographic implementation detail
+                Additional implementation context
               </summary>
               <p className="mt-4 text-sm leading-relaxed text-muted-foreground">
-                TrustSignal documentation can go deeper into digest handling,
-                proof systems, or anchoring strategies for teams that need that
-                level of review.
+                Use the linked documentation and repository to review endpoint
+                behavior, lifecycle expectations, and integration patterns in
+                more depth.
               </p>
             </details>
             

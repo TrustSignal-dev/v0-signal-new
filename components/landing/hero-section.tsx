@@ -8,18 +8,18 @@ import { AnimatedSphere } from "./animated-sphere";
 const heroHighlights = [
   {
     icon: Workflow,
-    title: "Fits existing compliance motion",
-    description: "Works alongside platforms like Vanta, Drata, and internal GRC flows.",
+    title: "Integrity layer for existing workflows",
+    description: "Fits alongside compliance and audit operations already in place.",
   },
   {
     icon: ShieldCheck,
-    title: "Signed at ingestion",
-    description: "Adds a signed cryptographic receipt when the artifact enters review.",
+    title: "Signed verification receipts",
+    description: "Issues signed receipts with provenance metadata at verification time.",
   },
   {
     icon: FileCheck2,
-    title: "Audit-ready verification",
-    description: "Preserves provenance so later review can confirm the record still matches.",
+    title: "Later integrity checks",
+    description: "Supports downstream checks to confirm whether records still match.",
   },
 ] as const;
 
@@ -83,9 +83,9 @@ export function HeroSection() {
               isVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-8"
             }`}
           >
-            <span className="block text-balance">Evidence integrity</span>
-            <span className="block text-balance">for compliance artifacts</span>
-            <span className="block text-muted-foreground text-balance">without workflow changes</span>
+            <span className="block text-balance">Evidence Integrity</span>
+            <span className="block text-balance">Infrastructure</span>
+            <span className="block text-muted-foreground text-balance">for existing compliance workflows</span>
           </h1>
         </div>
         
@@ -96,11 +96,10 @@ export function HeroSection() {
               isVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-4"
             }`}
           >
-            TrustSignal is evidence integrity infrastructure for compliance
-            artifacts. It attests artifacts at ingestion, returns signed
-            cryptographic receipts, and gives reviewers verifiable audit
-            evidence without replacing the collection workflow they already
-            trust.
+            TrustSignal issues signed verification receipts so organizations can
+            prove when evidence was created, where it came from, and whether it
+            has changed. It adds an integrity layer to existing workflows
+            without replacing the system of record.
           </p>
           
           {/* CTAs */}
@@ -126,7 +125,7 @@ export function HeroSection() {
                 variant="outline" 
                 className="h-14 px-8 text-base rounded-full border-foreground/20 hover:bg-foreground/5"
               >
-                <a href="#integration">View Integration Flow</a>
+                <a href="#integration">See Integration Fit</a>
               </Button>
             </div>
 

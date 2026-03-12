@@ -97,7 +97,7 @@ export default function WhatIsTrustSignalPage() {
               system, or evidence collector continues to gather documents,
               exports, and snapshots in the normal way. TrustSignal adds a
               signed receipt when the artifact is ingested, so the artifact hash
-              and related metadata are anchored at the moment the record enters
+              and related metadata are recorded at the moment the record enters
               review. That receipt becomes a durable reference point for later
               verification.
             </p>
@@ -152,7 +152,7 @@ export default function WhatIsTrustSignalPage() {
               </Link>{" "}
               describes the public site boundary and operational safeguards. The{" "}
               <Link
-                href="/developers"
+                href="/#developers"
                 className="text-foreground underline underline-offset-4"
               >
                 developers page

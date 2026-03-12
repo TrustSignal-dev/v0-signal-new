@@ -33,7 +33,7 @@ export const metadata: Metadata = {
     template: "%s | TrustSignal",
   },
   description:
-    "Evidence integrity infrastructure for compliance artifacts. Generate signed cryptographic receipts, preserve provenance, and verify records without replacing existing workflows.",
+    "Evidence integrity infrastructure for compliance artifacts. Generate signed verification receipts, preserve provenance, and verify records without replacing existing workflows.",
   keywords: [...DEFAULT_KEYWORDS],
   applicationName: "TrustSignal",
   alternates: {
@@ -42,7 +42,7 @@ export const metadata: Metadata = {
   openGraph: {
     title: "TrustSignal | Evidence Integrity Infrastructure",
     description:
-      "Evidence integrity infrastructure for compliance artifacts. Generate signed cryptographic receipts, preserve provenance, and verify records without replacing existing workflows.",
+      "Evidence integrity infrastructure for compliance artifacts. Generate signed verification receipts, preserve provenance, and verify records without replacing existing workflows.",
     url: absoluteUrl("/"),
     siteName: "TrustSignal",
     locale: "en_US",
@@ -60,7 +60,7 @@ export const metadata: Metadata = {
     card: "summary_large_image",
     title: "TrustSignal | Evidence Integrity Infrastructure",
     description:
-      "Evidence integrity infrastructure for compliance artifacts. Generate signed cryptographic receipts, preserve provenance, and verify records without replacing existing workflows.",
+      "Evidence integrity infrastructure for compliance artifacts. Generate signed verification receipts, preserve provenance, and verify records without replacing existing workflows.",
     images: [absoluteUrl("/placeholder-logo.png")],
   },
   icons: {

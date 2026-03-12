@@ -64,7 +64,7 @@ export function FooterSection() {
 
               <p className="text-muted-foreground leading-relaxed mb-8 max-w-xs">
                 TrustSignal evidence integrity infrastructure issues signed
-                cryptographic receipts for compliance artifacts and supports
+                verification receipts for compliance artifacts and supports
                 later verification without replacing the workflow that
                 collected them.
               </p>

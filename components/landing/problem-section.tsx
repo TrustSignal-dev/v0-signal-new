@@ -1,28 +1,28 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
-import { AlertTriangle, Building2, Stethoscope, CreditCard } from "lucide-react";
+import { AlertTriangle, Clock3, FileSearch, Link2 } from "lucide-react";
 
-const fraudStats = [
+const evidenceRisks = [
   {
-    icon: Building2,
-    sector: "Real Estate",
-    stat: "$173.6M",
-    description: "in wire fraud and deed-record manipulation losses in 2024",
+    icon: Clock3,
+    title: "Evidence drifts over time",
+    description:
+      "Files, exports, and screenshots can change after initial collection as they move between teams and systems.",
   },
   {
-    icon: Stethoscope,
-    sector: "Healthcare",
-    stat: "$144B–$480B",
-    description: "lost annually to fraud. Medicare alone: $57B in 2024",
+    icon: FileSearch,
+    title: "Provenance gets harder to confirm",
+    description:
+      "Weeks or months later, reviewers often cannot easily prove where an artifact came from or when it was captured.",
   },
   {
-    icon: CreditCard,
-    sector: "Financial & Credentials",
-    stat: "$12.5B",
-    description: "in identity fraud losses. Synthetic identity fraud up 311% in H1 2025",
+    icon: Link2,
+    title: "Audit readiness weakens",
+    description:
+      "Teams need a reliable way to verify what was collected, when it was collected, and from which source system.",
   },
-];
+] as const;
 
 export function ProblemSection() {
   const [isVisible, setIsVisible] = useState(false);
@@ -33,7 +33,7 @@ export function ProblemSection() {
       ([entry]) => {
         if (entry.isIntersecting) setIsVisible(true);
       },
-      { threshold: 0.1 }
+      { threshold: 0.1 },
     );
 
     if (sectionRef.current) observer.observe(sectionRef.current);
@@ -44,73 +44,69 @@ export function ProblemSection() {
     <section
       id="problem"
       ref={sectionRef}
-      className="relative py-24 lg:py-32 bg-foreground text-background overflow-hidden"
+      className="relative overflow-hidden bg-foreground py-24 text-background lg:py-32"
     >
-      {/* Diagonal lines pattern */}
-      <div className="absolute inset-0 opacity-[0.03] pointer-events-none">
-        <div className="absolute inset-0" style={{
-          backgroundImage: `repeating-linear-gradient(
+      <div className="absolute inset-0 pointer-events-none opacity-[0.03]">
+        <div
+          className="absolute inset-0"
+          style={{
+            backgroundImage: `repeating-linear-gradient(
             -45deg,
             transparent,
             transparent 40px,
             currentColor 40px,
             currentColor 41px
-          )`
-        }} />
+          )`,
+          }}
+        />
       </div>
 
-      <div className="relative z-10 max-w-[1400px] mx-auto px-6 lg:px-12">
-        {/* Header */}
-        <div className="mb-16 lg:mb-24">
-          <span className="inline-flex items-center gap-3 text-sm font-mono text-background/50 mb-6">
-            <AlertTriangle className="w-4 h-4" />
-            The Stakes
+      <div className="relative z-10 mx-auto max-w-[1400px] px-6 lg:px-12">
+        <div className="mb-16 lg:mb-20">
+          <span className="mb-6 inline-flex items-center gap-3 font-mono text-sm text-background/50">
+            <AlertTriangle className="h-4 w-4" />
+            Problem
           </span>
           <h2
-            className={`text-4xl lg:text-6xl font-display tracking-tight transition-all duration-700 ${
-              isVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-4"
+            className={`text-4xl font-display tracking-tight transition-all duration-700 lg:text-6xl ${
+              isVisible ? "translate-y-0 opacity-100" : "translate-y-4 opacity-0"
             }`}
           >
-            When evidence changes after collection,
+            Evidence can drift after collection.
             <br />
-            <span className="text-background/50">process controls aren&apos;t enough.</span>
+            <span className="text-background/55">Verification gets harder later.</span>
           </h2>
-          <p className={`mt-8 text-xl text-background/60 max-w-3xl leading-relaxed transition-all duration-700 delay-100 ${
-            isVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-4"
-          }`}>
-            TrustSignal intercepts fraud before records are finalized, providing mathematical proof of evidence integrity across high-stakes industries.
+          <p
+            className={`mt-8 max-w-3xl text-xl leading-relaxed text-background/60 transition-all duration-700 delay-100 ${
+              isVisible ? "translate-y-0 opacity-100" : "translate-y-4 opacity-0"
+            }`}
+          >
+            Compliance and audit teams rely on artifacts that pass through
+            multiple systems. Without a durable integrity reference, provenance
+            can become difficult to validate during later review.
           </p>
         </div>
 
-        {/* Stats Grid */}
-        <div className="grid md:grid-cols-3 gap-8 lg:gap-12">
-          {fraudStats.map((item, index) => {
+        <div className="grid gap-8 md:grid-cols-3 lg:gap-10">
+          {evidenceRisks.map((item, index) => {
             const Icon = item.icon;
+
             return (
               <div
-                key={item.sector}
-                className={`group relative p-8 lg:p-10 border border-background/10 hover:border-background/30 transition-all duration-500 ${
-                  isVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-8"
+                key={item.title}
+                className={`group relative border border-background/10 p-8 transition-all duration-500 hover:border-background/25 ${
+                  isVisible ? "translate-y-0 opacity-100" : "translate-y-8 opacity-0"
                 }`}
                 style={{ transitionDelay: `${index * 100 + 200}ms` }}
               >
-                <div className="flex items-center gap-4 mb-6">
-                  <div className="w-12 h-12 border border-background/20 flex items-center justify-center">
-                    <Icon className="w-5 h-5 text-background/60" />
-                  </div>
-                  <span className="font-mono text-sm text-background/40">{item.sector}</span>
+                <div className="mb-6 flex h-12 w-12 items-center justify-center border border-background/20">
+                  <Icon className="h-5 w-5 text-background/70" />
                 </div>
-                
-                <div className="text-5xl lg:text-6xl font-display mb-4 group-hover:translate-x-1 transition-transform duration-300">
-                  {item.stat}
-                </div>
-                
-                <p className="text-background/50 leading-relaxed">
+                <h3 className="text-2xl font-display">{item.title}</h3>
+                <p className="mt-4 text-sm leading-relaxed text-background/55">
                   {item.description}
                 </p>
-                
-                {/* Corner accent */}
-                <div className="absolute top-0 right-0 w-8 h-8 border-l border-b border-background/10 group-hover:border-background/30 transition-colors" />
+                <div className="absolute right-0 top-0 h-8 w-8 border-b border-l border-background/10 transition-colors group-hover:border-background/25" />
               </div>
             );
           })}

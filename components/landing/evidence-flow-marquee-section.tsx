@@ -162,22 +162,38 @@ export function EvidenceFlowMarqueeSection() {
   const showTrustSignal = prefersReducedMotion || (phase >= 3 && phase < 6);
   const showSignedState = prefersReducedMotion || (phase >= 4 && phase < 6);
   const showVerifiedState = prefersReducedMotion || phase === 5;
-  const outputLabel = showVerifiedState ? "Verified Evidence" : "Audit Evidence";
+  const outputLabel = showVerifiedState ? "Verification Signal" : "Signed Output";
 
   return (
-    <section className="relative border-t border-foreground/10 py-20 lg:py-24">
+    <section id="integrity-model" className="relative border-t border-foreground/10 py-20 lg:py-24">
       <div className="mx-auto max-w-[1400px] px-6 lg:px-12">
         <div className="max-w-3xl">
           <span className="inline-flex items-center border border-foreground/10 bg-background/80 px-3 py-1 font-mono text-[11px] uppercase tracking-[0.22em] text-muted-foreground">
-            Workflow integrity
+            Integrity model
           </span>
           <h2 className="mt-6 text-4xl font-display tracking-tight lg:text-6xl">
-            Where evidence integrity breaks
+            Verification receipts through the artifact lifecycle
           </h2>
           <p className="mt-6 text-lg leading-relaxed text-muted-foreground lg:text-xl">
-            TrustSignal inserts a signed receipt into the evidence flow so teams
-            can verify origin, timestamp, and integrity later.
+            Submit an artifact or artifact reference, receive a verification
+            result with a signed receipt, store it with the artifact, and run
+            later integrity checks when needed.
           </p>
+        </div>
+
+        <div className="mt-8 grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
+          <div className="border border-foreground/10 bg-foreground/[0.02] px-4 py-3 text-sm text-muted-foreground">
+            1. Submit artifact or artifact reference
+          </div>
+          <div className="border border-foreground/10 bg-foreground/[0.02] px-4 py-3 text-sm text-muted-foreground">
+            2. Receive verification result and signed receipt
+          </div>
+          <div className="border border-foreground/10 bg-foreground/[0.02] px-4 py-3 text-sm text-muted-foreground">
+            3. Store receipt alongside artifact
+          </div>
+          <div className="border border-foreground/10 bg-foreground/[0.02] px-4 py-3 text-sm text-muted-foreground">
+            4. Verify again later if needed
+          </div>
         </div>
 
         <div
@@ -189,15 +205,15 @@ export function EvidenceFlowMarqueeSection() {
           onPointerLeave={() => setIsPaused(false)}
         >
           <div className="flex flex-wrap items-center gap-3">
-            <span
-              className={`inline-flex items-center border px-3 py-1 font-mono text-[11px] uppercase tracking-[0.18em] transition-colors duration-300 ${
-                showVerifiedState
-                  ? "border-foreground/10 text-muted-foreground"
-                  : "border-foreground/20 bg-foreground/[0.04] text-foreground"
-              }`}
-            >
-              Broken provenance
-            </span>
+              <span
+                className={`inline-flex items-center border px-3 py-1 font-mono text-[11px] uppercase tracking-[0.18em] transition-colors duration-300 ${
+                  showVerifiedState
+                    ? "border-foreground/10 text-muted-foreground"
+                    : "border-foreground/20 bg-foreground/[0.04] text-foreground"
+                }`}
+              >
+                Artifact submitted
+              </span>
             <span
               className={`inline-flex items-center border px-3 py-1 font-mono text-[11px] uppercase tracking-[0.18em] transition-colors duration-300 ${
                 showVerifiedState
@@ -295,7 +311,7 @@ export function EvidenceFlowMarqueeSection() {
               }`}
             >
               <CheckCircle2 className="h-3.5 w-3.5 text-foreground/75" />
-              Integrity attached
+              Signed receipt and verification signal attached
             </div>
           </div>
         </div>

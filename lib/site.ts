@@ -9,9 +9,10 @@ export const TRUSTSIGNAL_REVIEW_REPO_URL =
   "https://github.com/TrustSignal-dev/TrustSignal-docs";
 
 export const PRIMARY_NAV_LINKS = [
-  { name: "Workflows", href: "#workflows" },
-  { name: "Integration", href: "#integration" },
-  { name: "Security", href: "#security" },
-  { name: "Architecture", href: "#architecture" },
+  { name: "Problem", href: "#problem" },
+  { name: "Integrity Model", href: "#integrity-model" },
+  { name: "Integration Fit", href: "#integration" },
+  { name: "For Developers", href: "#developers" },
+  { name: "Claims Boundary", href: "#claims-boundary" },
   { name: "Pilot Request", href: "#pilot-request" },
 ] as const;
