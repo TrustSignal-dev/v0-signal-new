@@ -11,7 +11,8 @@ import {
   ScrollText,
   Shield,
 } from "lucide-react";
-import { TRUSTSIGNAL_GITHUB_URL, TRUSTSIGNAL_REVIEW_REPO_URL } from "@/lib/site";
+import Link from "next/link";
+import { TRUSTSIGNAL_GITHUB_URL } from "@/lib/site";
 
 const techSpecs = [
   { 
@@ -113,39 +114,24 @@ export function DevelopersSection() {
             </p>
 
             <div className="mb-10 grid gap-3 text-sm">
-              <a href="#integration" className="border border-foreground/10 bg-foreground/[0.02] px-4 py-3 hover:border-foreground/20">
+              <Link href="/docs/api" className="border border-foreground/10 bg-foreground/[0.02] px-4 py-3 hover:border-foreground/20">
                 API Overview
-              </a>
-              <a href="#demo" className="border border-foreground/10 bg-foreground/[0.02] px-4 py-3 hover:border-foreground/20">
+              </Link>
+              <Link href="/docs/verification-example" className="border border-foreground/10 bg-foreground/[0.02] px-4 py-3 hover:border-foreground/20">
                 Quick Verification Example
-              </a>
-              <a href="/security" className="border border-foreground/10 bg-foreground/[0.02] px-4 py-3 hover:border-foreground/20">
+              </Link>
+              <Link href="/docs/security-model" className="border border-foreground/10 bg-foreground/[0.02] px-4 py-3 hover:border-foreground/20">
                 Security Model
-              </a>
-              <a
-                href={TRUSTSIGNAL_REVIEW_REPO_URL}
-                target="_blank"
-                rel="noreferrer"
-                className="border border-foreground/10 bg-foreground/[0.02] px-4 py-3 hover:border-foreground/20"
-              >
+              </Link>
+              <Link href="/docs/threat-model" className="border border-foreground/10 bg-foreground/[0.02] px-4 py-3 hover:border-foreground/20">
                 Threat Model
-              </a>
-              <a
-                href={TRUSTSIGNAL_GITHUB_URL}
-                target="_blank"
-                rel="noreferrer"
-                className="border border-foreground/10 bg-foreground/[0.02] px-4 py-3 hover:border-foreground/20"
-              >
-                GitHub Repository
-              </a>
-              <a
-                href={TRUSTSIGNAL_REVIEW_REPO_URL}
-                target="_blank"
-                rel="noreferrer"
-                className="border border-foreground/10 bg-foreground/[0.02] px-4 py-3 hover:border-foreground/20"
-              >
+              </Link>
+              <Link href="/docs/architecture" className="border border-foreground/10 bg-foreground/[0.02] px-4 py-3 hover:border-foreground/20">
+                Architecture
+              </Link>
+              <Link href="/docs" className="border border-foreground/10 bg-foreground/[0.02] px-4 py-3 hover:border-foreground/20">
                 Documentation
-              </a>
+              </Link>
             </div>
             
             {/* Tech Specs Grid */}
@@ -221,14 +207,12 @@ export function DevelopersSection() {
             
             {/* Links */}
             <div className="mt-6 flex items-center gap-6 text-sm">
-              <a
-                href={TRUSTSIGNAL_REVIEW_REPO_URL}
-                target="_blank"
-                rel="noreferrer"
+              <Link
+                href="/docs"
                 className="text-foreground hover:underline underline-offset-4"
               >
                 Read documentation
-              </a>
+              </Link>
               <span className="text-foreground/20">|</span>
               <a
                 href={TRUSTSIGNAL_GITHUB_URL}
