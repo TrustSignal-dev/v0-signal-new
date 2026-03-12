@@ -62,6 +62,6 @@ The site is deployed on Vercel and intended to serve `trustsignal.dev`.
 
 `trustsignal` is the implementation and messaging source of truth.
 
-Public website copy in this repo must follow the guardrails defined in
-`trustsignal/docs/PUBLIC_MESSAGING_GUARDRAILS.md` and should stay aligned with
+Public website copy in this repo must follow the guardrails in
+`docs/PUBLIC_MESSAGING_GUARDRAILS.md` and should stay aligned with
 implementation-backed behavior and public-safe claim boundaries.
