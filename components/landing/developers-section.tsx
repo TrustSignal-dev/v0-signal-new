@@ -117,10 +117,10 @@ export function DevelopersSection() {
               <Link href="/docs/api" className="border border-foreground/10 bg-foreground/[0.02] px-4 py-3 hover:border-foreground/20">
                 API Overview
               </Link>
-              <Link href="/docs/verification-example" className="border border-foreground/10 bg-foreground/[0.02] px-4 py-3 hover:border-foreground/20">
+              <Link href="/docs/verification" className="border border-foreground/10 bg-foreground/[0.02] px-4 py-3 hover:border-foreground/20">
                 Quick Verification Example
               </Link>
-              <Link href="/docs/security-model" className="border border-foreground/10 bg-foreground/[0.02] px-4 py-3 hover:border-foreground/20">
+              <Link href="/docs/security" className="border border-foreground/10 bg-foreground/[0.02] px-4 py-3 hover:border-foreground/20">
                 Security Model
               </Link>
               <Link href="/docs/threat-model" className="border border-foreground/10 bg-foreground/[0.02] px-4 py-3 hover:border-foreground/20">
