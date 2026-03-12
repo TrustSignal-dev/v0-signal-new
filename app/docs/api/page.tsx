@@ -1,7 +1,8 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { createPageMetadata } from "@/lib/seo";
-import { CodePanel, DiagramPanel, DocsShell, SectionBlock } from "../_components";
+import { ARTIFACT_LINKS, CURL_EXAMPLE, ENGINE_REPO_URL, VERIFICATION_RESPONSE } from "../content";
+import { CodePanel, DiagramPanel, DocsShell, ResourceGrid, SectionBlock } from "../_components";
 
 export const metadata: Metadata = createPageMetadata({
   title: "API Overview",
@@ -11,36 +12,11 @@ export const metadata: Metadata = createPageMetadata({
   keywords: ["TrustSignal API", "signed verification receipts", "verification lifecycle"],
 });
 
-const requestExample = `POST /api/attest-evidence
-Content-Type: application/json
-Authorization: Bearer <token>
-
-{
-  "source": "compliance_platform",
-  "artifact_hash": "sha256:93f6f35a...",
-  "control_id": "CC6.1",
-  "timestamp": "2026-03-12T18:42:00Z",
-  "metadata": {
-    "artifact_type": "compliance_evidence"
-  }
-}`;
-
-const responseExample = `HTTP/1.1 201 Created
-{
-  "receipt_id": "tsig_rcpt_01JTQY8N...",
-  "status": "signed",
-  "verification_status": "match",
-  "provenance": {
-    "artifact_type": "compliance_evidence"
-  },
-  "attested_at": "2026-03-12T18:42:01Z"
-}`;
-
 const surfaceSummary = [
-  ["POST /api/attest-evidence", "Submit artifact context and receive a signed verification receipt."],
-  ["GET /api/receipts/:id", "Retrieve receipt details and provenance metadata."],
-  ["GET /api/receipts/:id/status", "Check current verification lifecycle status."],
-  ["POST /api/receipts/:id/revoke", "Apply lifecycle action under authorized controls."],
+  ["POST /api/v1/verify", "Submit a verification request and receive verification signals plus a signed verification receipt."],
+  ["GET /api/v1/receipt/:receiptId", "Retrieve the stored receipt view and canonical receipt payload."],
+  ["POST /api/v1/receipt/:receiptId/verify", "Run later verification for the stored receipt before downstream reliance."],
+  ["POST /api/v1/receipt/:receiptId/revoke", "Apply an authorized lifecycle action when revocation is supported."],
 ] as const;
 
 export default function ApiDocsPage() {
@@ -53,7 +29,7 @@ export default function ApiDocsPage() {
       <DiagramPanel
         title="Verification Lifecycle"
         steps={[
-          "Submit artifact or artifact reference",
+          "Submit artifact or artifact-derived request",
           "Receive signed verification receipt",
           "Store receipt with artifact record",
           "Run later verification checks",
@@ -79,18 +55,33 @@ export default function ApiDocsPage() {
         description="Use authenticated requests with explicit provenance metadata so receipts can support later verification."
       >
         <div className="space-y-5">
-          <CodePanel label="Example Request" code={requestExample} />
-          <CodePanel label="Example Response" code={responseExample} />
+          <CodePanel label="cURL Request" code={CURL_EXAMPLE} />
+          <CodePanel label="Verification Response" code={VERIFICATION_RESPONSE} />
         </div>
+      </SectionBlock>
+
+      <SectionBlock
+        title="Evaluator Artifacts"
+        description="These links map directly to the engine repository artifacts used by evaluators."
+      >
+        <ResourceGrid resources={ARTIFACT_LINKS} />
       </SectionBlock>
 
       <SectionBlock
         title="Lifecycle Notes"
         description="Receipt retrieval, status checks, and lifecycle actions should be integrated with your organization’s review controls and record systems."
       >
-        <Link href="/docs/verification" className="text-sm text-foreground underline underline-offset-4">
-          Continue to Quick Verification Example
-        </Link>
+        <div className="space-y-3 text-sm text-muted-foreground">
+          <p>
+            TrustSignal is an integrity layer, not a system-of-record replacement. The upstream platform still owns business workflow state.
+          </p>
+          <p>
+            Proof internals, witness data, signing infrastructure details, and internal service topology are intentionally not part of the public API contract.
+          </p>
+          <p>
+            Continue to <Link href="/docs/verification" className="text-foreground underline underline-offset-4">Verification</Link> or inspect the <a href={ENGINE_REPO_URL} target="_blank" rel="noreferrer" className="text-foreground underline underline-offset-4">GitHub repository</a>.
+          </p>
+        </div>
       </SectionBlock>
     </DocsShell>
   );

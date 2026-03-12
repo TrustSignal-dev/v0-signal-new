@@ -1,11 +1,11 @@
 import Link from "next/link";
-import { ArrowRight, BookOpen, Home, ShieldCheck } from "lucide-react";
+import { ArrowRight, ArrowUpRight, BookOpen, Home, ShieldCheck } from "lucide-react";
 
 export const DOCS_NAV = [
   { href: "/docs/api", title: "API Overview", description: "Verification lifecycle and endpoint model." },
-  { href: "/docs/verification", title: "Quick Verification", description: "Practical request/response and field guidance." },
-  { href: "/docs/security", title: "Security Model", description: "Authentication, lifecycle checks, and controls." },
-  { href: "/docs/threat-model", title: "Threat Model", description: "Public threat scenarios and mitigations." },
+  { href: "/docs/verification", title: "Verification", description: "cURL flow, receipt, status, and tamper rejection." },
+  { href: "/docs/security", title: "Security", description: "Authenticated boundary, receipts, and fail-closed behavior." },
+  { href: "/docs/threat-model", title: "Threat Model", description: "Tampering, substitution, and provenance-loss scenarios." },
   { href: "/docs/architecture", title: "Architecture", description: "Integrity-layer fit and trust boundaries." },
 ] as const;
 
@@ -131,6 +131,32 @@ export function DiagramPanel({
   );
 }
 
+export function ResourceGrid({
+  resources,
+}: {
+  resources: ReadonlyArray<{ title: string; href: string; description: string }>;
+}) {
+  return (
+    <div className="grid gap-4 md:grid-cols-2">
+      {resources.map((resource) => (
+        <a
+          key={resource.href}
+          href={resource.href}
+          target="_blank"
+          rel="noreferrer"
+          className="group border border-foreground/10 bg-background p-5 transition-all hover:-translate-y-0.5 hover:border-foreground/20"
+        >
+          <div className="flex items-center justify-between gap-4">
+            <h3 className="text-xl font-display tracking-tight">{resource.title}</h3>
+            <ArrowUpRight className="h-4 w-4 text-muted-foreground transition-transform group-hover:translate-x-0.5 group-hover:-translate-y-0.5" />
+          </div>
+          <p className="mt-3 text-sm leading-relaxed text-muted-foreground">{resource.description}</p>
+        </a>
+      ))}
+    </div>
+  );
+}
+
 export function CodePanel({
   label,
   code,
@@ -156,7 +182,8 @@ export function ClaimsBoundaryPanel() {
         <ul className="mt-3 space-y-2 text-sm text-muted-foreground">
           <li>Signed verification receipts</li>
           <li>Verification signals</li>
-          <li>Verifiable provenance metadata</li>
+          <li>Verifiable provenance</li>
+          <li>Later verification capability</li>
         </ul>
       </div>
       <div className="border border-foreground/10 bg-background p-5">

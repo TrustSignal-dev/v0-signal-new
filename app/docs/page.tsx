@@ -3,7 +3,8 @@ import Link from "next/link";
 import { ArrowUpRight, Shield } from "lucide-react";
 import { TRUSTSIGNAL_GITHUB_URL } from "@/lib/site";
 import { createPageMetadata } from "@/lib/seo";
-import { ClaimsBoundaryPanel, DOCS_NAV, DocsIndexCard } from "./_components";
+import { ARTIFACT_LINKS, DEVELOPER_JOURNEY } from "./content";
+import { ClaimsBoundaryPanel, DOCS_NAV, DocsIndexCard, DiagramPanel, ResourceGrid, SectionBlock } from "./_components";
 
 export const metadata: Metadata = createPageMetadata({
   title: "Developer Documentation",
@@ -20,29 +21,24 @@ export const metadata: Metadata = createPageMetadata({
 
 const concepts = [
   {
-    title: "Signed verification receipts",
+    title: "Problem",
     description:
-      "Each verification event returns a receipt that can travel with the artifact record.",
+      "High-loss workflows need a way to detect evidence tampering, artifact substitution, provenance loss, and stale evidence after collection.",
   },
   {
-    title: "Verification signals",
+    title: "Integrity Model",
     description:
-      "Later checks produce clear signals for whether current artifacts still match prior receipts.",
+      "TrustSignal adds signed verification receipts, verification signals, verifiable provenance, and later verification without replacing the system of record.",
   },
   {
-    title: "Verifiable provenance",
+    title: "Demo",
     description:
-      "Source and timestamp metadata stay attached to receipts for audit and review workflows.",
+      "The 5-minute developer trial shows artifact intake, receipt issuance, later verification, and tampered artifact rejection in one local run.",
   },
   {
-    title: "Receipt lifecycle",
+    title: "API Example",
     description:
-      "Receipts can be checked over time with lifecycle-aware status and verification behavior.",
-  },
-  {
-    title: "Later verification",
-    description:
-      "Integrations can validate evidence again before relying on prior results in high-trust workflows.",
+      "OpenAPI, example payloads, and a Postman collection document the public verification lifecycle.",
   },
 ] as const;
 
@@ -53,16 +49,13 @@ export default function DocsPage() {
         <p className="font-mono text-sm uppercase tracking-[0.18em] text-muted-foreground">For Developers</p>
         <h1 className="text-4xl font-display tracking-tight lg:text-6xl">TrustSignal Documentation</h1>
         <p className="max-w-3xl text-lg leading-relaxed text-muted-foreground lg:text-xl">
-          TrustSignal exposes a public verification lifecycle for teams that need
-          evidence integrity infrastructure in existing workflow integration
-          paths. Start here for API behavior, examples, security guidance, and
-          architecture context.
+          TrustSignal exposes a public verification lifecycle for teams that need evidence integrity infrastructure inside existing workflow integration paths. Start here for the problem class, integrity model, demo, API artifacts, and technical docs.
         </p>
       </header>
 
       <section className="border border-foreground/10 bg-foreground/[0.02] p-6 lg:p-7">
-        <p className="font-mono text-xs uppercase tracking-[0.18em] text-muted-foreground">Core Concepts</p>
-        <div className="mt-5 grid gap-4 md:grid-cols-2 lg:grid-cols-3">
+        <p className="font-mono text-xs uppercase tracking-[0.18em] text-muted-foreground">Developer Journey</p>
+        <div className="mt-5 grid gap-4 md:grid-cols-2 lg:grid-cols-4">
           {concepts.map((concept) => (
             <article key={concept.title} className="border border-foreground/10 bg-background p-4">
               <h2 className="text-xl font-display tracking-tight">{concept.title}</h2>
@@ -71,6 +64,21 @@ export default function DocsPage() {
           ))}
         </div>
       </section>
+
+      <DiagramPanel title="Developer Journey Flow" steps={[...DEVELOPER_JOURNEY]} />
+
+      <SectionBlock
+        title="Why This Problem Exists"
+        description="Evidence risk usually appears after collection. Review, audit, and partner workflows often rely on artifacts that have been moved, copied, or resubmitted over time."
+      >
+        <ul className="space-y-2 text-sm leading-relaxed text-muted-foreground">
+          <li>Evidence tampering after collection</li>
+          <li>Artifact substitution attacks in workflow handoffs</li>
+          <li>Provenance loss across compliance and audit systems</li>
+          <li>Stale evidence during later review</li>
+          <li>Documentation chains that cannot be verified later</li>
+        </ul>
+      </SectionBlock>
 
       <section>
         <p className="mb-4 font-mono text-xs uppercase tracking-[0.18em] text-muted-foreground">Documentation Pages</p>
@@ -85,6 +93,13 @@ export default function DocsPage() {
           ))}
         </div>
       </section>
+
+      <SectionBlock
+        title="Repository Artifacts"
+        description="The public site mirrors the engine repository artifacts so evaluators can inspect the exact contract, payloads, and demo path."
+      >
+        <ResourceGrid resources={ARTIFACT_LINKS} />
+      </SectionBlock>
 
       <section className="grid gap-4 md:grid-cols-2">
         <Link href="/security" className="border border-foreground/10 bg-background p-5 text-sm hover:border-foreground/20">

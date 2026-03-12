@@ -12,29 +12,29 @@ export const metadata: Metadata = createPageMetadata({
 
 const threats = [
   {
-    threat: "Artifact tampering",
+    threat: "Evidence tampering after collection",
     behavior:
-      "TrustSignal is designed to provide later verification signals against signed verification receipts so drift can be detected during review.",
+      "Later verification compares current artifact state to the stored signed verification receipt so drift can be detected during downstream review.",
   },
   {
-    threat: "Receipt forgery attempts",
+    threat: "Artifact substitution attacks",
     behavior:
-      "TrustSignal is designed to return signed verification receipts that can be validated through public API lifecycle checks.",
+      "Verification signals and receipt-bound commitments make it explicit when a different artifact is presented later under the same workflow context.",
   },
   {
-    threat: "Replay or duplicate submission attempts",
+    threat: "Provenance loss in compliance workflows",
     behavior:
-      "TrustSignal is designed to preserve lifecycle state and timestamps to support duplicate detection and operational review policies.",
+      "Receipts preserve verifiable provenance metadata so downstream teams can keep source and lifecycle context attached to the record.",
   },
   {
-    threat: "Unauthorized revocation",
+    threat: "Stale evidence during audit review",
     behavior:
-      "TrustSignal is designed to require authenticated lifecycle actions with scoped controls before receipt state changes.",
+      "Later verification is a separate lifecycle check so older results are not silently reused without checking current receipt state.",
   },
   {
-    threat: "Upstream source inconsistency",
+    threat: "Unverifiable documentation chains",
     behavior:
-      "TrustSignal is designed to preserve verifiable provenance metadata so downstream teams can evaluate source context during later verification.",
+      "Signed verification receipts provide a durable technical record that can travel with the workflow even when documentation moves between systems.",
   },
 ] as const;
 
@@ -43,7 +43,7 @@ export default function ThreatModelPage() {
     <DocsShell
       eyebrow="Developer Docs"
       title="Threat Model"
-      intro="This public threat model summarizes the external risks TrustSignal is designed to address at a high level through signed verification receipts, verification signals, and verifiable provenance metadata."
+      intro="This public threat model summarizes the external risks TrustSignal is designed to address in high-loss workflows where incentives exist to modify, substitute, or detach evidence after collection."
     >
       <SectionBlock
         title="Threat Scenarios"
@@ -58,6 +58,11 @@ export default function ThreatModelPage() {
           ))}
         </div>
       </SectionBlock>
+
+      <SectionBlock
+        title="Boundary Conditions"
+        description="TrustSignal does not provide legal determinations, compliance certification, or fraud adjudication. It provides technical verification artifacts that downstream systems can use in their own workflow controls."
+      />
     </DocsShell>
   );
 }

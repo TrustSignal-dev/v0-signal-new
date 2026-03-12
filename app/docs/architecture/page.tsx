@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { createPageMetadata } from "@/lib/seo";
-import { CodePanel, DiagramPanel, DocsShell, SectionBlock } from "../_components";
+import { ARTIFACT_LINKS } from "../content";
+import { CodePanel, DiagramPanel, DocsShell, ResourceGrid, SectionBlock } from "../_components";
 
 export const metadata: Metadata = createPageMetadata({
   title: "Architecture",
@@ -13,8 +14,8 @@ export const metadata: Metadata = createPageMetadata({
 const integrationSnippet = `// Existing workflow remains the system of record
 const artifact = {
   source: "record_system",
-  artifact_hash: "sha256:93f6f35a...",
-  control_id: "CC8.2",
+  artifact_hash: "0x8b7b2f52f2a2e19f8f3fe0d815d1c1d8d1e0d120e8cc60d1baf5e7a6f9d211aa",
+  control_id: "CONTROL_CC_001",
 }
 
 // TrustSignal adds verification and receipt outputs
@@ -66,6 +67,13 @@ export default function ArchitecturePage() {
       />
 
       <CodePanel label="Integration Snippet" code={integrationSnippet} />
+
+      <SectionBlock
+        title="Linked Technical Artifacts"
+        description="The website developer portal mirrors the engine repository artifacts rather than inventing a separate surface."
+      >
+        <ResourceGrid resources={ARTIFACT_LINKS} />
+      </SectionBlock>
     </DocsShell>
   );
 }

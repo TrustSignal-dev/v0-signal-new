@@ -7,6 +7,7 @@ import {
   DocsShell,
   SectionBlock,
 } from "../_components";
+import { STATUS_EXAMPLE } from "../content";
 
 export const metadata: Metadata = createPageMetadata({
   title: "Security Model",
@@ -15,17 +16,6 @@ export const metadata: Metadata = createPageMetadata({
   path: "/docs/security",
   keywords: ["TrustSignal security", "signed verification receipts", "verification controls"],
 });
-
-const code = `GET /api/receipts/tsig_rcpt_01JTQY.../status
-Authorization: Bearer <token>
-
-HTTP/1.1 200 OK
-{
-  "receipt_id": "tsig_rcpt_01JTQY...",
-  "status": "signed",
-  "verification_status": "match",
-  "updated_at": "2026-03-12T19:24:00Z"
-}`;
 
 export default function SecurityPage() {
   return (
@@ -55,11 +45,11 @@ export default function SecurityPage() {
         </ul>
       </SectionBlock>
 
-      <CodePanel label="Lifecycle Status Check" code={code} />
+      <CodePanel label="Lifecycle Status Check" code={STATUS_EXAMPLE} />
 
       <SectionBlock
         title="Intentionally Not Exposed"
-        description="Public documentation does not disclose private infrastructure details, proof internals, or model architecture details."
+        description="Public documentation does not disclose proof internals, circuit identifiers, witness data, signing infrastructure specifics, model internals, or internal service topology."
       />
 
       <SectionBlock title="Claims Boundary">
