@@ -1,6 +1,13 @@
 export const ENGINE_REPO_URL = "https://github.com/TrustSignal-dev/TrustSignal";
+export const EVALUATOR_ENTRY_URL = `${ENGINE_REPO_URL}/blob/master/docs/partner-eval/start-here.md`;
+export const TRY_THE_API_URL = `${ENGINE_REPO_URL}/blob/master/docs/partner-eval/try-the-api.md`;
 
 export const ARTIFACT_LINKS = [
+  {
+    title: "Evaluator Start Here",
+    href: EVALUATOR_ENTRY_URL,
+    description: "Canonical repo-side entry point for partner engineers."
+  },
   {
     title: "OpenAPI Contract",
     href: `${ENGINE_REPO_URL}/blob/master/openapi.yaml`,
@@ -17,6 +24,11 @@ export const ARTIFACT_LINKS = [
     description: "Local evaluator requests with environment variables."
   },
   {
+    title: "Try The API",
+    href: TRY_THE_API_URL,
+    description: "Copy-paste API evaluation path using the public contract."
+  },
+  {
     title: "Developer Trial Demo",
     href: `${ENGINE_REPO_URL}/tree/master/demo`,
     description: "Local artifact to receipt to later verification walkthrough."
@@ -26,7 +38,7 @@ export const ARTIFACT_LINKS = [
 export const DEVELOPER_JOURNEY = [
   "Problem",
   "Verification Lifecycle",
-  "Demo",
+  "Try The API",
   "API Example",
   "Developer Docs"
 ] as const;
@@ -67,7 +79,7 @@ export const VERIFICATION_RESPONSE = `{
   "receiptVersion": "2.0",
   "decision": "ALLOW",
   "reasons": ["receipt issued"],
-  "receiptId": "2c17d2f5-4de6-48c3-b22c-0b7ea9eb5c0a",
+  "receiptId": "623e0b54-87b3-42b7-bc89-65fae0ad8d5e",
   "receiptHash": "0x4e7f2ce9d3f7a8d3b0e4c9f2aa17fd59d6b4fda2d7b7b7d1cce8124d7ee39d04",
   "receiptSignature": {
     "alg": "EdDSA",
@@ -86,7 +98,7 @@ export const VERIFICATION_RESPONSE = `{
 
 export const RECEIPT_EXAMPLE = `{
   "receiptVersion": "2.0",
-  "receiptId": "2c17d2f5-4de6-48c3-b22c-0b7ea9eb5c0a",
+  "receiptId": "623e0b54-87b3-42b7-bc89-65fae0ad8d5e",
   "createdAt": "2026-03-12T15:24:01.000Z",
   "policyProfile": "CONTROL_CC_001",
   "inputsCommitment": "0x2dded9c1b5c4c6d91df58a1b1793cb527f2b0cf5ddaf447f5b7d9839f7ab7d01",

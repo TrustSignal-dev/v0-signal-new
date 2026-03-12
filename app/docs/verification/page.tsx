@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import { createPageMetadata } from "@/lib/seo";
-import { CURL_EXAMPLE, LIFECYCLE_STEPS, RECEIPT_EXAMPLE, STATUS_EXAMPLE, TAMPERED_REJECTION } from "../content";
+import { CURL_EXAMPLE, EVALUATOR_ENTRY_URL, LIFECYCLE_STEPS, RECEIPT_EXAMPLE, STATUS_EXAMPLE, TAMPERED_REJECTION } from "../content";
 import { CodePanel, DiagramPanel, DocsShell, LifecycleCards, SectionBlock } from "../_components";
 
 export const metadata: Metadata = createPageMetadata({
@@ -36,6 +36,20 @@ export default function VerificationPage() {
       />
 
       <LifecycleCards title="Lifecycle Steps" steps={LIFECYCLE_STEPS} />
+
+      <SectionBlock
+        title="Want The Full Technical Evaluation Path?"
+        description="Start with the repo-side evaluator entry point for the problem framing, verification lifecycle, public API contract, example payloads, and security / claims boundary."
+      >
+        <a
+          href={EVALUATOR_ENTRY_URL}
+          target="_blank"
+          rel="noreferrer"
+          className="text-sm text-foreground underline underline-offset-4"
+        >
+          Start here
+        </a>
+      </SectionBlock>
 
       <SectionBlock
         title="Copy-Paste Request"

@@ -3,7 +3,7 @@ import Link from "next/link";
 import { ArrowUpRight, Shield } from "lucide-react";
 import { TRUSTSIGNAL_GITHUB_URL } from "@/lib/site";
 import { createPageMetadata } from "@/lib/seo";
-import { ARTIFACT_LINKS, DEVELOPER_JOURNEY, LIFECYCLE_STEPS } from "./content";
+import { ARTIFACT_LINKS, DEVELOPER_JOURNEY, EVALUATOR_ENTRY_URL, LIFECYCLE_STEPS } from "./content";
 import { ClaimsBoundaryPanel, DOCS_NAV, DocsIndexCard, DiagramPanel, LifecycleCards, ResourceGrid, SectionBlock } from "./_components";
 
 export const metadata: Metadata = createPageMetadata({
@@ -31,14 +31,14 @@ const concepts = [
       "TrustSignal accepts a verification request, returns verification signals, issues signed verification receipts, and supports later verification.",
   },
   {
-    title: "Demo",
+    title: "Try The API",
     description:
-      "The 5-minute developer trial shows artifact intake, receipt issuance, later verification, and tampered artifact rejection in one local run.",
+      "OpenAPI, example payloads, Postman assets, and a repo-side evaluator entry point make the API trial path copy-paste usable.",
   },
   {
-    title: "API Example",
+    title: "Security Model",
     description:
-      "OpenAPI, example payloads, and a Postman collection document the public verification lifecycle.",
+      "Claims boundary, authentication model, and production-readiness notes stay explicit and public-safe.",
   },
 ] as const;
 
@@ -68,6 +68,38 @@ export default function DocsPage() {
       <DiagramPanel title="Developer Journey Flow" steps={[...DEVELOPER_JOURNEY]} />
 
       <LifecycleCards title="Verification Lifecycle" steps={LIFECYCLE_STEPS} />
+
+      <SectionBlock
+        title="Start Evaluating TrustSignal"
+        description="Use the evaluator entry point if you want the full technical evaluation path, public API contract, example payloads, and security / claims boundary in one place."
+      >
+        <div className="grid gap-4 md:grid-cols-2">
+          <Link href="/docs/verification" className="border border-foreground/10 bg-foreground/[0.02] p-5 text-sm hover:border-foreground/20">
+            Try the Verification Lifecycle
+          </Link>
+          <Link href="/docs/api" className="border border-foreground/10 bg-foreground/[0.02] p-5 text-sm hover:border-foreground/20">
+            Review the API Overview
+          </Link>
+          <a
+            href={EVALUATOR_ENTRY_URL}
+            target="_blank"
+            rel="noreferrer"
+            className="inline-flex items-center justify-between border border-foreground/10 bg-background p-5 text-sm hover:border-foreground/20"
+          >
+            Open Evaluator Start Here
+            <ArrowUpRight className="h-4 w-4" />
+          </a>
+          <a
+            href={TRUSTSIGNAL_GITHUB_URL}
+            target="_blank"
+            rel="noreferrer"
+            className="inline-flex items-center justify-between border border-foreground/10 bg-background p-5 text-sm hover:border-foreground/20"
+          >
+            View GitHub Repository
+            <ArrowUpRight className="h-4 w-4" />
+          </a>
+        </div>
+      </SectionBlock>
 
       <SectionBlock
         title="Why This Problem Exists"
@@ -109,7 +141,7 @@ export default function DocsPage() {
       </SectionBlock>
 
       <section className="grid gap-4 md:grid-cols-2">
-        <Link href="/security" className="border border-foreground/10 bg-background p-5 text-sm hover:border-foreground/20">
+        <Link href="/docs/security" className="border border-foreground/10 bg-background p-5 text-sm hover:border-foreground/20">
           Security Materials
         </Link>
         <a

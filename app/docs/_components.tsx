@@ -2,9 +2,9 @@ import Link from "next/link";
 import { ArrowRight, ArrowUpRight, BookOpen, Home, ShieldCheck } from "lucide-react";
 
 export const DOCS_NAV = [
+  { href: "/docs/verification", title: "Verification Lifecycle", description: "cURL flow, receipt, status, and tamper rejection." },
   { href: "/docs/api", title: "API Overview", description: "Verification lifecycle and endpoint model." },
-  { href: "/docs/verification", title: "Verification", description: "cURL flow, receipt, status, and tamper rejection." },
-  { href: "/docs/security", title: "Security", description: "Authenticated boundary, receipts, and fail-closed behavior." },
+  { href: "/docs/security", title: "Security Model", description: "Authenticated boundary, receipts, and fail-closed behavior." },
   { href: "/docs/threat-model", title: "Threat Model", description: "Tampering, substitution, and provenance-loss scenarios." },
   { href: "/docs/architecture", title: "Architecture", description: "Integrity-layer fit and trust boundaries." },
 ] as const;
