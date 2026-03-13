@@ -3,8 +3,16 @@ import Link from "next/link";
 import { ArrowUpRight } from "lucide-react";
 import { TRUSTSIGNAL_GITHUB_URL } from "@/lib/site";
 import { createPageMetadata } from "@/lib/seo";
-import { ARTIFACT_LINKS, DEVELOPER_JOURNEY, EVALUATOR_ENTRY_URL, LIFECYCLE_STEPS } from "./content";
-import { AnimatedLifecycle, DocCallout, DocDiagram, DocFooterLinks, DocHeader, DocSection } from "./_components";
+import { DEVELOPER_JOURNEY, EVALUATOR_ENTRY_URL, LIFECYCLE_STEPS } from "./content";
+import {
+  AnimatedLifecycle,
+  ClaimsBoundaryPanel,
+  DocCallout,
+  DocDiagram,
+  DocFooterLinks,
+  DocHeader,
+  DocSection,
+} from "./_components";
 
 export const metadata: Metadata = createPageMetadata({
   title: "Developer Documentation",
@@ -103,7 +111,7 @@ export default function DocsPage() {
 
       <DocSection title="Security and Claims Boundary" description="Evaluators should understand the public contract and the explicit claims boundary before relying on the output model.">
         <div className="space-y-4">
-          <DocCallout type="claims" />
+          <ClaimsBoundaryPanel />
           <DocCallout type="security">
             Public documentation does not expose proof internals, circuit identifiers, witness data, signing infrastructure specifics, model internals, or internal service topology.
           </DocCallout>
@@ -112,10 +120,10 @@ export default function DocsPage() {
 
       <DocFooterLinks
         links={[
-          { href: "/docs/verification", label: "Verification Lifecycle", description: "Lifecycle, receipt flow, and later verification." },
-          { href: "/docs/api", label: "API", description: "Public contract, example request, and response shape." },
-          { href: "/docs/security", label: "Security Model", description: "Authentication, lifecycle checks, and claims boundary." },
-          { href: "/docs/architecture", label: "Architecture", description: "Integration boundary and existing workflow fit." },
+          { href: "/docs/verification", label: "Verification Lifecycle" },
+          { href: "/docs/api", label: "API" },
+          { href: "/docs/security", label: "Security Model" },
+          { href: "/docs/architecture", label: "Architecture" },
         ]}
       />
     </div>

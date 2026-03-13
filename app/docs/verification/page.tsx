@@ -1,7 +1,15 @@
 import type { Metadata } from "next";
 import { createPageMetadata } from "@/lib/seo";
 import { CURL_EXAMPLE, EVALUATOR_ENTRY_URL, LIFECYCLE_STEPS, RECEIPT_EXAMPLE, STATUS_EXAMPLE, TAMPERED_REJECTION } from "../content";
-import { AnimatedLifecycle, DocCallout, DocCodeBlock, DocFooterLinks, DocHeader, DocSection } from "../_components";
+import {
+  AnimatedLifecycle,
+  ClaimsBoundaryPanel,
+  DocCallout,
+  DocCodeBlock,
+  DocFooterLinks,
+  DocHeader,
+  DocSection,
+} from "../_components";
 
 export const metadata: Metadata = createPageMetadata({
   title: "Quick Verification",
@@ -68,8 +76,8 @@ export default function VerificationPage() {
         description="Start with the repo-side evaluator entry point for the problem framing, verification lifecycle, public API contract, example payloads, and security / claims boundary."
       >
         <div className="space-y-5">
-          <DocCodeBlock label="Example Request" language="bash" code={CURL_EXAMPLE} />
-          <DocCodeBlock label="Example Response" language="json" code={RECEIPT_EXAMPLE} />
+          <DocCodeBlock label="Example Request" code={CURL_EXAMPLE} />
+          <DocCodeBlock label="Example Response" code={RECEIPT_EXAMPLE} />
           <div className="space-y-3">
             {fieldNotes.map(([field, note]) => (
               <div key={field} className="grid gap-2 border border-foreground/10 bg-foreground/[0.02] p-4 md:grid-cols-[180px_minmax(0,1fr)]">
@@ -86,11 +94,11 @@ export default function VerificationPage() {
         description="Production environments should treat later verification as a distinct operational step before relying on an earlier result."
       >
         <div className="space-y-5">
-          <DocCallout type="production">
+          <DocCallout type="warning">
             Use scoped authentication, environment-specific configuration, lifecycle monitoring, and explicit verification checks before relying on prior results.
           </DocCallout>
-          <DocCodeBlock label="Later Verification Status" language="json" code={STATUS_EXAMPLE} />
-          <DocCodeBlock label="Tamper Detection Example" language="json" code={TAMPERED_REJECTION} />
+          <DocCodeBlock label="Later Verification Status" code={STATUS_EXAMPLE} />
+          <DocCodeBlock label="Tamper Detection Example" code={TAMPERED_REJECTION} />
         </div>
       </DocSection>
 
@@ -102,15 +110,15 @@ export default function VerificationPage() {
           <DocCallout type="security">
             Later verification returns status and integrity signals, not internal proof-system detail, witness data, or signing infrastructure specifics.
           </DocCallout>
-          <DocCallout type="claims" />
+          <ClaimsBoundaryPanel />
         </div>
       </DocSection>
 
       <DocFooterLinks
         links={[
-          { href: "/docs/api", label: "API", description: "Public route surface and request / response model." },
-          { href: "/docs/security", label: "Security Model", description: "Authentication boundary and production notes." },
-          { href: "/docs/architecture", label: "Architecture", description: "Existing workflow integration and trust boundary." },
+          { href: "/docs/api", label: "API" },
+          { href: "/docs/security", label: "Security Model" },
+          { href: "/docs/architecture", label: "Architecture" },
         ]}
       />
     </div>

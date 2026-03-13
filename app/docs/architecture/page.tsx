@@ -1,7 +1,16 @@
 import type { Metadata } from "next";
 import { createPageMetadata } from "@/lib/seo";
-import { ARTIFACT_LINKS, LIFECYCLE_STEPS } from "../content";
-import { AnimatedTrustBoundary, DocCallout, DocCodeBlock, DocDiagram, DocFooterLinks, DocHeader, DocSection } from "../_components";
+import { ARTIFACT_LINKS } from "../content";
+import {
+  AnimatedTrustBoundary,
+  ClaimsBoundaryPanel,
+  DocCallout,
+  DocCodeBlock,
+  DocDiagram,
+  DocFooterLinks,
+  DocHeader,
+  DocSection,
+} from "../_components";
 
 export const metadata: Metadata = createPageMetadata({
   title: "Architecture",
@@ -64,28 +73,7 @@ export default function ArchitecturePage() {
       </DocSection>
 
       <DocSection title="Example / Diagram" description="This view shows the boundary between partner systems, the public API surface, and private verification execution.">
-        <AnimatedTrustBoundary
-          title="Trust Boundary View"
-          description="The diagram reveals the externally visible workflow boundary first, then the public API boundary, then the private verification boundary, and finally the public outputs returned to the partner workflow."
-          layers={[
-            {
-              title: "External Workflow / Partner Systems",
-              description: "Evidence collectors, compliance platforms, and partner review systems remain the system of record and initiate the verification request.",
-            },
-            {
-              title: "TrustSignal API Gateway",
-              description: "The public API boundary accepts authenticated lifecycle requests and returns verification outputs suitable for existing workflow integration.",
-            },
-            {
-              title: "Private Verification Boundary",
-              description: "Private verification execution stays behind the public surface while internal implementation details remain non-public.",
-            },
-            {
-              title: "Verification Outputs / Receipts",
-              description: "Signed verification receipts, verification signals, and verifiable provenance flow back to the workflow for storage and later verification.",
-            },
-          ]}
-        />
+        <AnimatedTrustBoundary />
       </DocSection>
 
       <DocSection
@@ -93,10 +81,10 @@ export default function ArchitecturePage() {
         description="Architecture review should focus on how the receipt and later verification outputs fit into the surrounding workflow and monitoring model."
       >
         <div className="space-y-5">
-          <DocCallout type="production">
+          <DocCallout type="warning">
             Receipt storage, later verification, and lifecycle monitoring should live alongside the upstream workflow record, not instead of it.
           </DocCallout>
-          <DocCodeBlock label="Integration Snippet" language="ts" code={integrationSnippet} />
+          <DocCodeBlock label="Integration Snippet" code={integrationSnippet} />
         </div>
       </DocSection>
 
@@ -108,7 +96,7 @@ export default function ArchitecturePage() {
           <DocCallout type="security">
             Public documentation does not expose internal service topology, proof internals, or signing infrastructure specifics.
           </DocCallout>
-          <DocCallout type="claims" />
+          <ClaimsBoundaryPanel />
         </div>
       </DocSection>
 
@@ -125,9 +113,9 @@ export default function ArchitecturePage() {
 
       <DocFooterLinks
         links={[
-          { href: "/docs/verification", label: "Verification Lifecycle", description: "Receipt flow and later verification." },
-          { href: "/docs/api", label: "API", description: "Public contract and request / response structure." },
-          { href: "/docs/security", label: "Security Model", description: "Authentication boundary and public-safe controls." },
+          { href: "/docs/verification", label: "Verification Lifecycle" },
+          { href: "/docs/api", label: "API" },
+          { href: "/docs/security", label: "Security Model" },
         ]}
       />
     </div>
