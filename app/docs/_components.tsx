@@ -11,6 +11,7 @@ type NavItem = {
 
 export const DOCS_NAV: NavItem[] = [
   { href: "/docs", label: "Overview" },
+  { href: "/docs/drata-demo", label: "Drata Demo" },
   { href: "/docs/api", label: "API" },
   { href: "/docs/verification", label: "Verification" },
   { href: "/docs/security", label: "Security" },
