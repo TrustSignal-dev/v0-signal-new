@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import { createPageMetadata } from "@/lib/seo";
 import { CURL_EXAMPLE, EVALUATOR_ENTRY_URL, LIFECYCLE_STEPS, RECEIPT_EXAMPLE, STATUS_EXAMPLE, TAMPERED_REJECTION } from "../content";
-import { CodePanel, DiagramPanel, DocsShell, LifecycleCards, SectionBlock } from "../_components";
+import { AnimatedLifecycle, DocCallout, DocCodeBlock, DocFooterLinks, DocHeader, DocSection } from "../_components";
 
 export const metadata: Metadata = createPageMetadata({
   title: "Quick Verification",
@@ -20,50 +20,56 @@ const fieldNotes = [
 
 export default function VerificationPage() {
   return (
-    <DocsShell
-      eyebrow="Developer Docs"
-      title="Verification"
-      intro="This page shows the full public verification lifecycle: request, signed receipt, later verification status, and tampered artifact rejection."
-    >
-      <DiagramPanel
-        title="Try the Verification Lifecycle"
-        steps={[
-          "Submit artifact",
-          "Receive signed verification receipt",
-          "Store receipt",
-          "Run later verification",
-        ]}
+    <div className="space-y-8">
+      <DocHeader
+        title="Verification Lifecycle"
+        description="This page shows the public verification lifecycle from artifact submission through signed verification receipts, later verification, and tamper detection."
+        audience="Partner Engineers"
       />
 
-      <LifecycleCards title="Lifecycle Steps" steps={LIFECYCLE_STEPS} />
+      <DocSection
+        title="Problem / Context"
+        description="Verification should remain understandable during audit review, not only at the moment of initial submission."
+      >
+        <p className="text-sm leading-relaxed text-muted-foreground">
+          The evaluator path focuses on workflows where artifact tampering, provenance loss, and stale evidence matter after collection.
+        </p>
+      </DocSection>
 
-      <SectionBlock
-        title="Want The Full Technical Evaluation Path?"
+      <DocSection
+        title="Integrity Model"
+        description="TrustSignal accepts a verification request, returns verification signals, issues signed verification receipts, and supports later verification."
+      >
+        <DocCallout type="info">
+          Want the full technical evaluation path? Start with the repo-side evaluator entry point.
+        </DocCallout>
+        <div className="mt-4">
+          <a
+            href={EVALUATOR_ENTRY_URL}
+            target="_blank"
+            rel="noreferrer"
+            className="text-sm text-foreground underline underline-offset-4"
+          >
+            Start here
+          </a>
+        </div>
+      </DocSection>
+
+      <DocSection title="How It Works" description="The lifecycle stays explicit so downstream teams can store the receipt and re-run later verification when needed.">
+        <AnimatedLifecycle
+          title="Verification Lifecycle"
+          description="The active step progresses as you scroll so evaluators can read the full flow without losing the current lifecycle state."
+          steps={LIFECYCLE_STEPS}
+        />
+      </DocSection>
+
+      <DocSection
+        title="Example / Diagram"
         description="Start with the repo-side evaluator entry point for the problem framing, verification lifecycle, public API contract, example payloads, and security / claims boundary."
       >
-        <a
-          href={EVALUATOR_ENTRY_URL}
-          target="_blank"
-          rel="noreferrer"
-          className="text-sm text-foreground underline underline-offset-4"
-        >
-          Start here
-        </a>
-      </SectionBlock>
-
-      <SectionBlock
-        title="Copy-Paste Request"
-        description="Use scoped authentication and environment-specific API base URLs in production environments."
-      >
-        <CodePanel label="cURL Example" code={CURL_EXAMPLE} />
-      </SectionBlock>
-
-      <SectionBlock
-        title="Verification Response"
-        description="The response includes the receipt identifier, receipt hash, signature metadata, provenance state, and lifecycle state."
-      >
         <div className="space-y-5">
-          <CodePanel label="JSON Response" code={RECEIPT_EXAMPLE} />
+          <DocCodeBlock label="Example Request" language="bash" code={CURL_EXAMPLE} />
+          <DocCodeBlock label="Example Response" language="json" code={RECEIPT_EXAMPLE} />
           <div className="space-y-3">
             {fieldNotes.map(([field, note]) => (
               <div key={field} className="grid gap-2 border border-foreground/10 bg-foreground/[0.02] p-4 md:grid-cols-[180px_minmax(0,1fr)]">
@@ -73,26 +79,40 @@ export default function VerificationPage() {
             ))}
           </div>
         </div>
-      </SectionBlock>
+      </DocSection>
 
-      <SectionBlock
-        title="Later Verification"
-        description="A later verification check confirms that the stored receipt still matches current state before audit, partner review, or another high-trust workflow step."
+      <DocSection
+        title="Production Considerations"
+        description="Production environments should treat later verification as a distinct operational step before relying on an earlier result."
       >
-        <CodePanel label="Verification Status" code={STATUS_EXAMPLE} />
-      </SectionBlock>
+        <div className="space-y-5">
+          <DocCallout type="production">
+            Use scoped authentication, environment-specific configuration, lifecycle monitoring, and explicit verification checks before relying on prior results.
+          </DocCallout>
+          <DocCodeBlock label="Later Verification Status" language="json" code={STATUS_EXAMPLE} />
+          <DocCodeBlock label="Tamper Detection Example" language="json" code={TAMPERED_REJECTION} />
+        </div>
+      </DocSection>
 
-      <SectionBlock
-        title="Integration Boundary"
-        description="TrustSignal does not replace the system of record. It adds verifiable provenance and later verification capability."
+      <DocSection
+        title="Security and Claims Boundary"
+        description="This evaluator path is public-safe and intentionally excludes internal verification implementation details."
+      >
+        <div className="space-y-4">
+          <DocCallout type="security">
+            Later verification returns status and integrity signals, not internal proof-system detail, witness data, or signing infrastructure specifics.
+          </DocCallout>
+          <DocCallout type="claims" />
+        </div>
+      </DocSection>
+
+      <DocFooterLinks
+        links={[
+          { href: "/docs/api", label: "API", description: "Public route surface and request / response model." },
+          { href: "/docs/security", label: "Security Model", description: "Authentication boundary and production notes." },
+          { href: "/docs/architecture", label: "Architecture", description: "Existing workflow integration and trust boundary." },
+        ]}
       />
-
-      <SectionBlock
-        title="Tampered Artifact Rejection"
-        description="If the artifact has changed since receipt issuance, later verification returns a mismatch signal instead of silently reusing the earlier result."
-      >
-        <CodePanel label="Tampered Artifact Response" code={TAMPERED_REJECTION} />
-      </SectionBlock>
-    </DocsShell>
+    </div>
   );
 }

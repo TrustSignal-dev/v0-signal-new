@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import { createPageMetadata } from "@/lib/seo";
 import { ARTIFACT_LINKS, LIFECYCLE_STEPS } from "../content";
-import { CodePanel, DiagramPanel, DocsShell, LifecycleCards, ResourceGrid, SectionBlock } from "../_components";
+import { AnimatedTrustBoundary, DocCallout, DocCodeBlock, DocDiagram, DocFooterLinks, DocHeader, DocSection } from "../_components";
 
 export const metadata: Metadata = createPageMetadata({
   title: "Architecture",
@@ -23,64 +23,113 @@ const receipt = await verifyArtifact(artifact)`;
 
 export default function ArchitecturePage() {
   return (
-    <DocsShell
-      eyebrow="Developer Docs"
-      title="Architecture"
-      intro="TrustSignal operates as an integrity layer between existing evidence workflows and downstream review. Teams keep current systems of record while adding signed verification receipts and verification signals for later verification."
-    >
-      <DiagramPanel
-        title="System Architecture"
-        steps={[
-          "External evidence source",
-          "Existing system of record",
-          "TrustSignal verification boundary",
-          "Receipt and verification outputs",
+    <div className="space-y-8">
+      <DocHeader
+        title="Architecture"
+        description="TrustSignal operates as an integrity layer between existing evidence workflows and downstream review while keeping the current system of record in place."
+        audience="Architects"
+      />
+
+      <DocSection
+        title="Problem / Context"
+        description="Architects evaluating TrustSignal need to understand the trust boundary, the system-of-record boundary, and the externally visible outputs."
+      >
+        <p className="text-sm leading-relaxed text-muted-foreground">
+          The integration target is the workflow boundary where verification artifacts can be stored and checked later without replacing upstream application state.
+        </p>
+      </DocSection>
+
+      <DocSection
+        title="Integrity Model"
+        description="TrustSignal returns signed verification receipts, verification signals, and verifiable provenance while the existing workflow remains the system of record."
+      >
+        <DocCallout type="info">
+          Existing workflow integration is the architectural goal. TrustSignal adds verification outputs; it does not replace workflow software.
+        </DocCallout>
+      </DocSection>
+
+      <DocSection title="How It Works" description="The public architecture view stays focused on trust boundaries and workflow fit.">
+        <DocDiagram
+          title="System Architecture"
+          steps={[
+            "Artifact",
+            "Verification Request",
+            "Verification Result",
+            "Signed Verification Receipt",
+            "Receipt Storage",
+            "Later Verification",
+            "Tamper Detection",
+          ]}
+        />
+      </DocSection>
+
+      <DocSection title="Example / Diagram" description="This view shows the boundary between partner systems, the public API surface, and private verification execution.">
+        <AnimatedTrustBoundary
+          title="Trust Boundary View"
+          description="The diagram reveals the externally visible workflow boundary first, then the public API boundary, then the private verification boundary, and finally the public outputs returned to the partner workflow."
+          layers={[
+            {
+              title: "External Workflow / Partner Systems",
+              description: "Evidence collectors, compliance platforms, and partner review systems remain the system of record and initiate the verification request.",
+            },
+            {
+              title: "TrustSignal API Gateway",
+              description: "The public API boundary accepts authenticated lifecycle requests and returns verification outputs suitable for existing workflow integration.",
+            },
+            {
+              title: "Private Verification Boundary",
+              description: "Private verification execution stays behind the public surface while internal implementation details remain non-public.",
+            },
+            {
+              title: "Verification Outputs / Receipts",
+              description: "Signed verification receipts, verification signals, and verifiable provenance flow back to the workflow for storage and later verification.",
+            },
+          ]}
+        />
+      </DocSection>
+
+      <DocSection
+        title="Production Considerations"
+        description="Architecture review should focus on how the receipt and later verification outputs fit into the surrounding workflow and monitoring model."
+      >
+        <div className="space-y-5">
+          <DocCallout type="production">
+            Receipt storage, later verification, and lifecycle monitoring should live alongside the upstream workflow record, not instead of it.
+          </DocCallout>
+          <DocCodeBlock label="Integration Snippet" language="ts" code={integrationSnippet} />
+        </div>
+      </DocSection>
+
+      <DocSection
+        title="Security and Claims Boundary"
+        description="The architectural view is public-safe and intentionally excludes internal verification implementation details."
+      >
+        <div className="space-y-4">
+          <DocCallout type="security">
+            Public documentation does not expose internal service topology, proof internals, or signing infrastructure specifics.
+          </DocCallout>
+          <DocCallout type="claims" />
+        </div>
+      </DocSection>
+
+      <DocSection title="Related Docs" description="Use these links to continue from architecture into API, lifecycle, or security review.">
+        <div className="grid gap-3 md:grid-cols-2">
+          {ARTIFACT_LINKS.slice(0, 4).map((resource) => (
+            <a key={resource.href} href={resource.href} target="_blank" rel="noreferrer" className="border border-foreground/10 bg-foreground/[0.02] p-4 transition-colors hover:border-foreground/20">
+              <p className="font-medium text-foreground">{resource.title}</p>
+              <p className="mt-2 text-sm leading-relaxed text-muted-foreground">{resource.description}</p>
+            </a>
+          ))}
+        </div>
+      </DocSection>
+
+      <DocFooterLinks
+        links={[
+          { href: "/docs/verification", label: "Verification Lifecycle", description: "Receipt flow and later verification." },
+          { href: "/docs/api", label: "API", description: "Public contract and request / response structure." },
+          { href: "/docs/security", label: "Security Model", description: "Authentication boundary and public-safe controls." },
         ]}
       />
-
-      <LifecycleCards title="Lifecycle Through The Architecture" steps={LIFECYCLE_STEPS} />
-
-      <SectionBlock title="Trust-Boundary Diagram">
-        <div className="grid gap-4 lg:grid-cols-3">
-          <div className="border border-foreground/10 bg-foreground/[0.02] p-4">
-            <p className="font-mono text-xs uppercase tracking-[0.16em] text-muted-foreground">External / Partner Systems</p>
-            <p className="mt-3 text-sm leading-relaxed text-muted-foreground">
-              Evidence collectors, compliance platforms, and partner review systems.
-            </p>
-          </div>
-          <div className="border border-foreground/20 bg-background p-4">
-            <p className="font-mono text-xs uppercase tracking-[0.16em] text-muted-foreground">Public Boundary</p>
-            <p className="mt-3 text-sm leading-relaxed text-muted-foreground">
-              TrustSignal API Gateway handles authenticated verification and lifecycle requests.
-            </p>
-          </div>
-          <div className="border border-foreground/10 bg-foreground/[0.02] p-4">
-            <p className="font-mono text-xs uppercase tracking-[0.16em] text-muted-foreground">Private Boundary</p>
-            <p className="mt-3 text-sm leading-relaxed text-muted-foreground">
-              Internal verification engine remains private while signed verification receipts and verification signals are returned as outputs.
-            </p>
-          </div>
-        </div>
-      </SectionBlock>
-
-      <SectionBlock
-        title="Workflow Fit"
-        description="TrustSignal is not a workflow replacement. It integrates at defined boundaries so compliance, audit evidence pipelines, and systems of record can continue operating as they do today."
-      />
-
-      <SectionBlock
-        title="System-of-Record Boundary"
-        description="TrustSignal does not replace the system of record. It adds verifiable provenance and later verification capability."
-      />
-
-      <CodePanel label="Integration Snippet" code={integrationSnippet} />
-
-      <SectionBlock
-        title="Linked Technical Artifacts"
-        description="The website developer portal mirrors the engine repository artifacts rather than inventing a separate surface."
-      >
-        <ResourceGrid resources={ARTIFACT_LINKS} />
-      </SectionBlock>
-    </DocsShell>
+    </div>
   );
 }

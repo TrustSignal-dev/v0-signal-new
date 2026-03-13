@@ -1,10 +1,10 @@
 import type { Metadata } from "next";
 import Link from "next/link";
-import { ArrowUpRight, Shield } from "lucide-react";
+import { ArrowUpRight } from "lucide-react";
 import { TRUSTSIGNAL_GITHUB_URL } from "@/lib/site";
 import { createPageMetadata } from "@/lib/seo";
 import { ARTIFACT_LINKS, DEVELOPER_JOURNEY, EVALUATOR_ENTRY_URL, LIFECYCLE_STEPS } from "./content";
-import { ClaimsBoundaryPanel, DOCS_NAV, DocsIndexCard, DiagramPanel, LifecycleCards, ResourceGrid, SectionBlock } from "./_components";
+import { AnimatedLifecycle, DocCallout, DocDiagram, DocFooterLinks, DocHeader, DocSection } from "./_components";
 
 export const metadata: Metadata = createPageMetadata({
   title: "Developer Documentation",
@@ -19,91 +19,18 @@ export const metadata: Metadata = createPageMetadata({
   ],
 });
 
-const concepts = [
-  {
-    title: "Problem",
-    description:
-      "High-loss workflows need a way to detect evidence tampering, artifact substitution, provenance loss, and stale evidence after collection.",
-  },
-  {
-    title: "Verification Lifecycle",
-    description:
-      "TrustSignal accepts a verification request, returns verification signals, issues signed verification receipts, and supports later verification.",
-  },
-  {
-    title: "Try The API",
-    description:
-      "OpenAPI, example payloads, Postman assets, and a repo-side evaluator entry point make the API trial path copy-paste usable.",
-  },
-  {
-    title: "Security Model",
-    description:
-      "Claims boundary, authentication model, and production-readiness notes stay explicit and public-safe.",
-  },
-] as const;
-
 export default function DocsPage() {
   return (
-    <div className="space-y-10">
-      <header className="space-y-5">
-        <p className="font-mono text-sm uppercase tracking-[0.18em] text-muted-foreground">For Developers</p>
-        <h1 className="text-4xl font-display tracking-tight lg:text-6xl">TrustSignal Documentation</h1>
-        <p className="max-w-3xl text-lg leading-relaxed text-muted-foreground lg:text-xl">
-          TrustSignal exposes a public verification lifecycle for teams that need evidence integrity infrastructure inside existing workflow integration paths. Start here for the problem class, integrity model, demo, API artifacts, and technical docs.
-        </p>
-      </header>
+    <div className="space-y-8">
+      <DocHeader
+        title="TrustSignal Documentation"
+        description="Professional evaluator-facing documentation for the verification lifecycle, public API contract, security model, and architecture fit inside existing workflows."
+        audience="Technical Evaluators"
+      />
 
-      <section className="border border-foreground/10 bg-foreground/[0.02] p-6 lg:p-7">
-        <p className="font-mono text-xs uppercase tracking-[0.18em] text-muted-foreground">Developer Journey</p>
-        <div className="mt-5 grid gap-4 md:grid-cols-2 lg:grid-cols-4">
-          {concepts.map((concept) => (
-            <article key={concept.title} className="border border-foreground/10 bg-background p-4">
-              <h2 className="text-xl font-display tracking-tight">{concept.title}</h2>
-              <p className="mt-2 text-sm leading-relaxed text-muted-foreground">{concept.description}</p>
-            </article>
-          ))}
-        </div>
-      </section>
-
-      <DiagramPanel title="Developer Journey Flow" steps={[...DEVELOPER_JOURNEY]} />
-
-      <LifecycleCards title="Verification Lifecycle" steps={LIFECYCLE_STEPS} />
-
-      <SectionBlock
-        title="Start Evaluating TrustSignal"
-        description="Use the evaluator entry point if you want the full technical evaluation path, public API contract, example payloads, and security / claims boundary in one place."
-      >
-        <div className="grid gap-4 md:grid-cols-2">
-          <Link href="/docs/verification" className="border border-foreground/10 bg-foreground/[0.02] p-5 text-sm hover:border-foreground/20">
-            Try the Verification Lifecycle
-          </Link>
-          <Link href="/docs/api" className="border border-foreground/10 bg-foreground/[0.02] p-5 text-sm hover:border-foreground/20">
-            Review the API Overview
-          </Link>
-          <a
-            href={EVALUATOR_ENTRY_URL}
-            target="_blank"
-            rel="noreferrer"
-            className="inline-flex items-center justify-between border border-foreground/10 bg-background p-5 text-sm hover:border-foreground/20"
-          >
-            Open Evaluator Start Here
-            <ArrowUpRight className="h-4 w-4" />
-          </a>
-          <a
-            href={TRUSTSIGNAL_GITHUB_URL}
-            target="_blank"
-            rel="noreferrer"
-            className="inline-flex items-center justify-between border border-foreground/10 bg-background p-5 text-sm hover:border-foreground/20"
-          >
-            View GitHub Repository
-            <ArrowUpRight className="h-4 w-4" />
-          </a>
-        </div>
-      </SectionBlock>
-
-      <SectionBlock
-        title="Why This Problem Exists"
-        description="Evidence risk usually appears after collection. Review, audit, and partner workflows often rely on artifacts that have been moved, copied, or resubmitted over time."
+      <DocSection
+        title="Problem / Context"
+        description="High-loss workflows need a durable way to detect artifact tampering, provenance drift, and stale evidence after collection."
       >
         <ul className="space-y-2 text-sm leading-relaxed text-muted-foreground">
           <li>Evidence tampering after collection</li>
@@ -112,56 +39,85 @@ export default function DocsPage() {
           <li>Stale evidence during later review</li>
           <li>Documentation chains that cannot be verified later</li>
         </ul>
-      </SectionBlock>
+      </DocSection>
 
-      <SectionBlock
-        title="Integration Boundary"
-        description="TrustSignal does not replace the system of record. It adds verifiable provenance and later verification capability."
-      />
-
-      <section>
-        <p className="mb-4 font-mono text-xs uppercase tracking-[0.18em] text-muted-foreground">Documentation Pages</p>
-        <div className="grid gap-4 md:grid-cols-2">
-          {DOCS_NAV.map((item) => (
-            <DocsIndexCard
-              key={item.href}
-              href={item.href}
-              title={item.title}
-              description={item.description}
-            />
-          ))}
-        </div>
-      </section>
-
-      <SectionBlock
-        title="Repository Artifacts"
-        description="The public site mirrors the engine repository artifacts so evaluators can inspect the exact contract, payloads, and demo path."
+      <DocSection
+        title="Integrity Model"
+        description="TrustSignal operates as an integrity layer for existing workflow integration. It returns signed verification receipts, verification signals, verifiable provenance, and later verification capability."
       >
-        <ResourceGrid resources={ARTIFACT_LINKS} />
-      </SectionBlock>
+        <DocCallout type="info">
+          The developer journey is structured as problem, verification lifecycle, try the API, API example, and related documentation.
+        </DocCallout>
+      </DocSection>
 
-      <section className="grid gap-4 md:grid-cols-2">
-        <Link href="/docs/security" className="border border-foreground/10 bg-background p-5 text-sm hover:border-foreground/20">
-          Security Materials
-        </Link>
-        <a
-          href={TRUSTSIGNAL_GITHUB_URL}
-          target="_blank"
-          rel="noreferrer"
-          className="inline-flex items-center justify-between border border-foreground/10 bg-background p-5 text-sm hover:border-foreground/20"
-        >
-          View Repository
-          <ArrowUpRight className="h-4 w-4" />
-        </a>
-      </section>
+      <DocSection title="How It Works" description="The evaluator path should be understandable in one scan before you open the API example pages.">
+        <DocDiagram title="Developer Journey Flow" steps={[...DEVELOPER_JOURNEY]} />
+      </DocSection>
 
-      <section className="space-y-4">
-        <p className="inline-flex items-center gap-2 font-mono text-xs uppercase tracking-[0.18em] text-muted-foreground">
-          <Shield className="h-3.5 w-3.5" />
-          Claims Boundary
-        </p>
-        <ClaimsBoundaryPanel />
-      </section>
+      <DocSection title="Example / Diagram" description="This lifecycle view mirrors the public contract and the repo-side evaluator start path.">
+        <AnimatedLifecycle
+          title="Verification Lifecycle"
+          description="Submit artifact material, receive verification signals and a signed verification receipt, store the receipt with your workflow record, and run later verification when trust conditions matter."
+          steps={LIFECYCLE_STEPS}
+        />
+      </DocSection>
+
+      <DocSection title="Production Considerations" description="The evaluator path is intentionally narrow. Production integration still requires explicit authentication, environment configuration, and lifecycle monitoring.">
+        <div className="grid gap-4 md:grid-cols-2">
+          <Link href="/docs/verification" className="group border border-foreground/10 bg-foreground/[0.02] p-5 text-sm transition-colors hover:border-foreground/20">
+            <div className="flex items-center justify-between gap-4">
+              <span>Try the Verification Lifecycle</span>
+              <ArrowUpRight className="h-4 w-4 text-muted-foreground transition-transform group-hover:-translate-y-0.5 group-hover:translate-x-0.5" />
+            </div>
+          </Link>
+          <Link href="/docs/api" className="group border border-foreground/10 bg-foreground/[0.02] p-5 text-sm transition-colors hover:border-foreground/20">
+            <div className="flex items-center justify-between gap-4">
+              <span>Review the API Overview</span>
+              <ArrowUpRight className="h-4 w-4 text-muted-foreground transition-transform group-hover:-translate-y-0.5 group-hover:translate-x-0.5" />
+            </div>
+          </Link>
+          <a
+            href={EVALUATOR_ENTRY_URL}
+            target="_blank"
+            rel="noreferrer"
+            className="group border border-foreground/10 bg-background p-5 text-sm transition-colors hover:border-foreground/20"
+          >
+            <div className="flex items-center justify-between gap-4">
+              <span>Open Evaluator Start Here</span>
+              <ArrowUpRight className="h-4 w-4 text-muted-foreground transition-transform group-hover:-translate-y-0.5 group-hover:translate-x-0.5" />
+            </div>
+          </a>
+          <a
+            href={TRUSTSIGNAL_GITHUB_URL}
+            target="_blank"
+            rel="noreferrer"
+            className="group border border-foreground/10 bg-background p-5 text-sm transition-colors hover:border-foreground/20"
+          >
+            <div className="flex items-center justify-between gap-4">
+              <span>View GitHub Repository</span>
+              <ArrowUpRight className="h-4 w-4 text-muted-foreground transition-transform group-hover:-translate-y-0.5 group-hover:translate-x-0.5" />
+            </div>
+          </a>
+        </div>
+      </DocSection>
+
+      <DocSection title="Security and Claims Boundary" description="Evaluators should understand the public contract and the explicit claims boundary before relying on the output model.">
+        <div className="space-y-4">
+          <DocCallout type="claims" />
+          <DocCallout type="security">
+            Public documentation does not expose proof internals, circuit identifiers, witness data, signing infrastructure specifics, model internals, or internal service topology.
+          </DocCallout>
+        </div>
+      </DocSection>
+
+      <DocFooterLinks
+        links={[
+          { href: "/docs/verification", label: "Verification Lifecycle", description: "Lifecycle, receipt flow, and later verification." },
+          { href: "/docs/api", label: "API", description: "Public contract, example request, and response shape." },
+          { href: "/docs/security", label: "Security Model", description: "Authentication, lifecycle checks, and claims boundary." },
+          { href: "/docs/architecture", label: "Architecture", description: "Integration boundary and existing workflow fit." },
+        ]}
+      />
     </div>
   );
 }
