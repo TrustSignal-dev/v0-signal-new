@@ -5,7 +5,6 @@
   "scripts": {
     "build": "next build",
     "dev": "next dev",
-    "lint": "eslint .",
     "messaging:check": "bash scripts/check-public-messaging.sh",
     "start": "next start"
   },

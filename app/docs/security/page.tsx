@@ -1,12 +1,6 @@
 import type { Metadata } from "next";
 import { createPageMetadata } from "@/lib/seo";
-import {
-  ClaimsBoundaryPanel,
-  CodePanel,
-  DiagramPanel,
-  DocsShell,
-  SectionBlock,
-} from "../_components";
+import { DocCallout, DocCodeBlock, DocDiagram, DocHeader, DocSection } from "../_components";
 import { STATUS_EXAMPLE } from "../content";
 
 export const metadata: Metadata = createPageMetadata({
@@ -19,22 +13,26 @@ export const metadata: Metadata = createPageMetadata({
 
 export default function SecurityPage() {
   return (
-    <DocsShell
-      eyebrow="Developer Docs"
-      title="Security Model"
-      intro="TrustSignal provides externally verifiable outputs while limiting public interfaces to an authenticated API boundary. Integrations can evaluate verification signals and receipt lifecycle state without exposing private verification engine internals."
-    >
-      <DiagramPanel
-        title="Security Controls in the Verification Lifecycle"
-        steps={[
-          "Authenticate API client and scopes",
-          "Submit verification request over TLS",
-          "Receive signed verification receipt",
-          "Check lifecycle status and verification signals",
-        ]}
+    <div className="space-y-8">
+      <DocHeader
+        title="Security Model"
+        description="TrustSignal provides externally verifiable outputs while limiting public interfaces to an authenticated API boundary. Integrations can evaluate verification signals and receipt lifecycle state without exposing private verification engine internals."
+        audience="Security Reviewers"
       />
 
-      <SectionBlock title="Public Security Controls">
+      <DocSection title="How It Works" description="Public-facing controls across the verification lifecycle.">
+        <DocDiagram
+          title="Security Controls in the Verification Lifecycle"
+          steps={[
+            "Authenticate API client and scopes",
+            "Submit verification request over TLS",
+            "Receive signed verification receipt",
+            "Check lifecycle status and verification signals",
+          ]}
+        />
+      </DocSection>
+
+      <DocSection title="Public Security Controls">
         <ul className="space-y-2 text-sm leading-relaxed text-muted-foreground">
           <li>API authentication and scoped access for verification and lifecycle actions.</li>
           <li>Signed verification receipts for durable integrity records.</li>
@@ -43,18 +41,18 @@ export default function SecurityPage() {
           <li>Rate limiting and abuse protection on public API boundaries.</li>
           <li>Fail-closed behavior at the integration boundary when verification state is unavailable.</li>
         </ul>
-      </SectionBlock>
+      </DocSection>
 
-      <CodePanel label="Lifecycle Status Check" code={STATUS_EXAMPLE} />
+      <DocCodeBlock label="Lifecycle Status Check" code={STATUS_EXAMPLE} />
 
-      <SectionBlock
+      <DocSection
         title="Intentionally Not Exposed"
         description="Public documentation does not disclose proof internals, circuit identifiers, witness data, signing infrastructure specifics, model internals, or internal service topology."
       />
 
-      <SectionBlock title="Claims Boundary">
-        <ClaimsBoundaryPanel />
-      </SectionBlock>
-    </DocsShell>
+      <DocSection title="Claims Boundary">
+        <DocCallout type="claims" />
+      </DocSection>
+    </div>
   );
 }
