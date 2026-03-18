@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import { createPageMetadata } from "@/lib/seo";
-import { DocsShell, SectionBlock } from "../_components";
+import { DocHeader, DocSection } from "../_components";
 
 export const metadata: Metadata = createPageMetadata({
   title: "Threat Model",
@@ -40,12 +40,14 @@ const threats = [
 
 export default function ThreatModelPage() {
   return (
-    <DocsShell
-      eyebrow="Developer Docs"
-      title="Threat Model"
-      intro="This public threat model summarizes the external risks TrustSignal is designed to address in high-loss workflows where incentives exist to modify, substitute, or detach evidence after collection."
-    >
-      <SectionBlock
+    <div className="space-y-8">
+      <DocHeader
+        title="Threat Model"
+        description="This public threat model summarizes the external risks TrustSignal is designed to address in high-loss workflows where incentives exist to modify, substitute, or detach evidence after collection."
+        audience="Security Reviewers"
+      />
+
+      <DocSection
         title="Threat Scenarios"
         description="The table below focuses on externally visible threats and expected high-level behavior, without exposing proprietary internals."
       >
@@ -57,12 +59,12 @@ export default function ThreatModelPage() {
             </div>
           ))}
         </div>
-      </SectionBlock>
+      </DocSection>
 
-      <SectionBlock
+      <DocSection
         title="Boundary Conditions"
         description="TrustSignal does not provide legal determinations, compliance certification, or fraud adjudication. It provides technical verification artifacts that downstream systems can use in their own workflow controls."
       />
-    </DocsShell>
+    </div>
   );
 }
