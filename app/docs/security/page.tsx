@@ -50,10 +50,5 @@ export default function SecurityPage() {
         title="Intentionally Not Exposed"
         description="Public documentation does not disclose proof internals, circuit identifiers, witness data, signing infrastructure specifics, model internals, or internal service topology."
       />
-
-      <SectionBlock title="Claims Boundary">
-        <ClaimsBoundaryPanel />
-      </SectionBlock>
-    </DocsShell>
   );
 }
