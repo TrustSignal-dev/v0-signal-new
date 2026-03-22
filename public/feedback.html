@@ -233,6 +233,37 @@ function handleSubmit() {
     alert('Please answer at least a few questions before submitting.');
     return;
   }
+
+  const answers = {};
+  document.querySelectorAll('textarea[name]').forEach(t => {
+    answers[t.name] = t.value.trim() || '(no answer)';
+  });
+  document.querySelectorAll('input[type=radio]:checked').forEach(r => {
+    answers[r.name] = r.value;
+  });
+  document.querySelectorAll('input[type=checkbox]:checked').forEach(c => {
+    if (!answers[c.name]) answers[c.name] = [];
+    if (!Array.isArray(answers[c.name])) answers[c.name] = [answers[c.name]];
+    answers[c.name].push(c.value);
+  });
+
+  const body = Object.entries(answers)
+    .map(([k, v]) => k.toUpperCase() + ':
+' + (Array.isArray(v) ? v.join(', ') : v))
+    .join('
+
+');
+
+  const subject = encodeURIComponent('TrustSignal feedback form');
+  const bodyEnc = encodeURIComponent(body);
+  window.location.href = `mailto:info@trustsignal.dev?subject=${subject}&body=${bodyEnc}`;
+
+  setTimeout(() => {
+    document.getElementById('form-body').style.display = 'none';
+    document.getElementById('thankyou').style.display = 'block';
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }, 800);
+}
   document.getElementById('form-body').style.display = 'none';
   document.getElementById('thankyou').style.display = 'block';
   window.scrollTo({ top: 0, behavior: 'smooth' });
