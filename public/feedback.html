@@ -67,7 +67,6 @@ textarea:focus{outline:none;border-color:#888}
 
   <div id="form-body">
 
-```
 <!-- SECTION 1 -->
 <div class="section">
   <div class="section-label">The problem</div>
@@ -214,7 +213,6 @@ textarea:focus{outline:none;border-color:#888}
 </div>
 
 <button class="submit-btn" onclick="handleSubmit()">Submit feedback</button>
-```
 
   </div>
 
@@ -225,7 +223,9 @@ textarea:focus{outline:none;border-color:#888}
 </div>
 
 <script>
-function handleSubmit() {
+const FORMSPREE_ENDPOINT = 'https://formspree.io/f/mqeyvedk';
+
+async function handleSubmit() {
   const radios = document.querySelectorAll('input[type=radio]:checked');
   const textareas = document.querySelectorAll('textarea');
   let filled = radios.length + [...textareas].filter(t => t.value.trim().length > 0).length;
@@ -234,36 +234,44 @@ function handleSubmit() {
     return;
   }
 
-  const answers = {};
-  document.querySelectorAll('textarea[name]').forEach(t => {
-    answers[t.name] = t.value.trim() || '(no answer)';
-  });
-  document.querySelectorAll('input[type=radio]:checked').forEach(r => {
-    answers[r.name] = r.value;
-  });
-  document.querySelectorAll('input[type=checkbox]:checked').forEach(c => {
-    if (!answers[c.name]) answers[c.name] = [];
-    if (!Array.isArray(answers[c.name])) answers[c.name] = [answers[c.name]];
-    answers[c.name].push(c.value);
-  });
+  const btn = document.querySelector('.submit-btn');
+  btn.textContent = 'Sending...';
+  btn.disabled = true;
 
-  const body = Object.entries(answers)
-    .map(([k, v]) => k.toUpperCase() + '\n' + (Array.isArray(v) ? v.join(', ') : v))
-    .join('\n\n');
+  const data = {
+    q1: document.querySelector('input[name=q1]:checked')?.value || '',
+    q2: document.querySelector('textarea[name=q2]').value,
+    q3: document.querySelector('input[name=q3]:checked')?.value || '',
+    q4: document.querySelector('input[name=q4]:checked')?.value || '',
+    q5: document.querySelector('input[name=q5]:checked')?.value || '',
+    q6: document.querySelector('textarea[name=q6]').value,
+    q7: document.querySelector('input[name=q7]:checked')?.value || '',
+    q8: document.querySelector('input[name=q8]:checked')?.value || '',
+    q9: document.querySelector('textarea[name=q9]').value,
+    q10: document.querySelector('textarea[name=q10]').value,
+    loi: [...document.querySelectorAll('input[name=loi]:checked')].map(i => i.value).join(', '),
+    other: document.querySelector('textarea[name=q11]').value,
+    _subject: 'TrustSignal — Gina Feedback Form Submitted'
+  };
 
-  const subject = encodeURIComponent('TrustSignal feedback form');
-  const bodyEnc = encodeURIComponent(body);
-  window.location.href = `mailto:info@trustsignal.dev?subject=${subject}&body=${bodyEnc}`;
-
-  setTimeout(() => {
-    document.getElementById('form-body').style.display = 'none';
-    document.getElementById('thankyou').style.display = 'block';
-    window.scrollTo({ top: 0, behavior: 'smooth' });
-  }, 800);
-}
-  document.getElementById('form-body').style.display = 'none';
-  document.getElementById('thankyou').style.display = 'block';
-  window.scrollTo({ top: 0, behavior: 'smooth' });
+  try {
+    const res = await fetch(FORMSPREE_ENDPOINT, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
+      body: JSON.stringify(data)
+    });
+    if (res.ok) {
+      document.getElementById('form-body').style.display = 'none';
+      document.getElementById('thankyou').style.display = 'block';
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    } else {
+      throw new Error('Submit failed');
+    }
+  } catch(e) {
+    btn.textContent = 'Submit feedback';
+    btn.disabled = false;
+    alert('Something went wrong. Please try again.');
+  }
 }
 </script>
 
