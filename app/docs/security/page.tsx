@@ -1,7 +1,6 @@
 import type { Metadata } from "next";
 import { createPageMetadata } from "@/lib/seo";
 import {
-  ClaimsBoundaryPanel,
   CodePanel,
   DiagramPanel,
   DocsShell,
