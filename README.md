@@ -1,67 +1,167 @@
 # TrustSignal
 
-TrustSignal is evidence integrity infrastructure that adds signed cryptographic receipts to high-trust workflows so teams can prove records have not changed after collection.
+[![trustsignal.dev](https://img.shields.io/badge/trustsignal.dev-live-brightgreen)](https://trustsignal.dev)
+[![Docs](https://img.shields.io/badge/docs-available-blue)](https://trustsignal.dev/docs)
+[![Pilot](https://img.shields.io/badge/pilot-open-orange)](https://trustsignal.dev/#pilot-request)
+[![Email](https://img.shields.io/badge/contact-info%40trustsignal.dev-lightgrey)](mailto:info@trustsignal.dev)
 
-The public site explains how TrustSignal fits behind an existing workflow and
-supports later verification without overstating what is currently implemented.
+**Evidence integrity infrastructure for compliance and audit workflows.**
 
-The website is the presentation layer for TrustSignal. It should simplify the
-story, but it must not contradict the implementation truth in the `trustsignal`
-repo or the public-safe boundaries in `TrustSignal-docs`.
+TrustSignal issues signed verification receipts so organizations can prove when evidence was created, where it came from, and whether it has changed. It adds an integrity layer to existing workflows without replacing the system of record.
 
-## What the website communicates
+→ **[trustsignal.dev](https://trustsignal.dev)** · **[Documentation](https://trustsignal.dev/docs)** · **[Request a Pilot](https://trustsignal.dev/#pilot-request)**
 
-- Evidence integrity without workflow disruption
-- Minimal integration through an API call or webhook
-- Public-facing pilot intake for early adopters
-- Audit-ready traceability without exposing private implementation details
-- Deed verification as one use case, not the product definition
+---
 
-## Current site sections
+## The Problem
 
-- Problem: why post-collection drift and fraud matter
-- Demo: valid and tampered evidence verification
-- Integration: where TrustSignal sits in an existing workflow
-- Architecture: high-level developer and infrastructure messaging
-- Pilot Request: basic intake form for pilot and integration follow-up
+Compliance and audit teams rely on artifacts that pass through multiple systems. Without a durable integrity reference, provenance becomes difficult to validate during later review:
 
-## Public review posture
+- Evidence files, exports, and screenshots can change after initial collection
+- Weeks or months later, reviewers cannot easily prove where an artifact came from or when it was captured
+- Audit readiness weakens without a reliable tamper-evident reference
 
-This repository is intended for the TrustSignal website and related public
-materials. Any separate review repository linked from the live site should
-remain sanitized and should not expose proprietary internals, secrets, or
-private registry integrations.
+---
 
-Public website copy must not:
+## How TrustSignal Works
 
-- lead with blockchain, ZKML, or AI fraud detection
-- invent SDK or endpoint behavior that is not backed by the source-of-truth repo
-- present roadmap or experimental architecture as shipped behavior
-- publish precise performance or proof claims without current verification
+Submit an artifact or artifact reference -> receive a signed verification receipt -> store it with the artifact -> verify again later when trust conditions matter.
 
-Unless TrustSignal states otherwise in writing, all website materials are
-proprietary and covered by the terms in [LICENSE.md](./LICENSE.md).
-
-## Local development
-
-```bash
-corepack pnpm install
-corepack pnpm dev
+```
+┌─────────────────┐    POST /api/attest-evidence    ┌──────────────────┐
+│  Your Workflow  │ ──────────────────────────────► │   TrustSignal    │
+│  (Vanta, Drata, │                                 │  Integrity Layer │
+│   internal GRC) │ ◄────────────────────────────── │                  │
+└─────────────────┘    Signed receipt + signal      └──────────────────┘
+        │
+        ▼
+  Store receipt alongside artifact in your system of record
+        │
+        ▼
+  Later verification: compare current artifact against original receipt
 ```
 
-## Environment
+### Verification Request
 
-Copy values from `.env.example` and configure SMTP credentials before enabling
-pilot request email delivery.
+```json
+POST /api/attest-evidence
+Content-Type: application/json
 
-## Deployment
+{
+  "source": "vanta",
+  "artifact_hash": "sha256:93f6f35a550cbe1c3f0b5f0c12b9f0d62f3f9c6f8c6a4eddd8fa1fbfd4654af1",
+  "control_id": "CC6.1",
+  "timestamp": "2026-03-11T21:00:00Z",
+  "metadata": {
+    "artifact_type": "compliance_evidence",
+    "collector": "aws-config-snapshot"
+  }
+}
+```
 
-The site is deployed on Vercel and intended to serve `trustsignal.dev`.
+### Signed Receipt Response
 
-## Contributor Note
+```json
+HTTP/1.1 201 Created
 
-`trustsignal` is the implementation and messaging source of truth.
+{
+  "receipt_id": "tsig_rcpt_01JTQY8N1Q0M4F4F5T4J4B8Y9R",
+  "status": "signed",
+  "source": "vanta",
+  "control_id": "CC6.1",
+  "attested_at": "2026-03-11T21:00:01Z",
+  "signature": "tsig_sig_01JTQY8QK6X4YF7M6T2P9A5D3H",
+  "provenance": {
+    "artifact_type": "compliance_evidence",
+    "collector": "aws-config-snapshot"
+  }
+}
+```
 
-Public website copy in this repo must follow the guardrails in
-`docs/PUBLIC_MESSAGING_GUARDRAILS.md` and should stay aligned with
-implementation-backed behavior and public-safe claim boundaries.
+---
+
+## Integration Fit
+
+TrustSignal sits **behind** the system that collected the artifact.
+
+| Layer | What Stays in Place |
+|---|---|
+| Evidence collection | Your existing platform (Vanta, Drata, internal collector) |
+| System of record | Unchanged - TrustSignal adds to it, not replaces it |
+| Review workflow | Existing compliance or audit process |
+| **TrustSignal** | **Attests at ingestion. Signed receipt travels with artifact.** |
+
+No workflow replacement required. Integrates at clear API boundaries.
+
+---
+
+## Receipt Model
+
+```typescript
+const auditReadyReceipt = {
+  receipt_id: "tsig_rcpt_01JTQY8N1Q0M4F4F5T4J4B8Y9R",
+  source: "vanta",
+  artifact_hash: "sha256:93f6f35a550cbe1c3f0b5f0c12b9f0d62f3f9c6f8c6a4eddd8fa1fbfd4654af1",
+  control_id: "CC6.1",
+  timestamp: "2026-03-11T21:00:00Z",
+  receipt_status: "signed",
+  verification_status: "match",
+  provenance: {
+    artifact_type: "compliance_evidence",
+    collector: "aws-config-snapshot"
+  }
+}
+```
+
+---
+
+## Documentation
+
+| Resource | Link |
+|---|---|
+| Developer Overview | [trustsignal.dev/docs](https://trustsignal.dev/docs) |
+| Verification Lifecycle | [trustsignal.dev/docs/verification](https://trustsignal.dev/docs/verification) |
+| API Overview | [trustsignal.dev/docs/api](https://trustsignal.dev/docs/api) |
+| Security Model | [trustsignal.dev/docs/security](https://trustsignal.dev/docs/security) |
+| Architecture | [trustsignal.dev/docs/architecture](https://trustsignal.dev/docs/architecture) |
+| Threat Model | [trustsignal.dev/docs/threat-model](https://trustsignal.dev/docs/threat-model) |
+
+---
+
+## Claims Boundary
+
+**TrustSignal provides:**
+- Signed verification receipts
+- Verification signals
+- Verifiable provenance metadata
+- Later integrity check capability
+
+**TrustSignal does not provide:**
+- Legal determinations
+- Compliance certification
+- Fraud adjudication
+- Replacement for the system of record
+
+---
+
+## Security
+
+Public documentation does not expose proof internals, signing infrastructure specifics, or internal service topology.
+
+For security review materials: [trustsignal.dev/security](https://trustsignal.dev/security)
+
+To report a vulnerability: [info@trustsignal.dev](mailto:info@trustsignal.dev)
+
+---
+
+## Pilot Access
+
+Operational access and private verification workflows are restricted to TrustSignal pilot review.
+
+→ [Request a lightweight pilot](https://trustsignal.dev/#pilot-request)
+
+---
+
+## Contact
+
+[trustsignal.dev](https://trustsignal.dev) · [info@trustsignal.dev](mailto:info@trustsignal.dev)

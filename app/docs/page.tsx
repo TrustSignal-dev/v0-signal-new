@@ -84,17 +84,15 @@ export default function DocsPage() {
               <ArrowUpRight className="h-4 w-4 text-muted-foreground transition-transform group-hover:-translate-y-0.5 group-hover:translate-x-0.5" />
             </div>
           </Link>
-          <a
+          <Link
             href={EVALUATOR_ENTRY_URL}
-            target="_blank"
-            rel="noreferrer"
             className="group border border-foreground/10 bg-background p-5 text-sm transition-colors hover:border-foreground/20"
           >
             <div className="flex items-center justify-between gap-4">
-              <span>Open Evaluator Start Here</span>
+              <span>Open Verification Lifecycle</span>
               <ArrowUpRight className="h-4 w-4 text-muted-foreground transition-transform group-hover:-translate-y-0.5 group-hover:translate-x-0.5" />
             </div>
-          </a>
+          </Link>
           <a
             href={TRUSTSIGNAL_GITHUB_URL}
             target="_blank"
