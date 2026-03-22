@@ -1,0 +1,6 @@
+Contact: mailto:security@trustsignal.dev
+Contact: mailto:info@trustsignal.dev
+Canonical: https://trustsignal.dev/.well-known/security.txt
+Policy: https://trustsignal.dev/security
+Expires: 2027-03-20T00:00:00.000Z
+Preferred-Languages: en

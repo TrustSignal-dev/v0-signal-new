@@ -29,20 +29,20 @@ const jetbrainsMono = JetBrains_Mono({
 export const metadata: Metadata = {
   metadataBase: new URL(SITE_URL),
   title: {
-    default: "TrustSignal | Evidence Integrity Infrastructure",
+    default: "TrustSignal | Evidence Integrity Infrastructure for Compliance Workflows",
     template: "%s | TrustSignal",
   },
   description:
-    "Evidence integrity infrastructure for compliance artifacts. Generate signed verification receipts, preserve provenance, and verify records without replacing existing workflows.",
+    "TrustSignal issues signed verification receipts so compliance and audit teams can prove when evidence was created, where it came from, and whether it has changed.",
   keywords: [...DEFAULT_KEYWORDS],
   applicationName: "TrustSignal",
   alternates: {
     canonical: absoluteUrl("/"),
   },
   openGraph: {
-    title: "TrustSignal | Evidence Integrity Infrastructure",
+    title: "TrustSignal | Evidence Integrity Infrastructure for Compliance Workflows",
     description:
-      "Evidence integrity infrastructure for compliance artifacts. Generate signed verification receipts, preserve provenance, and verify records without replacing existing workflows.",
+      "TrustSignal issues signed verification receipts so compliance and audit teams can prove when evidence was created, where it came from, and whether it has changed.",
     url: absoluteUrl("/"),
     siteName: "TrustSignal",
     locale: "en_US",
@@ -58,9 +58,9 @@ export const metadata: Metadata = {
   },
   twitter: {
     card: "summary_large_image",
-    title: "TrustSignal | Evidence Integrity Infrastructure",
+    title: "TrustSignal | Evidence Integrity Infrastructure for Compliance Workflows",
     description:
-      "Evidence integrity infrastructure for compliance artifacts. Generate signed verification receipts, preserve provenance, and verify records without replacing existing workflows.",
+      "TrustSignal issues signed verification receipts so compliance and audit teams can prove when evidence was created, where it came from, and whether it has changed.",
     images: [absoluteUrl("/placeholder-logo.png")],
   },
   icons: {
@@ -79,13 +79,15 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
-      <body
-        className={`${instrumentSans.variable} ${instrumentSerif.variable} ${jetbrainsMono.variable} font-sans antialiased`}
-      >
+      <head>
         <script
           type="application/ld+json"
           dangerouslySetInnerHTML={{ __html: JSON.stringify(organizationJsonLd) }}
         />
+      </head>
+      <body
+        className={`${instrumentSans.variable} ${instrumentSerif.variable} ${jetbrainsMono.variable} font-sans antialiased`}
+      >
         {children}
         <Analytics />
       </body>

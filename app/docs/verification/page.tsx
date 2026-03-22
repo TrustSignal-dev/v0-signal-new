@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import Link from "next/link";
 import { createPageMetadata } from "@/lib/seo";
 import { CURL_EXAMPLE, EVALUATOR_ENTRY_URL, LIFECYCLE_STEPS, RECEIPT_EXAMPLE, STATUS_EXAMPLE, TAMPERED_REJECTION } from "../content";
 import {
@@ -20,7 +21,7 @@ export const metadata: Metadata = createPageMetadata({
 });
 
 const fieldNotes = [
-  ["receiptId", "Unique receipt reference for retrieval, status checks, and lifecycle actions."],
+  ["receiptId", "Unique receipt reference for retrieval, integrity checks, and lifecycle actions."],
   ["receiptHash", "Stable hash of the canonical receipt payload used for later verification."],
   ["receiptSignature", "Signed receipt metadata returned with the verification response."],
   ["inputsCommitment", "Canonical commitment to the verified request inputs."],
@@ -52,14 +53,12 @@ export default function VerificationPage() {
           Want the full technical evaluation path? Start with the repo-side evaluator entry point.
         </DocCallout>
         <div className="mt-4">
-          <a
+          <Link
             href={EVALUATOR_ENTRY_URL}
-            target="_blank"
-            rel="noreferrer"
             className="text-sm text-foreground underline underline-offset-4"
           >
-            Start here
-          </a>
+            Start with verification
+          </Link>
         </div>
       </DocSection>
 

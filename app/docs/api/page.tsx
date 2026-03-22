@@ -14,22 +14,27 @@ import { CURL_EXAMPLE, VERIFICATION_RESPONSE } from "../content";
 
 const API_ROUTES = [
   {
-    route: "POST /verify",
+    route: "POST /api/v1/verify",
     detail:
       "Submit an artifact or artifact reference and receive verification signals plus a signed verification receipt.",
   },
   {
-    route: "GET /receipt/:id",
+    route: "GET /api/v1/receipt/:receiptId",
     detail:
       "Retrieve a previously issued verification receipt for downstream storage, review, or audit use.",
   },
   {
-    route: "GET /status/:id",
+    route: "GET /api/v1/receipt/:receiptId/summary",
     detail:
-      "Check current lifecycle status before relying on an earlier verification result.",
+      "Retrieve a high-level summary of a verification receipt for quick review.",
   },
   {
-    route: "POST /receipt/:id/revoke",
+    route: "POST /api/v1/receipt/:receiptId/verify",
+    detail:
+      "Check current integrity status of an artifact against a stored receipt.",
+  },
+  {
+    route: "POST /api/v1/receipt/:receiptId/revoke",
     detail:
       "Revoke a receipt when lifecycle governance requires the prior verification output to be invalidated.",
   },

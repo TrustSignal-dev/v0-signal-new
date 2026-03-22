@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { CONTACT_EMAIL, SITE_URL, TRUSTSIGNAL_REVIEW_REPO_URL } from "@/lib/site";
+import { SITE_URL, TRUSTSIGNAL_GITHUB_URL } from "@/lib/site";
 
 export const DEFAULT_KEYWORDS = [
   "TrustSignal",
@@ -83,16 +83,9 @@ export const organizationJsonLd = {
   "@type": "Organization",
   name: "TrustSignal",
   url: SITE_URL,
-  logo: absoluteUrl("/placeholder-logo.png"),
-  sameAs: [TRUSTSIGNAL_REVIEW_REPO_URL],
-  contactPoint: [
-    {
-      "@type": "ContactPoint",
-      contactType: "sales",
-      email: CONTACT_EMAIL,
-      availableLanguage: ["English"],
-    },
+  description: "Evidence integrity infrastructure for compliance workflows",
+  sameAs: [
+    TRUSTSIGNAL_GITHUB_URL,
+    "https://linkedin.com/company/trustsignal-dev",
   ],
-  description:
-    "TrustSignal is evidence integrity infrastructure for compliance artifacts, signed receipts, provenance, and audit-ready verification.",
 };

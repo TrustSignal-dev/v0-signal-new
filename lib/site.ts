@@ -12,7 +12,40 @@ export const PRIMARY_NAV_LINKS = [
   { name: "Problem", href: "#problem" },
   { name: "Integrity Model", href: "#integrity-model" },
   { name: "Integration Fit", href: "#integration" },
-  { name: "For Developers", href: "#developers" },
+  { name: "Partner Demos", href: "/partner-access" },
   { name: "Claims Boundary", href: "#claims-boundary" },
   { name: "Pilot Request", href: "#pilot-request" },
+] as const;
+
+export const DEVELOPER_DOC_LINKS = [
+  {
+    name: "Developer Overview",
+    href: "/docs",
+    description: "Start at the main docs hub.",
+  },
+  {
+    name: "Verification Lifecycle",
+    href: "/docs/verification",
+    description: "Artifact submission, receipts, and later comparison.",
+  },
+  {
+    name: "API Overview",
+    href: "/docs/api",
+    description: "Public request and response model.",
+  },
+  {
+    name: "Security Model",
+    href: "/docs/security",
+    description: "Claims boundary and public-safe controls.",
+  },
+  {
+    name: "Architecture",
+    href: "/docs/architecture",
+    description: "Workflow fit and trust-boundary framing.",
+  },
+  {
+    name: "Threat Model",
+    href: "/docs/threat-model",
+    description: "Threat assumptions and review posture.",
+  },
 ] as const;

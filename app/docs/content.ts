@@ -1,37 +1,37 @@
 export const ENGINE_REPO_URL = "https://github.com/TrustSignal-dev/TrustSignal";
-export const EVALUATOR_ENTRY_URL = `${ENGINE_REPO_URL}/blob/master/docs/partner-eval/start-here.md`;
-export const TRY_THE_API_URL = `${ENGINE_REPO_URL}/blob/master/docs/partner-eval/try-the-api.md`;
+export const EVALUATOR_ENTRY_URL = "/docs/verification";
+export const TRY_THE_API_URL = "/docs/api";
 
 export const ARTIFACT_LINKS = [
   {
-    title: "Evaluator Start Here",
-    href: EVALUATOR_ENTRY_URL,
-    description: "Canonical repo-side entry point for partner engineers."
+    title: "Verification Lifecycle",
+    href: "/docs/verification",
+    description: "Lifecycle, receipt flow, and later comparison guidance."
   },
   {
-    title: "OpenAPI Contract",
-    href: `${ENGINE_REPO_URL}/blob/master/openapi.yaml`,
-    description: "Public verification lifecycle contract."
+    title: "API Overview",
+    href: "/docs/api",
+    description: "Public request and response model."
   },
   {
-    title: "Examples Directory",
-    href: `${ENGINE_REPO_URL}/tree/master/examples`,
-    description: "Request, response, receipt, and status payloads."
+    title: "Security Model",
+    href: "/docs/security",
+    description: "Public-safe controls and claims boundary."
   },
   {
-    title: "Postman Collection",
-    href: `${ENGINE_REPO_URL}/blob/master/postman/TrustSignal.postman_collection.json`,
-    description: "Local evaluator requests with environment variables."
+    title: "Architecture",
+    href: "/docs/architecture",
+    description: "Workflow fit and trust-boundary framing."
   },
   {
-    title: "Try The API",
-    href: TRY_THE_API_URL,
-    description: "Copy-paste API evaluation path using the public contract."
+    title: "TrustSignal Repository",
+    href: ENGINE_REPO_URL,
+    description: "Main repository for public source materials."
   },
   {
-    title: "Developer Trial Demo",
-    href: `${ENGINE_REPO_URL}/tree/master/demo`,
-    description: "Local artifact to receipt to later verification walkthrough."
+    title: "Pilot Request",
+    href: "/#pilot-request",
+    description: "Start a direct partner or pilot discussion."
   }
 ] as const;
 
@@ -89,7 +89,8 @@ export const VERIFICATION_RESPONSE = `{
   "anchor": {
     "status": "PENDING",
     "subjectDigest": "0x8c0f95cda31274e7b61adfd1dd1e0c03a4b96f78d90da52d42fd93d9a38fc112",
-    "subjectVersion": "trustsignal.anchor_subject.v1"
+    "subjectVersion": "trustsignal.anchor_subject.v1",
+    "note": "Experimental blockchain anchoring"
   },
   "revocation": {
     "status": "ACTIVE"
@@ -120,6 +121,7 @@ export const STATUS_EXAMPLE = `{
   "signatureVerified": true,
   "signatureStatus": "verified",
   "proofVerified": false,
+  "proofNote": "Experimental ZKP proof verification pending",
   "recomputedHash": "0x4e7f2ce9d3f7a8d3b0e4c9f2aa17fd59d6b4fda2d7b7b7d1cce8124d7ee39d04",
   "storedHash": "0x4e7f2ce9d3f7a8d3b0e4c9f2aa17fd59d6b4fda2d7b7b7d1cce8124d7ee39d04",
   "inputsCommitment": "0x2dded9c1b5c4c6d91df58a1b1793cb527f2b0cf5ddaf447f5b7d9839f7ab7d01",

@@ -1,0 +1,198 @@
+!eyebrow Private Partner Concept
+
+!privateNote This page is private partner walkthrough material for Scrut and TrustSignal. It is an illustrative integration concept only, not a public product claim, not an announced native integration, and not a statement of GA partner functionality. It does not claim access to private Scrut API documentation or official Scrut endpoint definitions.
+
+!summary This concept shows how Scrut can remain the workflow and audit-readiness system while TrustSignal adds evidence integrity verification, provenance binding, signed receipts, and tamper-evident verification metadata around the evidence already moving through the compliance workflow.
+
+!context Compliance evidence can be collected on time and still become harder to defend later if the artifact changes, the file reference drifts, or reviewers cannot reconstruct what was verified when the evidence first entered the workflow.
+
+!integration Scrut remains the workflow and system of record for evidence collection, control monitoring, workflow orchestration, and audit readiness. TrustSignal receives a stable artifact hash or reference plus provenance context, performs verification, returns a signed receipt, and can send signed webhook updates when evidence changes over time.
+
+!whyPartner This gives Scrut teams a narrow, enterprise-grade way to add defensible evidence integrity without replacing the compliance workflow. Reviewers and auditors can inspect what artifact state was verified, when it was verified, and whether it still matches later in the audit cycle.
+
+!talkTrack Start with evidence already moving through Scrut's workflow. Send a representative verify request to TrustSignal with the artifact hash, stable reference, provenance metadata, and control context. Read back the verification result and signed receipt. Optionally receive signed webhook events when evidence is refreshed or changes later. Keep the workflow inside Scrut while adding audit-ready integrity metadata to the evidence record.
+
+!productionNote In a production pilot, every verification request should use OAuth 2.0 client credentials or scoped service accounts, all traffic should require TLS 1.2+, webhook deliveries should be signed and replay-protected, access should stay least-privilege, and verification plus delivery events should be written to structured audit logs without logging raw evidence contents.
+
+## !!steps Scrut evidence context
+
+This example starts with evidence already collected or requested in Scrut. Scrut keeps the evidence workflow, framework mapping, and reviewer context.
+
+!narration The integration begins with evidence already inside the compliance workflow, not with a replacement workflow.
+
+!takeaway Scrut remains the system of record. TrustSignal receives stable artifact material or a stable reference plus audit-relevant provenance and control context.
+
+```json !code scrut-evidence-context.json
+{
+  "external_evidence_id": "scrut-ev-20491",
+  "workspace_id": "acme-prod",
+  "workflow": "continuous_compliance_review",
+  "collection_mode": "automated",
+  "frameworks": ["Framework-A", "Framework-B"],
+  "controls": [
+    { "framework": "Framework-A", "control_id": "CTRL-6.1" },
+    { "framework": "Framework-B", "control_id": "CTRL-5.15" }
+  ],
+  "artifact": {
+    "uri": "s3://acme-evidence/access-reviews/q1-2026.csv",
+    "hash": "sha256:4f4f7297a82f4d5308a6754df9374d9f2e2ef86361f98f290568a0dfcbaf8d4a",
+    "mime_type": "text/csv"
+  },
+  "provenance": {
+    "source_system": "Okta",
+    "collected_by": "scrut-service-account",
+    "collected_at": "2026-03-17T14:15:00.000Z"
+  }
+}
+```
+
+## !!steps Illustrative API-first verification flow
+
+The primary MVP path is a representative TrustSignal-side verify call. Scrut submits evidence metadata and receives a verification record plus a signed receipt identifier.
+
+!narration This is the narrowest possible integration surface: one verification call that enriches the existing evidence workflow.
+
+!takeaway The API-first model lets Scrut keep collection and review inside the existing workflow while TrustSignal adds integrity outcomes and receipt identifiers.
+
+```json !code illustrative-post-v1-evidence-verify.json
+{
+  "illustrative_endpoint": "POST /v1/evidence/verify",
+  "request": {
+    "external_evidence_id": "scrut-ev-20491",
+    "workspace_id": "acme-prod",
+    "artifact": {
+      "uri": "s3://acme-evidence/access-reviews/q1-2026.csv",
+      "hash": "sha256:4f4f7297a82f4d5308a6754df9374d9f2e2ef86361f98f290568a0dfcbaf8d4a",
+      "mime_type": "text/csv"
+    },
+    "provenance": {
+      "source_system": "Okta",
+      "collected_by": "scrut-service-account",
+      "collected_at": "2026-03-17T14:15:00.000Z"
+    },
+    "controls": [
+      { "framework": "Framework-A", "control_id": "CTRL-6.1" },
+      { "framework": "Framework-B", "control_id": "CTRL-5.15" }
+    ]
+  },
+  "response": {
+    "evidence_id": "ts_evi_01JTSCRUT4ETR2Y6X7A1P5W9F0",
+    "verification_status": "verified",
+    "receipt_id": "ts_rcpt_01JTSCRUT7DY1R57V9B56QJQ2W",
+    "receipt_hash": "sha256:0b7ebaa4c5e11de85d2e8196ec2a2ebfa0e39b14d4f17d2b190e3ef4d97c4306",
+    "signature": {
+      "alg": "EdDSA",
+      "kid": "demo-trustsignal-2026-01"
+    },
+    "summary": {
+      "artifact_hash_match": true,
+      "provenance_bound": true,
+      "tamper_evident_receipt_issued": true
+    }
+  }
+}
+```
+
+## !!steps Retrieval and reviewer inspection
+
+After the initial verify call, Scrut can retrieve current status or receipt metadata only when needed for review or audit preparation.
+
+!narration This keeps the operator surface small. Retrieval is optional and can be deferred until a reviewer or auditor needs the details.
+
+!takeaway The receipt and evidence identifiers give Scrut a compact way to attach integrity state to an evidence record without duplicating the workflow.
+
+```json !code illustrative-get-evidence-and-receipt.json
+{
+  "illustrative_endpoints": [
+    "GET /v1/evidence/{id}",
+    "GET /v1/receipts/{id}"
+  ],
+  "evidence": {
+    "evidence_id": "ts_evi_01JTSCRUT4ETR2Y6X7A1P5W9F0",
+    "status": "verified",
+    "linked_controls": ["CTRL-6.1", "CTRL-5.15"],
+    "latest_receipt_id": "ts_rcpt_01JTSCRUT7DY1R57V9B56QJQ2W"
+  },
+  "receipt": {
+    "receipt_id": "ts_rcpt_01JTSCRUT7DY1R57V9B56QJQ2W",
+    "issued_at": "2026-03-17T14:15:04.000Z",
+    "verification_status": "verified",
+    "receipt_hash": "sha256:0b7ebaa4c5e11de85d2e8196ec2a2ebfa0e39b14d4f17d2b190e3ef4d97c4306",
+    "signature": {
+      "alg": "EdDSA",
+      "kid": "demo-trustsignal-2026-01"
+    },
+    "chain_of_custody": [
+      "requested",
+      "collected",
+      "verified",
+      "attached_to_review_record"
+    ]
+  }
+}
+```
+
+## !!steps Webhook augmentation flow
+
+The asynchronous path is a signed webhook back to a Scrut-managed receiver when verification completes, fails, or later evidence drift is detected.
+
+!narration This is where the MVP supports continuous monitoring without forcing synchronous behavior for every evidence type.
+
+!takeaway Webhooks let Scrut update reviewer context and evidence status as evidence changes over time, while keeping the delivery model explicitly signed and replay-protected.
+
+```json !code illustrative-webhook-events.json
+{
+  "illustrative_endpoint": "POST /v1/webhooks/scrut/test",
+  "illustrative_events": [
+    "evidence.verified",
+    "evidence.verification_failed",
+    "evidence.changed",
+    "receipt.issued",
+    "control.evidence_updated"
+  ],
+  "representative_delivery": {
+    "event_id": "evt_01JTSCRUT9FF5M0TR7WTQ5TD73",
+    "event_type": "receipt.issued",
+    "occurred_at": "2026-03-17T14:16:12.000Z",
+    "delivery_id": "dlv_01JTSCRUTA8NK2H3ZZ8X8NQ7A9",
+    "evidence_id": "ts_evi_01JTSCRUT4ETR2Y6X7A1P5W9F0",
+    "external_evidence_id": "scrut-ev-20491",
+    "receipt": {
+      "receipt_id": "ts_rcpt_01JTSCRUT7DY1R57V9B56QJQ2W",
+      "verification_status": "verified",
+      "receipt_hash": "sha256:0b7ebaa4c5e11de85d2e8196ec2a2ebfa0e39b14d4f17d2b190e3ef4d97c4306"
+    },
+    "controls": ["CTRL-6.1", "CTRL-5.15"]
+  }
+}
+```
+
+## !!steps Security controls and pilot scope
+
+This MVP stays deliberately narrow: one evidence category, one verification path, optional webhook callbacks, and explicit machine-to-machine security controls.
+
+!narration The point is not a broad platform build. The point is to prove evidence integrity value with a controlled pilot envelope.
+
+!takeaway Security posture and scope discipline are part of the product story. The integration is only credible if auth, delivery integrity, least privilege, and audit logging are explicit from the start.
+
+```json !code pilot-scope-and-security.json
+{
+  "pilot_scope": {
+    "evidence_category": "quarterly_access_review_export",
+    "frameworks": ["Framework-A", "Framework-B"],
+    "mapped_controls": ["CTRL-6.1", "CTRL-5.15", "CTRL-7.2", "CTRL-8.16", "CTRL-5.18"],
+    "integration_mode": "api_first_with_optional_webhooks",
+    "reviewer_surface": "compact_receipt_panel"
+  },
+  "security_controls": {
+    "api_auth": "OAuth2 client credentials or scoped service accounts",
+    "transport": "TLS 1.2+",
+    "webhook_signing": "HMAC or asymmetric signatures with rotation support",
+    "replay_protection": ["delivery_id", "timestamp", "nonce", "bounded_window"],
+    "least_privilege": true,
+    "audit_logs": true,
+    "idempotency_keys": true,
+    "sensitive_logging_policy": "no raw evidence contents in logs"
+  }
+}
+```

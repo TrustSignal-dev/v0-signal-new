@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import Link from "next/link";
 import { createPageMetadata } from "@/lib/seo";
 import { ARTIFACT_LINKS } from "../content";
 import {
@@ -103,10 +104,14 @@ export default function ArchitecturePage() {
       <DocSection title="Related Docs" description="Use these links to continue from architecture into API, lifecycle, or security review.">
         <div className="grid gap-3 md:grid-cols-2">
           {ARTIFACT_LINKS.slice(0, 4).map((resource) => (
-            <a key={resource.href} href={resource.href} target="_blank" rel="noreferrer" className="border border-foreground/10 bg-foreground/[0.02] p-4 transition-colors hover:border-foreground/20">
+            <Link
+              key={resource.href}
+              href={resource.href}
+              className="border border-foreground/10 bg-foreground/[0.02] p-4 transition-colors hover:border-foreground/20"
+            >
               <p className="font-medium text-foreground">{resource.title}</p>
               <p className="mt-2 text-sm leading-relaxed text-muted-foreground">{resource.description}</p>
-            </a>
+            </Link>
           ))}
         </div>
       </DocSection>

@@ -52,8 +52,16 @@ export default function SecurityPage() {
         <section>
           <h2 className="mb-3 text-xl font-medium text-foreground">Reporting</h2>
           <p>
-            Security concerns should be reported to info@trustsignal.dev. Do not
-            include sensitive personal data in the initial report.
+            Security concerns should be reported to security@trustsignal.dev.
+            The public disclosure policy is available at
+            {" "}
+            <a
+              href="/.well-known/security.txt"
+              className="text-foreground underline underline-offset-4"
+            >
+              /.well-known/security.txt
+            </a>
+            . Do not include sensitive personal data in the initial report.
           </p>
         </section>
       </div>
