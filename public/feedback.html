@@ -248,11 +248,8 @@ function handleSubmit() {
   });
 
   const body = Object.entries(answers)
-    .map(([k, v]) => k.toUpperCase() + ':
-' + (Array.isArray(v) ? v.join(', ') : v))
-    .join('
-
-');
+    .map(([k, v]) => k.toUpperCase() + '\n' + (Array.isArray(v) ? v.join(', ') : v))
+    .join('\n\n');
 
   const subject = encodeURIComponent('TrustSignal feedback form');
   const bodyEnc = encodeURIComponent(body);
