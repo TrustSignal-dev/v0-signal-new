@@ -1,0 +1,243 @@
+<!DOCTYPE html>
+
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>TrustSignal — Industry Feedback Form</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=DM+Mono:wght@400;500&family=DM+Sans:wght@300;400;500&display=swap');
+:root{--ink:#1a1a18;--paper:#f5f2ea;--accent:#2d5a3d;--accent-light:#e8f0eb;--rule:#d4cfc3;--muted:#7a7568;--white:#fff}
+*{box-sizing:border-box;margin:0;padding:0}
+body{background:var(--paper);color:var(--ink);font-family:'DM Sans',sans-serif;font-weight:300;line-height:1.65;padding:2rem 1rem 4rem}
+.page{max-width:620px;margin:0 auto}
+.header{border-bottom:2px solid var(--ink);padding-bottom:1.2rem;margin-bottom:2rem}
+.header h1{font-family:'Instrument Serif',serif;font-size:1.9rem;font-weight:400;line-height:1.1;margin-bottom:.4rem}
+.header h1 span{font-style:italic;color:var(--accent)}
+.header p{font-size:.85rem;color:var(--muted);line-height:1.6;max-width:480px}
+.header .meta{font-family:'DM Mono',monospace;font-size:.65rem;color:var(--muted);margin-top:.5rem}
+.section{margin-bottom:2rem}
+.section-label{font-family:'DM Mono',monospace;font-size:.62rem;font-weight:500;letter-spacing:.12em;text-transform:uppercase;color:var(--accent);margin-bottom:.75rem}
+.card{background:var(--white);border:1px solid var(--rule);border-radius:8px;padding:1.25rem 1.4rem;margin-bottom:1.25rem}
+.q-block{margin-bottom:1.4rem}
+.q-block:last-child{margin-bottom:0}
+.q-label{font-size:.88rem;font-weight:500;margin-bottom:.35rem;line-height:1.5}
+.q-sub{font-size:.78rem;color:var(--muted);margin-bottom:.5rem;line-height:1.5}
+textarea{width:100%;border:1px solid var(--rule);border-radius:6px;padding:.6rem .75rem;font-family:'DM Sans',sans-serif;font-size:.88rem;font-weight:300;color:var(--ink);background:var(--paper);resize:vertical;min-height:72px;line-height:1.6;transition:border-color .15s}
+textarea:focus{outline:none;border-color:#888}
+.radio-group{display:flex;flex-direction:column;gap:.5rem;margin-top:.4rem}
+.radio-item{display:flex;align-items:center;gap:.6rem;cursor:pointer}
+.radio-item input[type=radio]{accent-color:var(--accent);width:15px;height:15px;cursor:pointer;flex-shrink:0}
+.radio-item label{font-size:.88rem;cursor:pointer;line-height:1.4}
+.scale-group{display:flex;gap:.5rem;align-items:center;margin-top:.4rem;flex-wrap:wrap}
+.scale-group input[type=radio]{display:none}
+.scale-group label{width:38px;height:38px;border:1px solid var(--rule);border-radius:6px;display:flex;align-items:center;justify-content:center;font-family:'DM Mono',monospace;font-size:.8rem;cursor:pointer;background:var(--paper);transition:all .15s;color:var(--muted)}
+.scale-group input[type=radio]:checked+label{background:var(--accent);border-color:var(--accent);color:#fff;font-weight:500}
+.scale-group label:hover{border-color:#888;color:var(--ink)}
+.scale-ends{display:flex;justify-content:space-between;font-size:.72rem;color:var(--muted);margin-top:.3rem;font-family:'DM Mono',monospace}
+.loi-block{background:var(--accent-light);border:1px solid #b8d4c0;border-radius:8px;padding:1.1rem 1.3rem;margin-bottom:1.25rem}
+.loi-block .loi-title{font-weight:500;font-size:.9rem;margin-bottom:.4rem;color:var(--accent)}
+.loi-block p{font-size:.82rem;color:#3d6b4f;line-height:1.6;margin-bottom:.75rem}
+.loi-options{display:flex;flex-direction:column;gap:.45rem}
+.loi-item{display:flex;align-items:flex-start;gap:.6rem;cursor:pointer}
+.loi-item input[type=checkbox]{accent-color:var(--accent);width:15px;height:15px;margin-top:.15rem;flex-shrink:0;cursor:pointer}
+.loi-item label{font-size:.85rem;cursor:pointer;line-height:1.45}
+.submit-btn{width:100%;background:var(--ink);color:#fff;border:none;border-radius:8px;padding:.9rem 1rem;font-family:'DM Sans',sans-serif;font-size:.95rem;font-weight:500;cursor:pointer;letter-spacing:.01em;transition:opacity .15s;margin-top:.5rem}
+.submit-btn:hover{opacity:.85}
+.submit-btn:active{opacity:.7}
+.thankyou{display:none;text-align:center;padding:2.5rem 1rem}
+.thankyou h2{font-family:'Instrument Serif',serif;font-size:1.6rem;font-weight:400;margin-bottom:.75rem}
+.thankyou p{font-size:.9rem;color:var(--muted);line-height:1.7}
+.note{background:#fffbe6;border:1px solid #e0d060;border-radius:6px;padding:.8rem 1rem;font-size:.78rem;color:#6b5a10;line-height:1.6;margin-bottom:1.5rem}
+.note strong{font-weight:500;display:block;margin-bottom:.15rem}
+</style>
+</head>
+<body>
+<div class="page">
+  <div class="header">
+    <h1>TrustSignal<br><span>Industry Feedback</span></h1>
+    <p>A few questions from Christopher Marziani, founder of TrustSignal — no commitment, no obligation. Your perspective as an experienced government auditor is genuinely valuable.</p>
+    <div class="meta">Estimated time: 5–8 minutes &nbsp;·&nbsp; Confidential — not shared without permission</div>
+  </div>
+
+  <div class="note">
+    <strong>A note before you start:</strong>
+    None of these questions ask about KPMG clients, engagements, or anything confidential. This is purely your personal professional opinion based on your experience in the field.
+  </div>
+
+  <div id="form-body">
+
+```
+<!-- SECTION 1 -->
+<div class="section">
+  <div class="section-label">The problem</div>
+  <div class="card">
+    <div class="q-block">
+      <div class="q-label">1. In government financial audits, how often does evidence integrity actually come into question?</div>
+      <div class="q-sub">Think about supporting documents — schedules, contracts, approvals — being challenged after submission.</div>
+      <div class="radio-group">
+        <label class="radio-item"><input type="radio" name="q1" value="rarely"> <label>Rarely — it's an edge case</label></label>
+        <label class="radio-item"><input type="radio" name="q1" value="occasionally"> <label>Occasionally — a few times a year</label></label>
+        <label class="radio-item"><input type="radio" name="q1" value="regularly"> <label>Regularly — it's a known operational risk</label></label>
+        <label class="radio-item"><input type="radio" name="q1" value="constant"> <label>It's a constant concern, especially post-submission</label></label>
+      </div>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="q-block">
+      <div class="q-label">2. When a supporting document submitted weeks ago needs to be verified, what's the current process?</div>
+      <div class="q-sub">How do auditors or the client currently confirm a document hasn't been altered since it was submitted?</div>
+      <textarea name="q2" placeholder="e.g. version control, email trail, system timestamps, asking the client..."></textarea>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="q-block">
+      <div class="q-label">3. For an ACFR-level audit, is document chain of custody something auditors actively think about — or is it assumed?</div>
+      <div class="radio-group">
+        <label class="radio-item"><input type="radio" name="q3" value="assumed"> <label>Assumed — we trust the intake process</label></label>
+        <label class="radio-item"><input type="radio" name="q3" value="informal"> <label>Informally managed — it depends on the engagement</label></label>
+        <label class="radio-item"><input type="radio" name="q3" value="active"> <label>Actively managed — it's part of the audit methodology</label></label>
+        <label class="radio-item"><input type="radio" name="q3" value="gap"> <label>It's a real gap — there's no consistent standard</label></label>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- SECTION 2 -->
+<div class="section">
+  <div class="section-label">Fit & workflow</div>
+  <div class="card">
+    <div class="q-block">
+      <div class="q-label">4. For a tool like TrustSignal to add value in an audit context, who would need to adopt it?</div>
+      <div class="q-sub">TrustSignal hashes and receipts documents at the moment they're submitted — before they enter any audit workflow.</div>
+      <div class="radio-group">
+        <label class="radio-item"><input type="radio" name="q4" value="client"> <label>The client (the government entity being audited)</label></label>
+        <label class="radio-item"><input type="radio" name="q4" value="firm"> <label>The audit firm</label></label>
+        <label class="radio-item"><input type="radio" name="q4" value="both"> <label>Both sides — it only works if both use it</label></label>
+        <label class="radio-item"><input type="radio" name="q4" value="either"> <label>Either — value exists even with one-sided adoption</label></label>
+      </div>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="q-block">
+      <div class="q-label">5. How resistant are government clients to adding anything new to their document intake workflow?</div>
+      <div class="radio-group">
+        <label class="radio-item"><input type="radio" name="q5" value="very"> <label>Very resistant — anything new is a hard sell</label></label>
+        <label class="radio-item"><input type="radio" name="q5" value="moderate"> <label>Moderately resistant — needs a clear ROI</label></label>
+        <label class="radio-item"><input type="radio" name="q5" value="open"> <label>Reasonably open if it's passive and non-disruptive</label></label>
+        <label class="radio-item"><input type="radio" name="q5" value="depends"> <label>Depends entirely on the specific entity</label></label>
+      </div>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="q-block">
+      <div class="q-label">6. Are there specific audit frameworks where cryptographically verifiable evidence would carry real weight?</div>
+      <div class="q-sub">Think GASB, Yellow Book, PCAOB, SOC 2, or others.</div>
+      <textarea name="q6" placeholder="e.g. Yellow Book engagements would benefit most because..."></textarea>
+    </div>
+  </div>
+</div>
+
+<!-- SECTION 3 -->
+<div class="section">
+  <div class="section-label">Buyer & credibility</div>
+  <div class="card">
+    <div class="q-block">
+      <div class="q-label">7. Who at a government finance department would own a decision like this?</div>
+      <div class="radio-group">
+        <label class="radio-item"><input type="radio" name="q7" value="cfo"> <label>CFO / Finance Director</label></label>
+        <label class="radio-item"><input type="radio" name="q7" value="comptroller"> <label>Comptroller / Controller</label></label>
+        <label class="radio-item"><input type="radio" name="q7" value="it"> <label>IT / CIO</label></label>
+        <label class="radio-item"><input type="radio" name="q7" value="audit"> <label>Internal Audit / Audit Committee</label></label>
+        <label class="radio-item"><input type="radio" name="q7" value="legal"> <label>General Counsel / Legal</label></label>
+        <label class="radio-item"><input type="radio" name="q7" value="multiple"> <label>Multiple stakeholders — it's a committee decision</label></label>
+      </div>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="q-block">
+      <div class="q-label">8. On a scale of 1–5, how useful would tamper-evident chain of custody be in your day-to-day audit work?</div>
+      <div class="q-sub">1 = not useful at all &nbsp;·&nbsp; 5 = extremely useful</div>
+      <div class="scale-group">
+        <input type="radio" name="q8" id="s1" value="1"><label for="s1">1</label>
+        <input type="radio" name="q8" id="s2" value="2"><label for="s2">2</label>
+        <input type="radio" name="q8" id="s3" value="3"><label for="s3">3</label>
+        <input type="radio" name="q8" id="s4" value="4"><label for="s4">4</label>
+        <input type="radio" name="q8" id="s5" value="5"><label for="s5">5</label>
+      </div>
+      <div class="scale-ends"><span>Not useful</span><span>Extremely useful</span></div>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="q-block">
+      <div class="q-label">9. What would make you trust a tool like this enough to reference it during an engagement?</div>
+      <div class="q-sub">What would it take — a known integration, a regulatory nod, a Big 4 endorsement, something else?</div>
+      <textarea name="q9" placeholder="e.g. it would need SOC 2 certification, or integration with our existing GRC platform..."></textarea>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="q-block">
+      <div class="q-label">10. Is there anything about how Christopher described TrustSignal that doesn't map to how audits actually work?</div>
+      <div class="q-sub">Honest feedback here is the most valuable thing you can offer.</div>
+      <textarea name="q10" placeholder="e.g. the framing around 'policy at ingestion' doesn't match how we receive documents because..."></textarea>
+    </div>
+  </div>
+</div>
+
+<!-- LOI SECTION -->
+<div class="section">
+  <div class="section-label">Optional — letter of interest</div>
+  <div class="loi-block">
+    <div class="loi-title">Would you be willing to sign a personal letter of interest?</div>
+    <p>This is a short statement — your personal professional opinion only, not on KPMG letterhead, not representing the firm. It helps Christopher with grant applications and investor conversations. No commitment, no obligation.</p>
+    <div class="loi-options">
+      <label class="loi-item"><input type="checkbox" name="loi" value="letter"> <label>Yes — I'm open to signing a one-paragraph personal letter of interest</label></label>
+      <label class="loi-item"><input type="checkbox" name="loi" value="intro"> <label>Yes — I may be able to make a personal introduction to someone in this space</label></label>
+      <label class="loi-item"><input type="checkbox" name="loi" value="more"> <label>I'd like to learn more before deciding</label></label>
+      <label class="loi-item"><input type="checkbox" name="loi" value="no"> <label>Not at this time — no problem at all</label></label>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="q-block">
+      <div class="q-label">Any other thoughts, questions, or feedback for Christopher?</div>
+      <textarea name="q11" placeholder="Anything else you want him to know..." style="min-height:88px"></textarea>
+    </div>
+  </div>
+</div>
+
+<button class="submit-btn" onclick="handleSubmit()">Submit feedback</button>
+```
+
+  </div>
+
+  <div class="thankyou" id="thankyou">
+    <h2>Thank you, <span style="font-style:italic;color:var(--accent)">Gina.</span></h2>
+    <p>Christopher will review your responses before your call.<br>Your feedback — especially the honest corrections — is exactly what he needs.<br><br>If you have anything to add, just reply to the email.</p>
+  </div>
+</div>
+
+<script>
+function handleSubmit() {
+  const radios = document.querySelectorAll('input[type=radio]:checked');
+  const textareas = document.querySelectorAll('textarea');
+  let filled = radios.length + [...textareas].filter(t => t.value.trim().length > 0).length;
+  if (filled < 3) {
+    alert('Please answer at least a few questions before submitting.');
+    return;
+  }
+  document.getElementById('form-body').style.display = 'none';
+  document.getElementById('thankyou').style.display = 'block';
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+</script>
+
+</body>
+</html>
