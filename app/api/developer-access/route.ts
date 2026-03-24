@@ -4,6 +4,7 @@ import { z } from "zod";
 const developerAccessSchema = z
   .object({
     accessMethod: z.enum(["github", "email"]),
+    artifactVolumeBand: z.enum(["1-100", "101-500", "500+"]),
     fullName: z.string().trim().min(2),
     company: z.string().trim().min(2),
     role: z.string().trim().min(2),

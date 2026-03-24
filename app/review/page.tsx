@@ -16,6 +16,7 @@ type DeveloperAccessSubmission = {
   pathname: string;
   submittedAt: string;
   accessMethod: "github" | "email";
+  artifactVolumeBand: "1-100" | "101-500" | "500+";
   fullName: string;
   company: string;
   role: string;
@@ -192,6 +193,7 @@ export default async function ReviewPage({
                     <p><strong className="text-foreground">Role:</strong> {submission.role}</p>
                     <p><strong className="text-foreground">Email:</strong> {submission.email}</p>
                     <p><strong className="text-foreground">Method:</strong> {submission.accessMethod}</p>
+                    <p><strong className="text-foreground">Artifact volume:</strong> {submission.artifactVolumeBand}</p>
                     {submission.githubUsername ? (
                       <p><strong className="text-foreground">GitHub:</strong> {submission.githubUsername}</p>
                     ) : null}

@@ -11,10 +11,12 @@ import { Textarea } from "@/components/ui/textarea";
 import { cn } from "@/lib/utils";
 
 const accessMethodSchema = z.enum(["github", "email"]);
+const artifactVolumeBandSchema = z.enum(["1-100", "101-500", "500+"]);
 
 const developerAccessSchema = z
   .object({
     accessMethod: accessMethodSchema,
+    artifactVolumeBand: artifactVolumeBandSchema,
     fullName: z.string().trim().min(2, "Enter your full name."),
     company: z.string().trim().min(2, "Enter your company name."),
     role: z.string().trim().min(2, "Enter your role or title."),
@@ -67,6 +69,7 @@ export function DeveloperAccessRequestForm() {
     resolver: zodResolver(developerAccessSchema),
     defaultValues: {
       accessMethod: "github",
+      artifactVolumeBand: "1-100",
       fullName: "",
       company: "",
       role: "",
@@ -154,7 +157,7 @@ export function DeveloperAccessRequestForm() {
           <div className="mt-10 space-y-4 text-sm text-muted-foreground">
             <p>Choose GitHub review if you want access tied to your GitHub identity.</p>
             <p>Choose email signup if you want the TrustSignal team to provision access manually.</p>
-            <p>No payment or live credentials are requested through this form.</p>
+            <p>Up to 100 artifacts stays in the entry tier. Above 100 artifacts moves into paid access.</p>
           </div>
         </div>
 
@@ -191,19 +194,36 @@ export function DeveloperAccessRequestForm() {
 
             <div className="grid gap-5 md:grid-cols-2">
               <Field
+                label="Expected artifact volume"
+                error={form.formState.errors.artifactVolumeBand?.message}
+                input={
+                  <select
+                    {...form.register("artifactVolumeBand")}
+                    className="h-12 w-full rounded-none border border-foreground/15 bg-background px-4 text-sm outline-none transition focus:border-foreground"
+                  >
+                    <option value="1-100">1-100 artifacts</option>
+                    <option value="101-500">101-500 artifacts</option>
+                    <option value="500+">500+ artifacts</option>
+                  </select>
+                }
+              />
+              <Field
                 label="Full name"
                 error={form.formState.errors.fullName?.message}
                 input={<Input {...form.register("fullName")} className="h-12 rounded-none border-foreground/15" placeholder="Your full name" autoComplete="name" />}
               />
               <Field
-                label="Company"
-                error={form.formState.errors.company?.message}
-                input={<Input {...form.register("company")} className="h-12 rounded-none border-foreground/15" placeholder="Company name" autoComplete="organization" />}
-              />
-              <Field
                 label="Role"
                 error={form.formState.errors.role?.message}
                 input={<Input {...form.register("role")} className="h-12 rounded-none border-foreground/15" placeholder="Engineering, security, ops..." />}
+              />
+            </div>
+
+            <div className="grid gap-5 md:grid-cols-2">
+              <Field
+                label="Company"
+                error={form.formState.errors.company?.message}
+                input={<Input {...form.register("company")} className="h-12 rounded-none border-foreground/15" placeholder="Company name" autoComplete="organization" />}
               />
               <Field
                 label="Work email"
@@ -251,6 +271,7 @@ export function DeveloperAccessRequestForm() {
                 <p className="text-sm leading-6 text-muted-foreground">
                   GitHub is currently an access-review path, not a live OAuth account flow in this repo.
                   The request is stored privately and reviewed by the TrustSignal team before access is provisioned.
+                  Requests above 100 artifacts should be treated as paid onboarding.
                 </p>
               </div>
             </div>

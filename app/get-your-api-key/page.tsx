@@ -4,14 +4,13 @@ import { createPageMetadata } from "@/lib/seo";
 import {
   ACCOUNT_LINKS,
   buildTrustSignalAppUrl,
-  getDeveloperAccessFallback,
   HAS_TRUSTSIGNAL_APP,
 } from "@/lib/site";
 
 export const metadata: Metadata = createPageMetadata({
   title: "Get Your API Key",
   description:
-    "Get your TrustSignal API key through the central developer app and use it across TrustSignal services.",
+    "Get your TrustSignal API key through the central developer app and use it across TrustSignal services. More than 100 artifacts moves into paid access.",
   path: "/get-your-api-key",
   keywords: ["TrustSignal API key", "developer portal", "central key management"],
 });
@@ -25,7 +24,7 @@ export default function GetYourApiKeyPage() {
     <AccountAccessPage
       eyebrow="TrustSignal developer access"
       title="Get your API key through the TrustSignal app."
-      description="TrustSignal API keys are issued in one central account system and then used by the TrustSignal API, TrustSignal Verify Artifact, and related application surfaces."
+      description="TrustSignal API keys are issued in one central account system and then used by the TrustSignal API, TrustSignal Verify Artifact, and related application surfaces. Up to 100 artifacts stays in the entry tier; anything above that moves into paid access."
       primaryHref={fallbackHref}
       primaryLabel={HAS_TRUSTSIGNAL_APP ? "Open API key dashboard" : "Sign up for access"}
       secondaryHref={ACCOUNT_LINKS.signUp}
@@ -43,6 +42,7 @@ export default function GetYourApiKeyPage() {
               ? "Validation belongs in the API repos; this website is the discovery and routing surface."
               : "The app domain is not active yet, so TrustSignal now routes API access requests into a dedicated on-site signup flow."}
           </p>
+          <p>Teams expecting more than 100 artifacts should be handled as paid commercial onboarding.</p>
         </>
       }
       icon="key"
