@@ -1,7 +1,12 @@
 import type { Metadata } from "next";
 import { AccountAccessPage } from "@/components/account-access-page";
 import { createPageMetadata } from "@/lib/seo";
-import { ACCOUNT_LINKS, buildTrustSignalAppUrl } from "@/lib/site";
+import {
+  ACCOUNT_LINKS,
+  buildTrustSignalAppUrl,
+  getDeveloperAccessFallback,
+  HAS_TRUSTSIGNAL_APP,
+} from "@/lib/site";
 
 export const metadata: Metadata = createPageMetadata({
   title: "Sign Up",
@@ -17,8 +22,11 @@ export default function SignUpPage() {
       eyebrow="TrustSignal account setup"
       title="Create your TrustSignal developer account."
       description="Use the central TrustSignal app to create an account, verify your email, and manage the API keys used by TrustSignal services."
-      primaryHref={buildTrustSignalAppUrl("/sign-up")}
-      primaryLabel="Create account"
+      primaryHref={buildTrustSignalAppUrl(
+        "/sign-up",
+        getDeveloperAccessFallback("TrustSignal developer access"),
+      )}
+      primaryLabel={HAS_TRUSTSIGNAL_APP ? "Create account" : "Request developer access"}
       secondaryHref={ACCOUNT_LINKS.signIn}
       secondaryLabel="Already have an account?"
       steps={[
@@ -29,7 +37,11 @@ export default function SignUpPage() {
       callout={
         <>
           <p>The public website explains the product and docs.</p>
-          <p>The authenticated app owns signup, sign-in, and API key issuance for the TrustSignal platform.</p>
+          <p>
+            {HAS_TRUSTSIGNAL_APP
+              ? "The authenticated app owns signup, sign-in, and API key issuance for the TrustSignal platform."
+              : "The dedicated app is not deployed yet, so this route currently falls back to direct developer-access contact."}
+          </p>
         </>
       }
       icon="signup"

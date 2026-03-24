@@ -1,7 +1,12 @@
 import type { Metadata } from "next";
 import { AccountAccessPage } from "@/components/account-access-page";
 import { createPageMetadata } from "@/lib/seo";
-import { ACCOUNT_LINKS, buildTrustSignalAppUrl } from "@/lib/site";
+import {
+  ACCOUNT_LINKS,
+  buildTrustSignalAppUrl,
+  getDeveloperAccessFallback,
+  HAS_TRUSTSIGNAL_APP,
+} from "@/lib/site";
 
 export const metadata: Metadata = createPageMetadata({
   title: "Get Your API Key",
@@ -17,8 +22,11 @@ export default function GetYourApiKeyPage() {
       eyebrow="TrustSignal developer access"
       title="Get your API key through the TrustSignal app."
       description="TrustSignal API keys are issued in one central account system and then used by the TrustSignal API, TrustSignal Verify Artifact, and related application surfaces."
-      primaryHref={buildTrustSignalAppUrl("/settings/api-keys")}
-      primaryLabel="Open API key dashboard"
+      primaryHref={buildTrustSignalAppUrl(
+        "/settings/api-keys",
+        getDeveloperAccessFallback("TrustSignal API key access"),
+      )}
+      primaryLabel={HAS_TRUSTSIGNAL_APP ? "Open API key dashboard" : "Request API access"}
       secondaryHref={ACCOUNT_LINKS.signUp}
       secondaryLabel="Need an account first?"
       steps={[
@@ -29,7 +37,11 @@ export default function GetYourApiKeyPage() {
       callout={
         <>
           <p>One API key system supports multiple TrustSignal properties.</p>
-          <p>Validation belongs in the API repos; this website is the discovery and routing surface.</p>
+          <p>
+            {HAS_TRUSTSIGNAL_APP
+              ? "Validation belongs in the API repos; this website is the discovery and routing surface."
+              : "The app domain is not active yet, so the site now falls back to direct API-access contact instead of a dead link."}
+          </p>
         </>
       }
       icon="key"

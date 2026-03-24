@@ -1,7 +1,8 @@
 export const SITE_URL =
   process.env.NEXT_PUBLIC_SITE_URL || "https://trustsignal.dev";
 export const TRUSTSIGNAL_APP_URL =
-  process.env.NEXT_PUBLIC_TRUSTSIGNAL_APP_URL || "https://app.trustsignal.dev";
+  process.env.NEXT_PUBLIC_TRUSTSIGNAL_APP_URL;
+export const HAS_TRUSTSIGNAL_APP = Boolean(TRUSTSIGNAL_APP_URL);
 
 export const CONTACT_EMAIL = "info@trustsignal.dev";
 export const TRUSTSIGNAL_GITHUB_URL =
@@ -58,6 +59,14 @@ export const ACCOUNT_LINKS = {
   getApiKey: "/get-your-api-key",
 } as const;
 
-export function buildTrustSignalAppUrl(path = "/") {
+export function getDeveloperAccessFallback(subject: string) {
+  return `mailto:${CONTACT_EMAIL}?subject=${encodeURIComponent(subject)}`;
+}
+
+export function buildTrustSignalAppUrl(path = "/", fallback?: string) {
+  if (!TRUSTSIGNAL_APP_URL) {
+    return fallback ?? SITE_URL;
+  }
+
   return new URL(path, TRUSTSIGNAL_APP_URL).toString();
 }

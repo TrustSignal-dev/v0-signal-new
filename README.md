@@ -22,7 +22,7 @@ service validates against one source of truth.
   - `/sign-in`
   - `/get-your-api-key`
 - Central app destination:
-  - `NEXT_PUBLIC_TRUSTSIGNAL_APP_URL` defaults to `https://app.trustsignal.dev`
+  - `NEXT_PUBLIC_TRUSTSIGNAL_APP_URL` should be set only when the TrustSignal app is actually deployed
 
 This keeps API key issuance out of the marketing/docs repo while still giving
 developers a clear path into the authenticated product surface.
