@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { createPageMetadata } from "@/lib/seo";
+import { ACCOUNT_LINKS } from "@/lib/site";
 import {
   ClaimsBoundaryPanel,
   DocCallout,
@@ -120,6 +121,14 @@ export default function ApiPage() {
           verification or status checks should be part of the normal integration path.
           The quick evaluator flow is intentionally lighter than production deployment.
         </DocCallout>
+        <p className="mt-4 max-w-3xl text-sm leading-6 text-muted-foreground sm:text-base">
+          Public docs live here, but developer account creation and API key issuance
+          are routed through the central TrustSignal app. Start at{" "}
+          <Link href={ACCOUNT_LINKS.getApiKey} className="text-foreground underline">
+            Get your API key
+          </Link>{" "}
+          to move from documentation into the authenticated developer flow.
+        </p>
       </DocSection>
 
       <DocSection

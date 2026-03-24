@@ -12,7 +12,7 @@ import {
   Shield,
 } from "lucide-react";
 import Link from "next/link";
-import { TRUSTSIGNAL_GITHUB_URL } from "@/lib/site";
+import { ACCOUNT_LINKS, TRUSTSIGNAL_GITHUB_URL } from "@/lib/site";
 
 const techSpecs = [
   { 
@@ -110,10 +110,16 @@ export function DevelopersSection() {
               TrustSignal exposes a straightforward API surface for
               verification, receipt retrieval, status checks, and lifecycle
               actions. This section is the transition point from buyer-facing
-              messaging to technical materials.
+              messaging to technical materials and the central account flow.
             </p>
 
             <div className="mb-10 grid gap-3 text-sm">
+              <Link href={ACCOUNT_LINKS.getApiKey} className="border border-foreground/10 bg-foreground/[0.02] px-4 py-3 hover:border-foreground/20">
+                Get Your API Key
+              </Link>
+              <Link href={ACCOUNT_LINKS.signUp} className="border border-foreground/10 bg-foreground/[0.02] px-4 py-3 hover:border-foreground/20">
+                Create Developer Account
+              </Link>
               <Link href="/docs/api" className="border border-foreground/10 bg-foreground/[0.02] px-4 py-3 hover:border-foreground/20">
                 API Overview
               </Link>

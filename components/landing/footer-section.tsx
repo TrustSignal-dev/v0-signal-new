@@ -5,6 +5,7 @@ import { usePathname } from "next/navigation";
 import { ArrowUpRight } from "lucide-react";
 import { AnimatedWave } from "./animated-wave";
 import {
+  ACCOUNT_LINKS,
   CONTACT_EMAIL,
   TRUSTSIGNAL_GITHUB_URL,
   PRIMARY_NAV_LINKS,
@@ -14,6 +15,9 @@ import {
 const footerLinks = {
   Product: PRIMARY_NAV_LINKS,
   Developers: [
+    { name: "Get Your API Key", href: ACCOUNT_LINKS.getApiKey },
+    { name: "Sign Up", href: ACCOUNT_LINKS.signUp },
+    { name: "Sign In", href: ACCOUNT_LINKS.signIn },
     { name: "Documentation", href: "/docs" },
     { name: "GitHub", href: TRUSTSIGNAL_GITHUB_URL, external: true },
     { name: "Security Overview", href: "/security" },
@@ -65,8 +69,8 @@ export function FooterSection() {
               <p className="text-muted-foreground leading-relaxed mb-8 max-w-xs">
                 TrustSignal evidence integrity infrastructure issues signed
                 verification receipts for compliance artifacts and supports
-                later verification without replacing the workflow that
-                collected them.
+                later verification without replacing the workflow that collected
+                them.
               </p>
 
               {/* Social Links */}
@@ -127,7 +131,7 @@ export function FooterSection() {
           <div className="flex items-center gap-4 text-sm text-muted-foreground">
             <span className="flex items-center gap-2">
               <span className="w-2 h-2 rounded-full bg-foreground/35" />
-              Documentation, security materials, and pilot intake are available for evaluation.
+              Documentation, account access, and pilot intake are available from the public TrustSignal surface.
             </span>
           </div>
         </div>

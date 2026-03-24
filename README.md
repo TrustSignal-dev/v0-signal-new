@@ -11,6 +11,22 @@ TrustSignal issues signed verification receipts so organizations can prove when 
 
 → **[trustsignal.dev](https://trustsignal.dev)** · **[Documentation](https://trustsignal.dev/docs)** · **[Request a Pilot](https://trustsignal.dev/#pilot-request)**
 
+## Developer Access
+
+The public website is the discovery layer. Account creation, sign-in, and API
+key management should live in the central TrustSignal app so every TrustSignal
+service validates against one source of truth.
+
+- Public site entry points:
+  - `/sign-up`
+  - `/sign-in`
+  - `/get-your-api-key`
+- Central app destination:
+  - `NEXT_PUBLIC_TRUSTSIGNAL_APP_URL` defaults to `https://app.trustsignal.dev`
+
+This keeps API key issuance out of the marketing/docs repo while still giving
+developers a clear path into the authenticated product surface.
+
 ---
 
 ## The Problem

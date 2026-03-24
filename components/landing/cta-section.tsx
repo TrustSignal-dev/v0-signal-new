@@ -1,9 +1,11 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
+import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { ArrowRight, Shield } from "lucide-react";
 import { AnimatedTetrahedron } from "./animated-tetrahedron";
+import { ACCOUNT_LINKS } from "@/lib/site";
 
 export function CtaSection() {
   const [isVisible, setIsVisible] = useState(false);
@@ -63,9 +65,9 @@ export function CtaSection() {
                 </h2>
 
                 <p className="text-xl text-muted-foreground mb-12 leading-relaxed max-w-xl">
-                  Start with a lightweight pilot and connect TrustSignal to your
-                  existing compliance workflow with a low-friction integration
-                  path.
+                  Start with a lightweight pilot, or route developers directly
+                  into the TrustSignal app to create an account and get the API
+                  key they need for production integration.
                 </p>
 
                 <div className="flex flex-col sm:flex-row items-start gap-4">
@@ -85,12 +87,12 @@ export function CtaSection() {
                     variant="outline"
                     className="h-14 px-8 text-base rounded-full border-foreground/20 hover:bg-foreground/5"
                   >
-                    <a href="#pilot-request">Align on Integration</a>
+                    <Link href={ACCOUNT_LINKS.getApiKey}>Get your API key</Link>
                   </Button>
                 </div>
 
                 <p className="text-sm text-muted-foreground mt-8 font-mono">
-                  Low-friction onboarding for pilot teams
+                  Pilot onboarding and self-serve developer access can now coexist
                 </p>
               </div>
 

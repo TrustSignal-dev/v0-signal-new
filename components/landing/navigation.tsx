@@ -5,7 +5,11 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { ChevronDown, Menu, X } from "lucide-react";
-import { DEVELOPER_DOC_LINKS, PRIMARY_NAV_LINKS } from "@/lib/site";
+import {
+  ACCOUNT_LINKS,
+  DEVELOPER_DOC_LINKS,
+  PRIMARY_NAV_LINKS,
+} from "@/lib/site";
 
 export function Navigation() {
   const [isScrolled, setIsScrolled] = useState(false);
@@ -163,6 +167,20 @@ export function Navigation() {
 
           {/* Desktop CTA */}
           <div className="hidden md:flex items-center gap-4">
+            <Link
+              href={ACCOUNT_LINKS.signIn}
+              className="text-sm text-foreground/70 transition-colors duration-300 hover:text-foreground"
+            >
+              Sign in
+            </Link>
+            <Button
+              asChild
+              size="sm"
+              variant="outline"
+              className={`rounded-full border-foreground/15 transition-all duration-500 ${isScrolled ? "px-4 h-8 text-xs" : "px-5"}`}
+            >
+              <Link href={ACCOUNT_LINKS.getApiKey}>Get API key</Link>
+            </Button>
             <Button
               asChild
               size="sm"
@@ -255,6 +273,14 @@ export function Navigation() {
           }`}
           style={{ transitionDelay: isMobileMenuOpen ? "300ms" : "0ms" }}
           >
+            <Button
+              asChild
+              variant="outline"
+              className="flex-1 rounded-full h-14 text-base border-foreground/15"
+              onClick={() => setIsMobileMenuOpen(false)}
+            >
+              <Link href={ACCOUNT_LINKS.getApiKey}>Get API key</Link>
+            </Button>
             <Button 
               asChild
               className="flex-1 bg-foreground text-background rounded-full h-14 text-base"
