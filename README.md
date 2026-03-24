@@ -27,6 +27,23 @@ service validates against one source of truth.
 This keeps API key issuance out of the marketing/docs repo while still giving
 developers a clear path into the authenticated product surface.
 
+## Supabase
+
+The repo now includes a Supabase CLI scaffold and a TrustSignal-specific
+security runbook for table classification, RLS defaults, and client exposure.
+
+- Runbook: `docs/supabase-security-runbook.md`
+- Starter schema: `supabase/schemas/001_trustsignal_base.sql`
+- CLI config: `supabase/config.toml`
+
+The starter schema treats:
+
+- `profiles` as client-scoped
+- `api_keys` as client-scoped but backend-managed
+- `verification_log` as backend-only
+
+Do not expose new tables to clients until the ownership model is explicit in the schema.
+
 ---
 
 ## The Problem

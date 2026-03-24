@@ -1,0 +1,2 @@
+-- Intentionally empty.
+-- TrustSignal seed data should be added only when the local data model is stable.
