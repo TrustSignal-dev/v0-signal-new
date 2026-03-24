@@ -22,10 +22,7 @@ export default function SignInPage() {
       eyebrow="TrustSignal account access"
       title="Sign in to manage your TrustSignal keys."
       description="The public site routes developers into the central TrustSignal app, where account access, key rotation, and usage review live."
-      primaryHref={buildTrustSignalAppUrl(
-        "/sign-in",
-        getDeveloperAccessFallback("TrustSignal sign-in access"),
-      )}
+      primaryHref={buildTrustSignalAppUrl("/sign-in", getDeveloperAccessFallback())}
       primaryLabel={HAS_TRUSTSIGNAL_APP ? "Sign in" : "Request sign-in access"}
       secondaryHref={ACCOUNT_LINKS.getApiKey}
       secondaryLabel="Need an API key?"
@@ -40,7 +37,7 @@ export default function SignInPage() {
           <p>
             {HAS_TRUSTSIGNAL_APP
               ? "The public website should not become a second source of truth for API credentials."
-              : "Until the app is deployed, the public site should route access requests somewhere that does not 404."}
+              : "Until the app is deployed, the public site should route access requests into the on-site form instead of a dead or local-mail link."}
           </p>
         </>
       }

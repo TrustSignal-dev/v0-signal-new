@@ -22,10 +22,7 @@ export default function SignUpPage() {
       eyebrow="TrustSignal account setup"
       title="Create your TrustSignal developer account."
       description="Use the central TrustSignal app to create an account, verify your email, and manage the API keys used by TrustSignal services."
-      primaryHref={buildTrustSignalAppUrl(
-        "/sign-up",
-        getDeveloperAccessFallback("TrustSignal developer access"),
-      )}
+      primaryHref={buildTrustSignalAppUrl("/sign-up", getDeveloperAccessFallback())}
       primaryLabel={HAS_TRUSTSIGNAL_APP ? "Create account" : "Request developer access"}
       secondaryHref={ACCOUNT_LINKS.signIn}
       secondaryLabel="Already have an account?"
@@ -40,7 +37,7 @@ export default function SignUpPage() {
           <p>
             {HAS_TRUSTSIGNAL_APP
               ? "The authenticated app owns signup, sign-in, and API key issuance for the TrustSignal platform."
-              : "The dedicated app is not deployed yet, so this route currently falls back to direct developer-access contact."}
+              : "The dedicated app is not deployed yet, so this route currently falls back to the on-site access request form."}
           </p>
         </>
       }

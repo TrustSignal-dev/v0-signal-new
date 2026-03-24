@@ -22,10 +22,7 @@ export default function GetYourApiKeyPage() {
       eyebrow="TrustSignal developer access"
       title="Get your API key through the TrustSignal app."
       description="TrustSignal API keys are issued in one central account system and then used by the TrustSignal API, TrustSignal Verify Artifact, and related application surfaces."
-      primaryHref={buildTrustSignalAppUrl(
-        "/settings/api-keys",
-        getDeveloperAccessFallback("TrustSignal API key access"),
-      )}
+      primaryHref={buildTrustSignalAppUrl("/settings/api-keys", getDeveloperAccessFallback())}
       primaryLabel={HAS_TRUSTSIGNAL_APP ? "Open API key dashboard" : "Request API access"}
       secondaryHref={ACCOUNT_LINKS.signUp}
       secondaryLabel="Need an account first?"
@@ -40,7 +37,7 @@ export default function GetYourApiKeyPage() {
           <p>
             {HAS_TRUSTSIGNAL_APP
               ? "Validation belongs in the API repos; this website is the discovery and routing surface."
-              : "The app domain is not active yet, so the site now falls back to direct API-access contact instead of a dead link."}
+              : "The app domain is not active yet, so the site now falls back to the TrustSignal access request form instead of a dead link."}
           </p>
         </>
       }

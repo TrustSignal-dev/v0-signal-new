@@ -59,8 +59,8 @@ export const ACCOUNT_LINKS = {
   getApiKey: "/get-your-api-key",
 } as const;
 
-export function getDeveloperAccessFallback(subject: string) {
-  return `mailto:${CONTACT_EMAIL}?subject=${encodeURIComponent(subject)}`;
+export function getDeveloperAccessFallback() {
+  return "/#pilot-request";
 }
 
 export function buildTrustSignalAppUrl(path = "/", fallback?: string) {
