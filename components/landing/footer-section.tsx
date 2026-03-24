@@ -38,6 +38,7 @@ const footerLinks = {
 
 const socialLinks = [
   { name: "GitHub", href: TRUSTSIGNAL_GITHUB_URL, external: true },
+  { name: "Reddit", href: "https://www.reddit.com/r/trustsignal/", external: true },
   { name: "Email", href: `mailto:${CONTACT_EMAIL}`, external: true },
 ];
 
