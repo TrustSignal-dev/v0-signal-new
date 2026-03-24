@@ -12,6 +12,20 @@ type Submission = {
   phone: string;
 };
 
+type DeveloperAccessSubmission = {
+  pathname: string;
+  submittedAt: string;
+  accessMethod: "github" | "email";
+  fullName: string;
+  company: string;
+  role: string;
+  email: string;
+  phone?: string;
+  githubUsername?: string;
+  githubProfileUrl?: string;
+  useCase: string;
+};
+
 export const dynamic = "force-dynamic";
 export const metadata: Metadata = createPageMetadata({
   title: "Private Review Access",
@@ -70,13 +84,18 @@ export default async function ReviewPage({
     );
   }
 
-  const response = await list({ prefix: "pilot-requests/" });
-  const blobs = [...response.blobs].sort((a, b) =>
+  const pilotResponse = await list({ prefix: "pilot-requests/" });
+  const pilotBlobs = [...pilotResponse.blobs].sort((a, b) =>
+    b.pathname.localeCompare(a.pathname),
+  );
+
+  const accessResponse = await list({ prefix: "developer-access-requests/" });
+  const accessBlobs = [...accessResponse.blobs].sort((a, b) =>
     b.pathname.localeCompare(a.pathname),
   );
 
   const submissions = await Promise.all(
-    blobs.slice(0, 50).map(async (blob) => {
+    pilotBlobs.slice(0, 50).map(async (blob) => {
       const result = await get(blob.pathname, { access: "private" });
 
       if (!result || result.statusCode !== 200 || !result.stream) {
@@ -95,6 +114,28 @@ export default async function ReviewPage({
 
   const visibleSubmissions = submissions.filter(
     (submission): submission is Submission => submission !== null,
+  );
+
+  const developerAccessSubmissions = await Promise.all(
+    accessBlobs.slice(0, 50).map(async (blob) => {
+      const result = await get(blob.pathname, { access: "private" });
+
+      if (!result || result.statusCode !== 200 || !result.stream) {
+        return null;
+      }
+
+      const text = await new Response(result.stream).text();
+      const parsed = JSON.parse(text) as Omit<DeveloperAccessSubmission, "pathname">;
+
+      return {
+        pathname: blob.pathname,
+        ...parsed,
+      } satisfies DeveloperAccessSubmission;
+    }),
+  );
+
+  const visibleDeveloperAccessSubmissions = developerAccessSubmissions.filter(
+    (submission): submission is DeveloperAccessSubmission => submission !== null,
   );
 
   return (
@@ -116,6 +157,78 @@ export default async function ReviewPage({
           Lock dashboard
         </a>
       </div>
+
+      <section className="mb-14">
+        <div className="mb-6">
+          <p className="mb-3 font-mono text-sm uppercase tracking-[0.18em] text-muted-foreground">
+            Developer Access
+          </p>
+          <h2 className="text-3xl font-display tracking-tight">Developer access requests</h2>
+          <p className="mt-3 text-base text-muted-foreground">
+            Recent requests submitted through the API access signup flow.
+          </p>
+        </div>
+
+        {visibleDeveloperAccessSubmissions.length === 0 ? (
+          <div className="border border-dashed border-foreground/15 p-10 text-muted-foreground">
+            No developer access requests have been stored yet.
+          </div>
+        ) : (
+          <div className="space-y-5">
+            {visibleDeveloperAccessSubmissions.map((submission) => (
+              <article
+                key={submission.pathname}
+                className="grid gap-6 border border-foreground/10 bg-background p-6 lg:grid-cols-[1.2fr_0.8fr]"
+              >
+                <div className="space-y-3">
+                  <p className="font-mono text-xs uppercase tracking-[0.18em] text-muted-foreground">
+                    {formatDate(submission.submittedAt)}
+                  </p>
+                  <h3 className="text-2xl font-display tracking-tight">
+                    {submission.fullName}
+                  </h3>
+                  <div className="space-y-1 text-sm text-muted-foreground">
+                    <p><strong className="text-foreground">Company:</strong> {submission.company}</p>
+                    <p><strong className="text-foreground">Role:</strong> {submission.role}</p>
+                    <p><strong className="text-foreground">Email:</strong> {submission.email}</p>
+                    <p><strong className="text-foreground">Method:</strong> {submission.accessMethod}</p>
+                    {submission.githubUsername ? (
+                      <p><strong className="text-foreground">GitHub:</strong> {submission.githubUsername}</p>
+                    ) : null}
+                  </div>
+                </div>
+                <div className="space-y-3 text-sm text-muted-foreground">
+                  {submission.phone ? (
+                    <p><strong className="text-foreground">Phone:</strong> {submission.phone}</p>
+                  ) : null}
+                  {submission.githubProfileUrl ? (
+                    <p className="break-all">
+                      <strong className="text-foreground">Profile:</strong> {submission.githubProfileUrl}
+                    </p>
+                  ) : null}
+                  <p>
+                    <strong className="text-foreground">Use case:</strong> {submission.useCase}
+                  </p>
+                  <p className="break-all">
+                    <strong className="text-foreground">Submission ID:</strong> {submission.pathname}
+                  </p>
+                </div>
+              </article>
+            ))}
+          </div>
+        )}
+      </section>
+
+      <section>
+        <div className="mb-6">
+          <p className="mb-3 font-mono text-sm uppercase tracking-[0.18em] text-muted-foreground">
+            Pilot Requests
+          </p>
+          <h2 className="text-3xl font-display tracking-tight">Pilot request submissions</h2>
+          <p className="mt-3 text-base text-muted-foreground">
+            Recent pilot and integration requests submitted through the public site.
+          </p>
+        </div>
 
       {visibleSubmissions.length === 0 ? (
         <div className="border border-dashed border-foreground/15 p-10 text-muted-foreground">
@@ -153,6 +266,7 @@ export default async function ReviewPage({
           ))}
         </div>
       )}
+      </section>
     </main>
   );
 }

@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { AccountAccessPage } from "@/components/account-access-page";
+import { DeveloperAccessRequestForm } from "@/components/developer-access-request-form";
 import { createPageMetadata } from "@/lib/seo";
 import {
   ACCOUNT_LINKS,
@@ -17,6 +18,10 @@ export const metadata: Metadata = createPageMetadata({
 });
 
 export default function SignUpPage() {
+  if (!HAS_TRUSTSIGNAL_APP) {
+    return <DeveloperAccessRequestForm />;
+  }
+
   return (
     <AccountAccessPage
       eyebrow="TrustSignal account setup"

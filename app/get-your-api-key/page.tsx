@@ -17,15 +17,19 @@ export const metadata: Metadata = createPageMetadata({
 });
 
 export default function GetYourApiKeyPage() {
+  const fallbackHref = HAS_TRUSTSIGNAL_APP
+    ? buildTrustSignalAppUrl("/settings/api-keys", ACCOUNT_LINKS.signUp)
+    : ACCOUNT_LINKS.signUp;
+
   return (
     <AccountAccessPage
       eyebrow="TrustSignal developer access"
       title="Get your API key through the TrustSignal app."
       description="TrustSignal API keys are issued in one central account system and then used by the TrustSignal API, TrustSignal Verify Artifact, and related application surfaces."
-      primaryHref={buildTrustSignalAppUrl("/settings/api-keys", getDeveloperAccessFallback())}
-      primaryLabel={HAS_TRUSTSIGNAL_APP ? "Open API key dashboard" : "Request API access"}
+      primaryHref={fallbackHref}
+      primaryLabel={HAS_TRUSTSIGNAL_APP ? "Open API key dashboard" : "Sign up for access"}
       secondaryHref={ACCOUNT_LINKS.signUp}
-      secondaryLabel="Need an account first?"
+      secondaryLabel={HAS_TRUSTSIGNAL_APP ? "Need an account first?" : "Developer signup details"}
       steps={[
         "Create or sign in to your TrustSignal account.",
         "Open the API key dashboard in the TrustSignal app.",
@@ -37,7 +41,7 @@ export default function GetYourApiKeyPage() {
           <p>
             {HAS_TRUSTSIGNAL_APP
               ? "Validation belongs in the API repos; this website is the discovery and routing surface."
-              : "The app domain is not active yet, so the site now falls back to the TrustSignal access request form instead of a dead link."}
+              : "The app domain is not active yet, so TrustSignal now routes API access requests into a dedicated on-site signup flow."}
           </p>
         </>
       }
