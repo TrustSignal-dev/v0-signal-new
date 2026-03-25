@@ -2,18 +2,4 @@
 
 ## Public Copy Change Gate
 
-Changes to homepage or README copy are only allowed when they improve at least
-one of the following:
-
-- integration clarity
-- evaluator trust
-- adoption friction
-
-Copy changes that do not improve one of these areas should not be made.
-
-Public-facing copy must also preserve:
-
-- buyer-first framing before technical depth
-- claims-boundary compliance
-- realistic integration language
-- no proprietary engine detail leakage
+Public-facing copy may only be changed where it improves integration clarity, evaluator trust, or reduces adoption friction. Public copy must preserve buyer-first framing, respect the claims boundary, avoid leaking private engine details, and use realistic integration language. Changes that do not meet these criteria should not be merged into public site repositories.
