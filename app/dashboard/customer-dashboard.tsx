@@ -36,6 +36,7 @@ export function CustomerDashboard({ user }: { user: { id: string; email: string 
     });
   }
 
+
   function handleCreateKey(formData: FormData) {
     const name = (formData.get('keyName') as string)?.trim();
     if (!name) return;
@@ -125,6 +126,7 @@ export function CustomerDashboard({ user }: { user: { id: string; email: string 
           <p className="text-sm text-slate-400">Load your usage stats above.</p>
         )}
       </section>
+
 
       {error ? (
         <div className="rounded-2xl border border-red-200 bg-red-50 p-4 text-sm text-red-700">
