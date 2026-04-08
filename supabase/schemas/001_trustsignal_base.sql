@@ -31,10 +31,15 @@ create table if not exists public.customers (
   user_id uuid not null unique references public.profiles(id) on delete cascade,
   company_name text,
   plan text not null default 'free',
+  stripe_customer_id text unique,
   created_at timestamptz not null default timezone('utc', now()),
   updated_at timestamptz not null default timezone('utc', now()),
   constraint customers_plan_values check (plan in ('free', 'pro', 'enterprise'))
 );
+
+create index if not exists customers_stripe_customer_id_idx
+  on public.customers (stripe_customer_id)
+  where stripe_customer_id is not null;
 
 comment on table public.customers is
   'Backend-only system data. RLS enabled. No client policies by default. Use server-side endpoints.';
