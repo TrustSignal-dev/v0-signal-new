@@ -24,10 +24,26 @@ create table if not exists public.profiles (
 comment on table public.profiles is
   'Client-scoped data. RLS enabled. Client policies may use id = auth.uid().';
 
+-- Customers store company/plan metadata linked to the auth user.
+-- Backend-only by default; expose via RPC or server-side endpoints.
+create table if not exists public.customers (
+  id uuid primary key default gen_random_uuid(),
+  user_id uuid not null unique references public.profiles(id) on delete cascade,
+  company_name text,
+  plan text not null default 'free',
+  created_at timestamptz not null default timezone('utc', now()),
+  updated_at timestamptz not null default timezone('utc', now()),
+  constraint customers_plan_values check (plan in ('free', 'pro', 'enterprise'))
+);
+
+comment on table public.customers is
+  'Backend-only system data. RLS enabled. No client policies by default. Use server-side endpoints.';
+
 -- API keys are client-scoped, but secret material must remain server-managed.
 create table if not exists public.api_keys (
   id uuid primary key default gen_random_uuid(),
   user_id uuid not null references public.profiles(id) on delete cascade,
+  customer_id uuid references public.customers(id) on delete set null,
   name text not null,
   key_prefix text not null,
   key_hash text not null,
@@ -82,13 +98,18 @@ create index if not exists verification_log_user_id_idx
 create index if not exists verification_log_created_at_idx
   on public.verification_log (created_at desc);
 
+create index if not exists api_keys_customer_id_idx
+  on public.api_keys (customer_id);
+
 alter table public.profiles enable row level security;
 alter table public.api_keys enable row level security;
 alter table public.verification_log enable row level security;
+alter table public.customers enable row level security;
 
 alter table public.profiles force row level security;
 alter table public.api_keys force row level security;
 alter table public.verification_log force row level security;
+alter table public.customers force row level security;
 
 -- Profiles: narrow client access is acceptable because ownership is explicit.
 drop policy if exists "profiles_select_own" on public.profiles;
@@ -171,6 +192,56 @@ create trigger set_api_keys_updated_at
 before update on public.api_keys
 for each row
 execute function public.set_updated_at();
+
+drop trigger if exists set_customers_updated_at on public.customers;
+create trigger set_customers_updated_at
+before update on public.customers
+for each row
+execute function public.set_updated_at();
+
+-- Auto-create a profile row when a new auth.users entry is created (OAuth signup).
+create or replace function public.handle_new_user()
+returns trigger
+language plpgsql
+security definer set search_path = public
+as $$
+begin
+  insert into public.profiles (id, email, full_name)
+  values (
+    new.id,
+    new.email,
+    coalesce(new.raw_user_meta_data->>'full_name', new.raw_user_meta_data->>'name', '')
+  )
+  on conflict (id) do nothing;
+  return new;
+end;
+$$;
+
+drop trigger if exists on_auth_user_created on auth.users;
+create trigger on_auth_user_created
+after insert on auth.users
+for each row
+execute function public.handle_new_user();
+
+-- Auto-create a customers row when a profile is inserted (OAuth signup).
+create or replace function public.handle_new_customer()
+returns trigger
+language plpgsql
+security definer set search_path = public
+as $$
+begin
+  insert into public.customers (user_id)
+  values (new.id)
+  on conflict (user_id) do nothing;
+  return new;
+end;
+$$;
+
+drop trigger if exists on_profile_created_create_customer on public.profiles;
+create trigger on_profile_created_create_customer
+after insert on public.profiles
+for each row
+execute function public.handle_new_customer();
 
 -- Example conversion pattern for locked tables:
 --
