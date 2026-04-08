@@ -33,6 +33,7 @@ create table if not exists public.api_keys (
   key_hash text not null,
   scopes text[] not null default '{}',
   last_used_at timestamptz,
+  expires_at timestamptz,
   revoked_at timestamptz,
   created_at timestamptz not null default timezone('utc', now()),
   updated_at timestamptz not null default timezone('utc', now()),
