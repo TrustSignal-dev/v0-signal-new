@@ -229,8 +229,6 @@ export function AdminConsole({
           {receiptLookup ? (
             <div className="mt-5 rounded-2xl bg-slate-50 p-4 text-sm text-slate-700">
               <div>Status: {receiptLookup.status ?? "unknown"}</div>
-              <div>Decision: {receiptLookup.decision ?? "unknown"}</div>
-              <div>Revoked: {String(receiptLookup.revoked ?? false)}</div>
               <div>Anchor: {receiptLookup.anchor?.status ?? "unknown"}</div>
               <div>Created: {receiptLookup.receipt?.createdAt ?? "unknown"}</div>
             </div>
