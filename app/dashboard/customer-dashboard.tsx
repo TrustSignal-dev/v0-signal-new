@@ -1,10 +1,12 @@
 'use client';
 
 import { useState, useTransition } from 'react';
-import { createApiKey, listApiKeys, revokeApiKey, type CustomerApiKey } from '@/lib/customer-data';
+import { createApiKey, getUsage, listApiKeys, revokeApiKey, type CustomerApiKey, type UsageStat } from '@/lib/customer-data';
 
 export function CustomerDashboard({ user }: { user: { id: string; email: string } }) {
   const [keys, setKeys] = useState<CustomerApiKey[]>([]);
+  const [usage, setUsage] = useState<UsageStat | null>(null);
+  const [usageError, setUsageError] = useState<string | null>(null);
   const [newKeySecret, setNewKeySecret] = useState<string | null>(null);
   const [keyName, setKeyName] = useState('');
   const [error, setError] = useState<string | null>(null);
@@ -19,6 +21,17 @@ export function CustomerDashboard({ user }: { user: { id: string; email: string 
       } else {
         setKeys(result.keys);
         setLoaded(true);
+      }
+    });
+  }
+
+  function handleLoadUsage() {
+    startTransition(async () => {
+      const result = await getUsage();
+      if ('error' in result) {
+        setUsageError(result.error);
+      } else {
+        setUsage(result);
       }
     });
   }
@@ -65,6 +78,53 @@ export function CustomerDashboard({ user }: { user: { id: string; email: string 
           </button>
         </form>
       </header>
+
+      {/* Usage widget */}
+      <section className="rounded-[28px] border border-slate-200 bg-white p-6 shadow-sm">
+        <div className="flex items-center justify-between mb-4">
+          <div>
+            <h2 className="text-base font-semibold">Monthly usage</h2>
+            {usage ? (
+              <p className="text-xs text-slate-500 mt-0.5 capitalize">{usage.plan} plan · resets {usage.resetAt ? new Date(usage.resetAt).toLocaleDateString() : '—'}</p>
+            ) : null}
+          </div>
+          <button
+            type="button"
+            onClick={handleLoadUsage}
+            disabled={isPending}
+            className="rounded-full border border-slate-200 px-4 py-2 text-sm text-slate-700 hover:bg-slate-50"
+          >
+            {usage ? 'Refresh' : 'Load usage'}
+          </button>
+        </div>
+        {usageError ? (
+          <p className="text-sm text-red-600">{usageError}</p>
+        ) : usage ? (
+          <div>
+            <div className="flex items-end gap-2">
+              <span className="text-3xl font-semibold text-slate-900">{usage.used.toLocaleString()}</span>
+              <span className="text-sm text-slate-500 mb-1">
+                {usage.limit !== null ? `/ ${usage.limit.toLocaleString()} verifications` : 'verifications (unlimited)'}
+              </span>
+            </div>
+            {usage.limit !== null ? (
+              <div className="mt-3">
+                <div className="h-2 rounded-full bg-slate-100 overflow-hidden">
+                  <div
+                    className="h-full rounded-full bg-[#114d3f] transition-all"
+                    style={{ width: `${Math.min(100, (usage.used / usage.limit) * 100).toFixed(1)}%` }}
+                  />
+                </div>
+                <p className="text-xs text-slate-400 mt-1">
+                  {usage.remaining !== null ? `${usage.remaining.toLocaleString()} remaining this month` : ''}
+                </p>
+              </div>
+            ) : null}
+          </div>
+        ) : (
+          <p className="text-sm text-slate-400">Load your usage stats above.</p>
+        )}
+      </section>
 
       {error ? (
         <div className="rounded-2xl border border-red-200 bg-red-50 p-4 text-sm text-red-700">

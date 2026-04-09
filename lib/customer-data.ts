@@ -109,6 +109,48 @@ export async function createApiKey(name: string): Promise<ApiResult<{ id: string
   }
 }
 
+export type UsageStat = {
+  plan: string;
+  used: number;
+  limit: number | null;
+  remaining: number | null;
+  resetAt: string | null;
+};
+
+/**
+ * Get the current month's verification usage for the authenticated customer.
+ * Calls GET /api/v1/usage on the TrustSignal API using the first active read-scoped key.
+ *
+ * Falls back gracefully when TRUSTSIGNAL_API_BASE_URL is not configured.
+ */
+export async function getUsage(): Promise<ApiResult<UsageStat>> {
+  try {
+    const baseUrl = process.env.TRUSTSIGNAL_API_BASE_URL?.trim();
+    if (!baseUrl) {
+      return { error: 'TRUSTSIGNAL_API_BASE_URL is not configured' };
+    }
+
+    // Use the service-level API key configured for the dashboard (internal read key)
+    const apiKey = process.env.TRUSTSIGNAL_DASHBOARD_API_KEY?.trim();
+    if (!apiKey) {
+      return { error: 'TRUSTSIGNAL_DASHBOARD_API_KEY is not configured' };
+    }
+
+    const res = await fetch(`${baseUrl}/api/v1/usage`, {
+      headers: { 'x-api-key': apiKey },
+      cache: 'no-store'
+    });
+    if (!res.ok) {
+      const text = await res.text();
+      return { error: `Usage fetch failed: ${text}` };
+    }
+    const data = await res.json() as UsageStat;
+    return data;
+  } catch (err) {
+    return { error: err instanceof Error ? err.message : 'Unknown error' };
+  }
+}
+
 /**
  * Revoke an API key — only if it belongs to the authenticated customer.
  */
