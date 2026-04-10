@@ -1,16 +1,39 @@
 import { type NextRequest, NextResponse } from 'next/server';
 import { createServerClient } from '@supabase/ssr';
 
+const SUPABASE_URL = process.env.NEXT_PUBLIC_SUPABASE_URL;
+const SUPABASE_ANON_KEY = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
+
 /**
  * Edge middleware — refresh Supabase session cookies on every request
  * and protect /dashboard routes from unauthenticated access.
  */
 export async function middleware(request: NextRequest) {
+  const pathname = request.nextUrl.pathname;
+
+  // Skip auth checks for API routes — they handle their own auth.
+  if (pathname.startsWith('/api/')) {
+    return NextResponse.next({ request });
+  }
+
+  // If Supabase isn't configured (e.g. missing env vars in a preview deployment),
+  // allow the request through rather than hard-crashing the Edge runtime.
+  if (!SUPABASE_URL || !SUPABASE_ANON_KEY) {
+    const isDashboardRoute = pathname.startsWith('/dashboard');
+    if (isDashboardRoute) {
+      const signInUrl = request.nextUrl.clone();
+      signInUrl.pathname = '/sign-in';
+      signInUrl.searchParams.set('next', pathname);
+      return NextResponse.redirect(signInUrl);
+    }
+    return NextResponse.next({ request });
+  }
+
   let supabaseResponse = NextResponse.next({ request });
 
   const supabase = createServerClient(
-    process.env.NEXT_PUBLIC_SUPABASE_URL!,
-    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
+    SUPABASE_URL,
+    SUPABASE_ANON_KEY,
     {
       cookies: {
         getAll() {
@@ -32,12 +55,10 @@ export async function middleware(request: NextRequest) {
   // Refresh session — must be called before any auth checks.
   const { data: { user } } = await supabase.auth.getUser();
 
-  const isDashboardRoute = request.nextUrl.pathname.startsWith('/dashboard');
-
-  if (isDashboardRoute && !user) {
+  if (pathname.startsWith('/dashboard') && !user) {
     const signInUrl = request.nextUrl.clone();
     signInUrl.pathname = '/sign-in';
-    signInUrl.searchParams.set('next', request.nextUrl.pathname);
+    signInUrl.searchParams.set('next', pathname);
     return NextResponse.redirect(signInUrl);
   }
 
