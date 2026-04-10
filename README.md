@@ -1,200 +1,198 @@
-# TrustSignal
+# TrustSignal — Public Website
 
 [![trustsignal.dev](https://img.shields.io/badge/trustsignal.dev-live-brightgreen)](https://trustsignal.dev)
 [![Docs](https://img.shields.io/badge/docs-available-blue)](https://trustsignal.dev/docs)
 [![Pilot](https://img.shields.io/badge/pilot-open-orange)](https://trustsignal.dev/#pilot-request)
 [![Email](https://img.shields.io/badge/contact-info%40trustsignal.dev-lightgrey)](mailto:info@trustsignal.dev)
 
-**Evidence integrity infrastructure for compliance and audit workflows.**
-
-TrustSignal issues signed verification receipts so organizations can prove when evidence was created, where it came from, and whether it has changed. It adds an integrity layer to existing workflows without replacing the system of record.
+The public-facing website, documentation hub, and developer entry point for [TrustSignal](https://trustsignal.dev) — evidence integrity infrastructure for compliance and audit workflows.
 
 → **[trustsignal.dev](https://trustsignal.dev)** · **[Documentation](https://trustsignal.dev/docs)** · **[Request a Pilot](https://trustsignal.dev/#pilot-request)**
 
+---
+
+## What This Repo Contains
+
+This is the Next.js application that powers **trustsignal.dev**, including:
+
+- **Marketing pages** — Product positioning, use cases, and pilot request flow
+- **Developer documentation** — Verification lifecycle, API reference, architecture, security model, and threat model
+- **Integration demos** — Drata and Scrut walkthrough pages
+- **Auth & dashboard** — Sign-in/sign-up via Supabase, customer dashboard, admin console
+- **API routes** — Pilot requests, feedback, developer access, partner access, Stripe checkout
+- **Admin console** — API key management, receipt inspection
+
+---
+
+## Tech Stack
+
+| Layer | Technology |
+|---|---|
+| Framework | Next.js 15 (App Router) |
+| Language | TypeScript |
+| Styling | Tailwind CSS, Radix UI |
+| Auth | Supabase Auth |
+| Payments | Stripe (checkout + webhooks) |
+| Content | MDX for documentation pages |
+
+---
+
+## Quick Start
+
+### Prerequisites
+
+- Node.js 20+
+- npm
+
+### Setup
+
+```bash
+# Install dependencies
+npm install
+
+# Configure environment
+cp .env.example .env.local
+# Edit .env.local with your Supabase, Stripe, and app credentials
+
+# Start development server
+npm run dev
+```
+
+The site runs at `http://localhost:3000`.
+
+### Environment Variables
+
+See [.env.example](.env.example) for the full list. Key variables:
+
+| Variable | Purpose |
+|---|---|
+| `NEXT_PUBLIC_SUPABASE_URL` | Supabase project URL |
+| `NEXT_PUBLIC_SUPABASE_ANON_KEY` | Supabase anonymous key |
+| `SUPABASE_SERVICE_ROLE_KEY` | Supabase service role key (server-side) |
+| `STRIPE_SECRET_KEY` | Stripe API key |
+| `STRIPE_WEBHOOK_SECRET` | Stripe webhook signing secret |
+| `NEXT_PUBLIC_TRUSTSIGNAL_APP_URL` | Central TrustSignal app URL (set only when deployed) |
+
+---
+
+## Project Structure
+
+```
+app/
+├── (root)                Landing page and global layout
+├── admin/                Admin console (key management, receipts)
+├── auth/                 Sign-in, sign-out, callback routes
+├── dashboard/            Customer dashboard
+├── docs/                 Documentation pages (MDX)
+│   ├── api/              API reference
+│   ├── architecture/     Architecture overview
+│   ├── drata-demo/       Drata integration walkthrough
+│   ├── scrut-demo/       Scrut integration walkthrough
+│   ├── security/         Security documentation
+│   ├── security-model/   Security model details
+│   ├── threat-model/     Threat model
+│   ├── verification/     Verification lifecycle
+│   └── verification-example/  Live verification example
+├── get-your-api-key/     Developer onboarding
+├── integrations/         Integration landing pages
+├── partner-access/       Partner access request
+├── pilot-request/        Pilot request form
+├── pricing/              Pricing page
+├── sign-in/              Sign-in page
+├── sign-up/              Sign-up page
+├── api/                  API routes
+│   ├── admin/            Admin endpoints (keys, receipts, session)
+│   ├── developer-access/ Developer access requests
+│   ├── feedback/         Feedback collection
+│   ├── partner-access/   Partner access requests
+│   ├── pilot-request/    Pilot request submissions
+│   └── stripe/           Checkout and webhook handlers
+components/               Shared UI components
+lib/                      Utilities and client libraries
+supabase/                 Database schema, config, security runbook
+docs/                     Additional documentation
+```
+
+---
+
 ## Developer Access
 
-The public website is the discovery layer. Account creation, sign-in, and API
-key management should live in the central TrustSignal app so every TrustSignal
-service validates against one source of truth.
+The website is the discovery layer. Account creation, sign-in, and API key management route through the central TrustSignal app:
 
-- Public site entry points:
-  - `/sign-up`
-  - `/sign-in`
-  - `/get-your-api-key`
-- Central app destination:
-  - `NEXT_PUBLIC_TRUSTSIGNAL_APP_URL` should be set only when the TrustSignal app is actually deployed
+- `/sign-up`, `/sign-in`, `/get-your-api-key` — entry points on the public site
+- API key issuance lives in the central app, not this marketing repo
 
-This keeps API key issuance out of the marketing/docs repo while still giving
-developers a clear path into the authenticated product surface.
+---
 
 ## Supabase
 
-The repo now includes a Supabase CLI scaffold and a TrustSignal-specific
-security runbook for table classification, RLS defaults, and client exposure.
+The repo includes a Supabase CLI scaffold and a security runbook:
 
-- Runbook: `docs/supabase-security-runbook.md`
-- Starter schema: `supabase/schemas/001_trustsignal_base.sql`
-- CLI config: `supabase/config.toml`
+- **Runbook:** [docs/supabase-security-runbook.md](docs/supabase-security-runbook.md)
+- **Starter schema:** [supabase/schemas/001_trustsignal_base.sql](supabase/schemas/001_trustsignal_base.sql)
+- **CLI config:** [supabase/config.toml](supabase/config.toml)
 
-The starter schema treats:
-
-- `profiles` as client-scoped
-- `api_keys` as client-scoped but backend-managed
-- `verification_log` as backend-only
-
-Do not expose new tables to clients until the ownership model is explicit in the schema.
-
----
-
-## The Problem
-
-Compliance and audit teams rely on artifacts that pass through multiple systems. Without a durable integrity reference, provenance becomes difficult to validate during later review:
-
-- Evidence files, exports, and screenshots can change after initial collection
-- Weeks or months later, reviewers cannot easily prove where an artifact came from or when it was captured
-- Audit readiness weakens without a reliable tamper-evident reference
-
----
-
-## How TrustSignal Works
-
-Submit an artifact or artifact reference -> receive a signed verification receipt -> store it with the artifact -> verify again later when trust conditions matter.
-
-```
-┌─────────────────┐    POST /api/attest-evidence    ┌──────────────────┐
-│  Your Workflow  │ ──────────────────────────────► │   TrustSignal    │
-│  (Vanta, Drata, │                                 │  Integrity Layer │
-│   internal GRC) │ ◄────────────────────────────── │                  │
-└─────────────────┘    Signed receipt + signal      └──────────────────┘
-        │
-        ▼
-  Store receipt alongside artifact in your system of record
-        │
-        ▼
-  Later verification: compare current artifact against original receipt
-```
-
-### Verification Request
-
-```json
-POST /api/attest-evidence
-Content-Type: application/json
-
-{
-  "source": "vanta",
-  "artifact_hash": "sha256:93f6f35a550cbe1c3f0b5f0c12b9f0d62f3f9c6f8c6a4eddd8fa1fbfd4654af1",
-  "control_id": "CC6.1",
-  "timestamp": "2026-03-11T21:00:00Z",
-  "metadata": {
-    "artifact_type": "compliance_evidence",
-    "collector": "aws-config-snapshot"
-  }
-}
-```
-
-### Signed Receipt Response
-
-```json
-HTTP/1.1 201 Created
-
-{
-  "receipt_id": "tsig_rcpt_01JTQY8N1Q0M4F4F5T4J4B8Y9R",
-  "status": "signed",
-  "source": "vanta",
-  "control_id": "CC6.1",
-  "attested_at": "2026-03-11T21:00:01Z",
-  "signature": "tsig_sig_01JTQY8QK6X4YF7M6T2P9A5D3H",
-  "provenance": {
-    "artifact_type": "compliance_evidence",
-    "collector": "aws-config-snapshot"
-  }
-}
-```
-
----
-
-## Integration Fit
-
-TrustSignal sits **behind** the system that collected the artifact.
-
-| Layer | What Stays in Place |
+Table classification:
+| Table | Exposure |
 |---|---|
-| Evidence collection | Your existing platform (Vanta, Drata, internal collector) |
-| System of record | Unchanged - TrustSignal adds to it, not replaces it |
-| Review workflow | Existing compliance or audit process |
-| **TrustSignal** | **Attests at ingestion. Signed receipt travels with artifact.** |
-
-No workflow replacement required. Integrates at clear API boundaries.
+| `profiles` | Client-scoped |
+| `api_keys` | Client-scoped, backend-managed |
+| `verification_log` | Backend-only |
 
 ---
 
-## Receipt Model
+## Validation
 
-```typescript
-const auditReadyReceipt = {
-  receipt_id: "tsig_rcpt_01JTQY8N1Q0M4F4F5T4J4B8Y9R",
-  source: "vanta",
-  artifact_hash: "sha256:93f6f35a550cbe1c3f0b5f0c12b9f0d62f3f9c6f8c6a4eddd8fa1fbfd4654af1",
-  control_id: "CC6.1",
-  timestamp: "2026-03-11T21:00:00Z",
-  receipt_status: "signed",
-  verification_status: "match",
-  provenance: {
-    artifact_type: "compliance_evidence",
-    collector: "aws-config-snapshot"
-  }
-}
+```bash
+npm run typecheck       # Type checking
+npm run build           # Production build
+npm run messaging:check # Messaging guardrails
 ```
 
 ---
 
-## Documentation
+## Documentation Pages
 
-| Resource | Link |
+| Page | URL |
 |---|---|
-| Developer Overview | [trustsignal.dev/docs](https://trustsignal.dev/docs) |
-| Verification Lifecycle | [trustsignal.dev/docs/verification](https://trustsignal.dev/docs/verification) |
-| API Overview | [trustsignal.dev/docs/api](https://trustsignal.dev/docs/api) |
-| Security Model | [trustsignal.dev/docs/security](https://trustsignal.dev/docs/security) |
-| Architecture | [trustsignal.dev/docs/architecture](https://trustsignal.dev/docs/architecture) |
-| Threat Model | [trustsignal.dev/docs/threat-model](https://trustsignal.dev/docs/threat-model) |
-
----
-
-## Claims Boundary
-
-**TrustSignal provides:**
-- Signed verification receipts
-- Verification signals
-- Verifiable provenance metadata
-- Later integrity check capability
-
-**TrustSignal does not provide:**
-- Legal determinations
-- Compliance certification
-- Fraud adjudication
-- Replacement for the system of record
+| Developer Overview | [/docs](https://trustsignal.dev/docs) |
+| Verification Lifecycle | [/docs/verification](https://trustsignal.dev/docs/verification) |
+| API Overview | [/docs/api](https://trustsignal.dev/docs/api) |
+| API Reference | [/docs/api/reference](https://trustsignal.dev/docs/api/reference) |
+| Security Model | [/docs/security-model](https://trustsignal.dev/docs/security-model) |
+| Threat Model | [/docs/threat-model](https://trustsignal.dev/docs/threat-model) |
+| Architecture | [/docs/architecture](https://trustsignal.dev/docs/architecture) |
 
 ---
 
 ## Security
 
-Public documentation does not expose proof internals, signing infrastructure specifics, or internal service topology.
+Public documentation does not expose proof internals, signing infrastructure, or internal service topology.
 
-For security review materials: [trustsignal.dev/security](https://trustsignal.dev/security)
-
-To report a vulnerability: [info@trustsignal.dev](mailto:info@trustsignal.dev)
+- Security review: [trustsignal.dev/security](https://trustsignal.dev/security)
+- Report a vulnerability: [info@trustsignal.dev](mailto:info@trustsignal.dev)
 
 ---
 
-## Pilot Access
+## Claims Boundary
 
-Operational access and private verification workflows are restricted to TrustSignal pilot review.
+**TrustSignal provides:** Signed verification receipts · Verification signals · Verifiable provenance metadata · Later integrity-check capability
 
-→ [Request a lightweight pilot](https://trustsignal.dev/#pilot-request)
+**TrustSignal does not provide:** Legal determinations · Compliance certification · Fraud adjudication · Replacement for the system of record
+
+---
+
+## Related Repositories
+
+| Repository | Purpose |
+|---|---|
+| [TrustSignal](https://github.com/TrustSignal-dev/TrustSignal) | Core API and verification engine |
+| [TrustSignal-App](https://github.com/TrustSignal-dev/TrustSignal-App) | GitHub App for CI verification |
+| [TrustSignal-Verify-Artifact](https://github.com/TrustSignal-dev/TrustSignal-Verify-Artifact) | GitHub Action for artifact verification |
+| [TrustSignal-docs](https://github.com/TrustSignal-dev/TrustSignal-docs) | Public documentation repo |
 
 ---
 
 ## Contact
 
-[trustsignal.dev](https://trustsignal.dev) · [info@trustsignal.dev](mailto:info@trustsignal.dev)
+[trustsignal.dev](https://trustsignal.dev) · [info@trustsignal.dev](mailto:info@trustsignal.dev) · [Request a Pilot](https://trustsignal.dev/#pilot-request)
