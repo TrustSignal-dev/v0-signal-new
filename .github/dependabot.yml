@@ -1,0 +1,26 @@
+version: 2
+updates:
+  - package-ecosystem: npm
+    directory: /
+    schedule:
+      interval: weekly
+      day: monday
+    labels:
+      - dependencies
+      - javascript
+    open-pull-requests-limit: 10
+    groups:
+      next-deps:
+        patterns:
+          - "next"
+          - "@next/*"
+      radix-deps:
+        patterns:
+          - "@radix-ui/*"
+      type-deps:
+        patterns:
+          - "@types/*"
+      minor-patch-deps:
+        update-types:
+          - minor
+          - patch
