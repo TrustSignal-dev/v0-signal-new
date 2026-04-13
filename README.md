@@ -7,6 +7,16 @@
 
 The public-facing website, documentation hub, and developer entry point for [TrustSignal](https://trustsignal.dev) — evidence integrity infrastructure for compliance and audit workflows.
 
+> Status: `canonical` `active`
+>
+> This repo is the primary public website, docs, and onboarding surface for `trustsignal.dev`.
+>
+> Public account access and API-key issuance are deployment-configured. If a separate authenticated app URL is not configured, onboarding should remain manual or pilot-gated rather than implied as self-serve.
+
+## Source of Truth
+
+Canonical repo roles and ownership are defined in [TrustSignal/docs/REPO_ROLES.md](https://github.com/TrustSignal-dev/TrustSignal/blob/master/docs/REPO_ROLES.md).
+
 → **[trustsignal.dev](https://trustsignal.dev)** · **[Documentation](https://trustsignal.dev/docs)** · **[Request a Pilot](https://trustsignal.dev/#pilot-request)**
 
 ---
@@ -18,7 +28,7 @@ This is the Next.js application that powers **trustsignal.dev**, including:
 - **Marketing pages** — Product positioning, use cases, and pilot request flow
 - **Developer documentation** — Verification lifecycle, API reference, architecture, security model, and threat model
 - **Integration demos** — Drata and Scrut walkthrough pages
-- **Auth & dashboard** — Sign-in/sign-up via Supabase, customer dashboard, admin console
+- **Auth & dashboard** — Deployment-configured Supabase auth routes, customer dashboard, and operator/admin surfaces
 - **API routes** — Pilot requests, feedback, developer access, partner access, Stripe checkout
 - **Admin console** — API key management, receipt inspection
 
@@ -71,7 +81,7 @@ See [.env.example](.env.example) for the full list. Key variables:
 | `SUPABASE_SERVICE_ROLE_KEY` | Supabase service role key (server-side) |
 | `STRIPE_SECRET_KEY` | Stripe API key |
 | `STRIPE_WEBHOOK_SECRET` | Stripe webhook signing secret |
-| `NEXT_PUBLIC_TRUSTSIGNAL_APP_URL` | Central TrustSignal app URL (set only when deployed) |
+| `NEXT_PUBLIC_TRUSTSIGNAL_APP_URL` | Optional external authenticated TrustSignal app URL. When unset, public entry pages should fall back to manual or pilot-gated access messaging. |
 
 ---
 
@@ -117,10 +127,14 @@ docs/                     Additional documentation
 
 ## Developer Access
 
-The website is the discovery layer. Account creation, sign-in, and API key management route through the central TrustSignal app:
+The website is the canonical public discovery layer. Auth and key-management behavior depends on deployment configuration:
+
+- If `NEXT_PUBLIC_TRUSTSIGNAL_APP_URL` is configured, public entry pages route into that authenticated TrustSignal surface.
+- If it is not configured, developer onboarding should remain manual or pilot-gated.
+- This repository also contains local auth and dashboard code paths, but public messaging should not imply open self-serve availability unless the deployment is actually configured for it.
 
 - `/sign-up`, `/sign-in`, `/get-your-api-key` — entry points on the public site
-- API key issuance lives in the central app, not this marketing repo
+- API key issuance is part of the authenticated TrustSignal surface, not the anonymous marketing/docs path
 
 ---
 
@@ -188,8 +202,8 @@ Public documentation does not expose proof internals, signing infrastructure, or
 |---|---|
 | [TrustSignal](https://github.com/TrustSignal-dev/TrustSignal) | Core API and verification engine |
 | [TrustSignal-App](https://github.com/TrustSignal-dev/TrustSignal-App) | GitHub App for CI verification |
-| [TrustSignal-Verify-Artifact](https://github.com/TrustSignal-dev/TrustSignal-Verify-Artifact) | GitHub Action for artifact verification |
-| [TrustSignal-docs](https://github.com/TrustSignal-dev/TrustSignal-docs) | Public documentation repo |
+| [TrustSignal GitHub Action](https://github.com/TrustSignal-dev/TrustSignal/tree/master/github-actions/trustsignal-verify-artifact) | Canonical GitHub Action source in the monorepo. Confirm the published ref before documenting a stable version alias. |
+| [TrustSignal-docs](https://github.com/TrustSignal-dev/TrustSignal-docs) | Secondary sanitized public review package, not the primary live docs source |
 
 ---
 

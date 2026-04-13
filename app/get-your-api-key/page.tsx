@@ -10,7 +10,7 @@ import {
 export const metadata: Metadata = createPageMetadata({
   title: "Get Your API Key",
   description:
-    "Get your TrustSignal API key through the central developer app and use it across TrustSignal services. More than 100 artifacts moves into paid access.",
+    "Get or request your TrustSignal API key through the configured authenticated surface. Public self-serve availability depends on deployment configuration.",
   path: "/get-your-api-key",
   keywords: ["TrustSignal API key", "developer portal", "central key management"],
 });
@@ -23,26 +23,26 @@ export default function GetYourApiKeyPage() {
   return (
     <AccountAccessPage
       eyebrow="TrustSignal developer access"
-      title="Get your API key through the TrustSignal app."
-      description="TrustSignal API keys are issued in one central account system and then used by the TrustSignal API, TrustSignal Verify Artifact, and related application surfaces. Up to 100 artifacts stays in the entry tier; anything above that moves into paid access."
+      title="Request or open your TrustSignal API access path."
+      description="TrustSignal API keys are issued through the configured authenticated surface when it is deployed. Otherwise this page should route developers into manual or pilot-gated access review. Higher-volume access should be handled through the current commercial onboarding path rather than assumed as self-serve."
       primaryHref={fallbackHref}
       primaryLabel={HAS_TRUSTSIGNAL_APP ? "Open API key dashboard" : "Sign up for access"}
       secondaryHref={ACCOUNT_LINKS.signUp}
       secondaryLabel={HAS_TRUSTSIGNAL_APP ? "Need an account first?" : "Developer signup details"}
       steps={[
-        "Create or sign in to your TrustSignal account.",
-        "Open the API key dashboard in the TrustSignal app.",
-        "Generate, copy, and store the key securely because the raw value is shown once.",
+        "Create or sign in to your TrustSignal account when the authenticated surface is deployed.",
+        "Open the API key dashboard only in that authenticated surface.",
+        "Generate, copy, and store the key securely if key issuance is enabled there.",
       ]}
       callout={
         <>
           <p>One API key system supports multiple TrustSignal properties.</p>
           <p>
             {HAS_TRUSTSIGNAL_APP
-              ? "Validation belongs in the API repos; this website is the discovery and routing surface."
+              ? "Validation belongs in the API repos; this website is the public discovery and routing surface."
               : "The app domain is not active yet, so TrustSignal now routes API access requests into a dedicated on-site signup flow."}
           </p>
-          <p>Teams expecting more than 100 artifacts should be handled as paid commercial onboarding.</p>
+          <p>Higher-volume access should be handled through commercial onboarding.</p>
         </>
       }
       icon="key"

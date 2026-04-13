@@ -4,8 +4,8 @@ import { createClient } from '@/lib/supabase/server';
 import { CustomerDashboard } from './customer-dashboard';
 
 export const metadata: Metadata = {
-  title: 'Dashboard — TrustSignal',
-  description: 'Manage your TrustSignal API keys and verification receipts.',
+  title: 'Authenticated Dashboard — TrustSignal',
+  description: 'Authenticated TrustSignal dashboard for API keys and verification receipts when the deployed access surface is enabled.',
   robots: { index: false }
 };
 

@@ -127,12 +127,14 @@ export default function ApiPage() {
           The quick evaluator flow is intentionally lighter than production deployment.
         </DocCallout>
         <p className="mt-4 max-w-3xl text-sm leading-6 text-muted-foreground sm:text-base">
-          Public docs live here, but developer account creation and API key issuance
-          are routed through the central TrustSignal app. Start at{" "}
+          Public docs live here. Developer account creation and API key issuance
+          are routed through the configured authenticated TrustSignal surface when
+          it is deployed; otherwise access should remain manual or pilot-gated.
+          Start at{" "}
           <Link href={ACCOUNT_LINKS.getApiKey} className="text-foreground underline">
             Get your API key
           </Link>{" "}
-          to move from documentation into the authenticated developer flow.
+          to move from documentation into the current access path.
         </p>
       </DocSection>
 

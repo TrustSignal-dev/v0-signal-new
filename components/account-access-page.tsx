@@ -122,7 +122,7 @@ export function AccountAccessPage({
             <CardHeader className="border-b border-foreground/10 py-8">
               <CardTitle className="text-2xl font-medium">Developer access</CardTitle>
               <CardDescription className="text-sm leading-6">
-                TrustSignal account creation and API key management happen in the central app, not on the public website.
+                Public entry points here either route into a configured authenticated TrustSignal surface or fall back to manual access review. Do not assume self-serve availability unless the deployment is configured for it.
               </CardDescription>
             </CardHeader>
             <CardContent className="space-y-6 py-8">
@@ -138,14 +138,14 @@ export function AccountAccessPage({
               <div className="rounded-3xl border border-foreground/10 p-5">
                 <p className="text-sm font-medium text-foreground">What you can expect</p>
                 <ul className="mt-4 space-y-3 text-sm leading-6 text-muted-foreground">
-                  <li>Single account system across TrustSignal products.</li>
-                  <li>One place to generate, rotate, and revoke API keys.</li>
-                  <li>API services validate keys against the central TrustSignal store.</li>
+                  <li>Public docs and marketing stay on this site.</li>
+                  <li>Authenticated access may be routed here or to a separate app URL depending on deployment configuration.</li>
+                  <li>If no authenticated route is deployed, onboarding should remain manual or pilot-gated.</li>
                 </ul>
               </div>
 
               <div className="text-xs leading-5 text-muted-foreground">
-                If the app URL changes later, update `NEXT_PUBLIC_TRUSTSIGNAL_APP_URL` in this repo and the public entry points here will keep working.
+                If the authenticated app URL changes later, update `NEXT_PUBLIC_TRUSTSIGNAL_APP_URL` in this repo. If it is unset, keep the public messaging here aligned to manual or pilot-gated access.
               </div>
             </CardContent>
           </Card>
