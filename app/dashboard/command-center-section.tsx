@@ -5,9 +5,24 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 
 type ConsistencyResult = {
   integrityVerified: boolean
-  reason: "match" | "artifact_mismatch" | "missing_hash" | "invalid_receipt"
+  reason:
+    | "match"
+    | "artifact_mismatch"
+    | "missing_hash"
+    | "invalid_receipt"
+    | "verification_failed"
+  method: "local_hash_compare" | "receipt_verify_api"
+  receiptId: string | null
   storedArtifactHash: string | null
   presentedArtifactHash: string | null
+  errorMessage: string | null
+}
+
+type ParsedReceiptInput = {
+  receiptId: string | null
+  storedHash: string | null
+  artifactReference: string | null
+  reason: "missing_hash" | "invalid_receipt" | null
 }
 
 function normalizeHash(value: string | null | undefined) {
@@ -17,18 +32,29 @@ function normalizeHash(value: string | null | undefined) {
   return trimmed.toLowerCase().startsWith("sha256:") ? trimmed.toLowerCase() : `sha256:${trimmed.toLowerCase()}`
 }
 
-function extractStoredHash(receiptInput: string) {
+function extractStoredHash(receiptInput: string): ParsedReceiptInput {
   const normalizedInput = receiptInput.trim()
   if (!normalizedInput) {
-    return { storedHash: null, reason: "missing_hash" as const }
+    return { receiptId: null, storedHash: null, artifactReference: null, reason: "missing_hash" }
   }
 
   try {
     const parsed = JSON.parse(normalizedInput) as Record<string, unknown>
+    const receiptId =
+      (typeof parsed.receipt_id === "string" && parsed.receipt_id) ||
+      (typeof parsed.receiptId === "string" && parsed.receiptId) ||
+      null
     const nestedArtifact =
       parsed.artifact && typeof parsed.artifact === "object"
         ? (parsed.artifact as Record<string, unknown>)
         : null
+
+    const artifactReference =
+      (typeof parsed.artifact_reference === "string" && parsed.artifact_reference) ||
+      (typeof parsed.artifactReference === "string" && parsed.artifactReference) ||
+      (nestedArtifact && typeof nestedArtifact.artifact_reference === "string" && nestedArtifact.artifact_reference) ||
+      (nestedArtifact && typeof nestedArtifact.artifactReference === "string" && nestedArtifact.artifactReference) ||
+      null
 
     const candidate =
       (typeof parsed.stored_artifact_hash === "string" && parsed.stored_artifact_hash) ||
@@ -38,10 +64,20 @@ function extractStoredHash(receiptInput: string) {
       (nestedArtifact && typeof nestedArtifact.artifactHash === "string" && nestedArtifact.artifactHash) ||
       null
 
-    return { storedHash: normalizeHash(candidate), reason: candidate ? null : ("missing_hash" as const) }
+    return {
+      receiptId,
+      storedHash: normalizeHash(candidate),
+      artifactReference,
+      reason: candidate ? null : "missing_hash",
+    }
   } catch {
     const directHash = normalizeHash(normalizedInput)
-    return { storedHash: directHash, reason: directHash ? null : ("invalid_receipt" as const) }
+    return {
+      receiptId: null,
+      storedHash: directHash,
+      artifactReference: null,
+      reason: directHash ? null : "invalid_receipt",
+    }
   }
 }
 
@@ -57,6 +93,7 @@ async function sha256ForFile(file: File) {
 
 export default function CommandCenterSection() {
   const [receiptInput, setReceiptInput] = useState("")
+  const [verificationApiKey, setVerificationApiKey] = useState("")
   const [selectedFileName, setSelectedFileName] = useState<string | null>(null)
   const [isCheckingConsistency, setIsCheckingConsistency] = useState(false)
   const [consistencyResult, setConsistencyResult] = useState<ConsistencyResult | null>(null)
@@ -72,24 +109,84 @@ export default function CommandCenterSection() {
     setSelectedFileName(file.name)
     setIsCheckingConsistency(true)
 
-    const { storedHash, reason } = extractStoredHash(receiptInput)
+    const parsedReceipt = extractStoredHash(receiptInput)
+    const { receiptId, storedHash, reason, artifactReference } = parsedReceipt
     if (!storedHash) {
       setConsistencyResult({
         integrityVerified: false,
         reason: reason ?? "missing_hash",
+        method: "local_hash_compare",
+        receiptId,
         storedArtifactHash: null,
         presentedArtifactHash: null,
+        errorMessage: null,
       })
       setIsCheckingConsistency(false)
       return
     }
 
     const presentedHash = await sha256ForFile(file)
+
+    if (receiptId) {
+      const response = await fetch(`/api/receipts/${encodeURIComponent(receiptId)}/verify`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          artifactHash: presentedHash,
+          artifactReference,
+          apiKey: verificationApiKey.trim() || undefined,
+        }),
+      })
+
+      const data = (await response.json().catch(() => ({}))) as Record<string, unknown>
+      if (response.ok) {
+        const integrityVerified = data.integrity_verified === true
+        const remoteStoredHash = normalizeHash(
+          typeof data.stored_artifact_hash === "string" ? data.stored_artifact_hash : null,
+        )
+        const remotePresentedHash = normalizeHash(
+          typeof data.presented_artifact_hash === "string" ? data.presented_artifact_hash : null,
+        )
+
+        setConsistencyResult({
+          integrityVerified,
+          reason: integrityVerified ? "match" : "artifact_mismatch",
+          method: "receipt_verify_api",
+          receiptId,
+          storedArtifactHash: remoteStoredHash ?? storedHash,
+          presentedArtifactHash: remotePresentedHash ?? presentedHash,
+          errorMessage: null,
+        })
+        setIsCheckingConsistency(false)
+        return
+      }
+
+      const remoteError =
+        (typeof data.error === "string" && data.error) ||
+        (typeof data.message === "string" && data.message) ||
+        "Receipt verification request failed"
+
+      setConsistencyResult({
+        integrityVerified: false,
+        reason: "verification_failed",
+        method: "receipt_verify_api",
+        receiptId,
+        storedArtifactHash: storedHash,
+        presentedArtifactHash: presentedHash,
+        errorMessage: remoteError,
+      })
+      setIsCheckingConsistency(false)
+      return
+    }
+
     setConsistencyResult({
       integrityVerified: storedHash === presentedHash,
       reason: storedHash === presentedHash ? "match" : "artifact_mismatch",
+      method: "local_hash_compare",
+      receiptId: null,
       storedArtifactHash: storedHash,
       presentedArtifactHash: presentedHash,
+      errorMessage: null,
     })
     setIsCheckingConsistency(false)
   }
@@ -259,7 +356,7 @@ export default function CommandCenterSection() {
           <CardContent className="space-y-4">
             <p className="text-sm text-neutral-400">
               Compare the current document against the receipted artifact hash before a reviewer relies on it.
-              Paste a receipt JSON blob or stored hash, then upload the current document.
+              Paste a receipt JSON blob (preferred) or stored hash, then upload the current document.
             </p>
 
             <div className="grid gap-4 lg:grid-cols-[minmax(0,1.4fr)_minmax(0,0.8fr)]">
@@ -279,6 +376,19 @@ export default function CommandCenterSection() {
               </label>
 
               <div className="space-y-4">
+                <label className="block">
+                  <span className="mb-2 block text-xs font-medium uppercase tracking-[0.22em] text-neutral-500">
+                    Verify API Key (Optional)
+                  </span>
+                  <input
+                    type="password"
+                    value={verificationApiKey}
+                    onChange={(event) => setVerificationApiKey(event.target.value)}
+                    placeholder="tsk_live_..."
+                    className="block w-full rounded border border-neutral-700 bg-neutral-800 px-3 py-3 text-sm text-white outline-none transition-colors placeholder:text-neutral-500 focus:border-orange-500"
+                  />
+                </label>
+
                 <label className="block">
                   <span className="mb-2 block text-xs font-medium uppercase tracking-[0.22em] text-neutral-500">
                     Current Document
@@ -302,6 +412,16 @@ export default function CommandCenterSection() {
                       <span className="text-sm text-white">Computing current document hash...</span>
                     ) : consistencyResult ? (
                       <div className="space-y-3">
+                        <div className="text-xs text-neutral-500 uppercase tracking-[0.2em]">
+                          {consistencyResult.method === "receipt_verify_api"
+                            ? "Checked via Receipt Verify API"
+                            : "Checked via Local Hash Comparison"}
+                        </div>
+                        {consistencyResult.receiptId && (
+                          <div className="text-xs text-neutral-400">
+                            Receipt ID: <span className="font-mono text-white">{consistencyResult.receiptId}</span>
+                          </div>
+                        )}
                         <div
                           className={`inline-flex rounded px-2 py-1 text-xs font-medium uppercase tracking-[0.22em] ${
                             consistencyResult.integrityVerified
@@ -311,6 +431,9 @@ export default function CommandCenterSection() {
                         >
                           {consistencyResult.integrityVerified ? "MATCH" : consistencyResult.reason}
                         </div>
+                        {consistencyResult.errorMessage && (
+                          <div className="text-xs text-red-400">{consistencyResult.errorMessage}</div>
+                        )}
                         <div className="space-y-2 text-xs text-neutral-400">
                           <div>
                             <div className="uppercase tracking-[0.18em] text-neutral-500">Stored Artifact Hash</div>
