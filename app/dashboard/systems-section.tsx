@@ -34,26 +34,26 @@ type SystemRecord = {
   lastMaintenance: string
 }
 
-export default function SystemsPage() {
+export default function SystemsSection() {
   const [selectedSystem, setSelectedSystem] = useState<SystemRecord | null>(null)
 
   const systems: SystemRecord[] = [
     {
       id: "SYS-001",
-      name: "COMMAND SERVER ALPHA",
-      type: "Primary Server",
+      name: "RECEIPT SIGNER CLUSTER",
+      type: "Signer",
       status: "online",
       health: 98,
       cpu: 45,
       memory: 67,
       storage: 34,
       uptime: "247 days",
-      location: "Data Center 1",
+      location: "US-East-1",
       lastMaintenance: "2025-05-15",
     },
     {
       id: "SYS-002",
-      name: "DATABASE CLUSTER BETA",
+      name: "VERIFICATION LEDGER",
       type: "Database",
       status: "online",
       health: 95,
@@ -61,12 +61,12 @@ export default function SystemsPage() {
       memory: 84,
       storage: 78,
       uptime: "189 days",
-      location: "Data Center 2",
+      location: "US-East-2",
       lastMaintenance: "2025-06-01",
     },
     {
       id: "SYS-003",
-      name: "SECURITY GATEWAY",
+      name: "POLICY ENFORCEMENT GATEWAY",
       type: "Firewall",
       status: "warning",
       health: 87,
@@ -74,12 +74,12 @@ export default function SystemsPage() {
       memory: 45,
       storage: 12,
       uptime: "156 days",
-      location: "DMZ",
+      location: "Edge",
       lastMaintenance: "2025-04-20",
     },
     {
       id: "SYS-004",
-      name: "COMMUNICATION HUB",
+      name: "PARTNER INGESTION BUS",
       type: "Network",
       status: "online",
       health: 92,
@@ -87,12 +87,12 @@ export default function SystemsPage() {
       memory: 52,
       storage: 23,
       uptime: "203 days",
-      location: "Network Core",
+      location: "Multi-region",
       lastMaintenance: "2025-05-28",
     },
     {
       id: "SYS-005",
-      name: "BACKUP STORAGE ARRAY",
+      name: "RECEIPT ARCHIVE STORAGE",
       type: "Storage",
       status: "maintenance",
       health: 76,
@@ -100,12 +100,12 @@ export default function SystemsPage() {
       memory: 28,
       storage: 89,
       uptime: "0 days",
-      location: "Backup Facility",
+      location: "Cold Archive",
       lastMaintenance: "2025-06-17",
     },
     {
       id: "SYS-006",
-      name: "ANALYTICS ENGINE",
+      name: "PROVENANCE ANALYZER",
       type: "Processing",
       status: "online",
       health: 94,
@@ -113,7 +113,7 @@ export default function SystemsPage() {
       memory: 76,
       storage: 45,
       uptime: "134 days",
-      location: "Data Center 1",
+      location: "US-Central-1",
       lastMaintenance: "2025-05-10",
     },
   ]
@@ -150,7 +150,7 @@ export default function SystemsPage() {
 
   const getSystemIcon = (type: string) => {
     switch (type) {
-      case "Primary Server":
+      case "Signer":
         return <Server className="w-6 h-6" />
       case "Database":
         return <Database className="w-6 h-6" />
@@ -264,7 +264,7 @@ export default function SystemsPage() {
             </CardHeader>
             <CardContent className="space-y-4">
               <div className="flex items-center justify-between">
-                <span className="text-xs text-neutral-400">SYSTEM HEALTH</span>
+                <span className="text-xs text-neutral-400">SERVICE HEALTH</span>
                 <span className={`text-sm font-bold font-mono ${getHealthColor(system.health)}`}>{system.health}%</span>
               </div>
               <Progress value={system.health} className="h-2" />
@@ -308,7 +308,7 @@ export default function SystemsPage() {
                   <span className="text-white font-mono">{system.uptime}</span>
                 </div>
                 <div className="flex justify-between">
-                  <span>Location:</span>
+                  <span>Region:</span>
                   <span className="text-white">{system.location}</span>
                 </div>
               </div>
@@ -343,7 +343,7 @@ export default function SystemsPage() {
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <div className="space-y-4">
                   <div>
-                    <h3 className="text-sm font-medium text-neutral-300 tracking-wider mb-2">SYSTEM STATUS</h3>
+                    <h3 className="text-sm font-medium text-neutral-300 tracking-wider mb-2">SERVICE STATUS</h3>
                     <div className="flex items-center gap-2">
                       {getStatusIcon(selectedSystem.status)}
                       <Badge className={getStatusColor(selectedSystem.status)}>
@@ -353,10 +353,10 @@ export default function SystemsPage() {
                   </div>
 
                   <div>
-                    <h3 className="text-sm font-medium text-neutral-300 tracking-wider mb-2">SYSTEM INFORMATION</h3>
+                    <h3 className="text-sm font-medium text-neutral-300 tracking-wider mb-2">SERVICE INFORMATION</h3>
                     <div className="space-y-2 text-sm">
                       <div className="flex justify-between">
-                        <span className="text-neutral-400">Location:</span>
+                        <span className="text-neutral-400">Region:</span>
                         <span className="text-white">{selectedSystem.location}</span>
                       </div>
                       <div className="flex justify-between">
@@ -425,12 +425,12 @@ export default function SystemsPage() {
               </div>
 
               <div className="flex gap-2 pt-4 border-t border-neutral-700">
-                <Button className="bg-orange-500 hover:bg-orange-600 text-white">Restart System</Button>
+                <Button className="bg-orange-500 hover:bg-orange-600 text-white">Restart Service</Button>
                 <Button
                   variant="outline"
                   className="border-neutral-700 text-neutral-400 hover:bg-neutral-800 hover:text-neutral-300 bg-transparent"
                 >
-                  View Logs
+                  View Audit Logs
                 </Button>
                 <Button
                   variant="outline"

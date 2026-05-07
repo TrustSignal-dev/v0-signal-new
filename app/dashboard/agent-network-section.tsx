@@ -16,79 +16,79 @@ type Agent = {
   risk: string
 }
 
-export default function AgentNetworkPage() {
+export default function AgentNetworkSection() {
   const [searchTerm, setSearchTerm] = useState("")
   const [selectedAgent, setSelectedAgent] = useState<Agent | null>(null)
 
   const agents: Agent[] = [
     {
-      id: "G-078W",
-      name: "VENGEFUL SPIRIT",
+      id: "ACC-104",
+      name: "Acme GRC Workspace",
       status: "active",
-      location: "Berlin",
+      location: "US-East",
       lastSeen: "2 min ago",
       missions: 47,
       risk: "high",
     },
     {
-      id: "G-079X",
-      name: "OBSIDIAN SENTINEL",
+      id: "ACC-118",
+      name: "Vanta Production Sync",
       status: "standby",
-      location: "Tokyo",
+      location: "EU-West",
       lastSeen: "15 min ago",
       missions: 32,
       risk: "medium",
     },
     {
-      id: "G-080Y",
-      name: "GHOSTLY FURY",
+      id: "ACC-146",
+      name: "Drata Control Importer",
       status: "active",
-      location: "Cairo",
+      location: "US-West",
       lastSeen: "1 min ago",
       missions: 63,
       risk: "high",
     },
     {
-      id: "G-081Z",
-      name: "CURSED REVENANT",
+      id: "ACC-203",
+      name: "HR Access Review Queue",
       status: "compromised",
-      location: "Moscow",
+      location: "EU-Central",
       lastSeen: "3 hours ago",
       missions: 28,
       risk: "critical",
     },
     {
-      id: "G-082A",
-      name: "VENOMOUS SHADE",
+      id: "ACC-217",
+      name: "GitHub Evidence Export",
       status: "active",
-      location: "London",
+      location: "Global",
       lastSeen: "5 min ago",
       missions: 41,
       risk: "medium",
     },
     {
-      id: "G-083B",
-      name: "MYSTIC ENIGMA",
+      id: "ACC-260",
+      name: "Pilot Review Sandbox",
       status: "training",
-      location: "Base Alpha",
+      location: "Sandbox",
       lastSeen: "1 day ago",
       missions: 12,
       risk: "low",
     },
     {
-      id: "G-084C",
-      name: "WRAITH AVENGER",
+      id: "ACC-311",
+      name: "Security Questionnaire Intake",
       status: "active",
-      location: "Paris",
+      location: "US-Central",
       lastSeen: "8 min ago",
       missions: 55,
       risk: "high",
     },
     {
-      id: "G-085D",
-      name: "SPECTRAL FURY",
+      id: "ACC-328",
+      name: "Audit Trail Archiver",
       status: "standby",
-      location: "Sydney",
+      location: "AP-Southeast",
       lastSeen: "22 min ago",
       missions: 38,
       risk: "medium",
@@ -171,7 +171,7 @@ export default function AgentNetworkPage() {
         </Card>
       </div>
 
-      {/* Agent List */}
+      {/* Account List */}
       <Card className="bg-neutral-900 border-neutral-700">
         <CardHeader>
           <CardTitle className="text-sm font-medium text-neutral-300 tracking-wider">ACCOUNT ROSTER</CardTitle>
@@ -259,7 +259,7 @@ export default function AgentNetworkPage() {
         </CardContent>
       </Card>
 
-      {/* Agent Detail Modal */}
+      {/* Account Detail Modal */}
       {selectedAgent && (
         <div className="fixed inset-0 bg-black/50 flex items-center justify-center p-4 z-50">
           <Card className="bg-neutral-900 border-neutral-700 w-full max-w-2xl">
@@ -296,11 +296,11 @@ export default function AgentNetworkPage() {
                   </div>
                 </div>
                 <div>
-                  <p className="text-xs text-neutral-400 tracking-wider mb-1">LOCATION</p>
+                  <p className="text-xs text-neutral-400 tracking-wider mb-1">REGION</p>
                   <p className="text-sm text-white">{selectedAgent.location}</p>
                 </div>
                 <div>
-                  <p className="text-xs text-neutral-400 tracking-wider mb-1">MISSIONS COMPLETED</p>
+                  <p className="text-xs text-neutral-400 tracking-wider mb-1">VERIFICATIONS COMPLETED</p>
                   <p className="text-sm text-white font-mono">{selectedAgent.missions}</p>
                 </div>
                 <div>
@@ -321,18 +321,18 @@ export default function AgentNetworkPage() {
                 </div>
               </div>
               <div className="flex gap-2 pt-4">
-                <Button className="bg-orange-500 hover:bg-orange-600 text-white">Assign Mission</Button>
+                <Button className="bg-orange-500 hover:bg-orange-600 text-white">Rotate Key</Button>
                 <Button
                   variant="outline"
                   className="border-neutral-700 text-neutral-400 hover:bg-neutral-800 hover:text-neutral-300 bg-transparent"
                 >
-                  View History
+                  View Receipts
                 </Button>
                 <Button
                   variant="outline"
                   className="border-neutral-700 text-neutral-400 hover:bg-neutral-800 hover:text-neutral-300 bg-transparent"
                 >
-                  Send Message
+                  Review Access
                 </Button>
               </div>
             </CardContent>

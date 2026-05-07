@@ -20,70 +20,70 @@ type IntelligenceReport = {
   tags: string[]
 }
 
-export default function IntelligencePage() {
+export default function IntelligenceSection() {
   const [searchTerm, setSearchTerm] = useState("")
   const [selectedReport, setSelectedReport] = useState<IntelligenceReport | null>(null)
 
   const reports: IntelligenceReport[] = [
     {
       id: "INT-2025-001",
-      title: "CYBERCRIME NETWORK ANALYSIS",
+      title: "ACCESS REVIEW HASH MISMATCH",
       classification: "TOP SECRET",
-      source: "SIGINT",
-      location: "Eastern Europe",
+      source: "OKTA EXPORT",
+      location: "Identity Controls",
       date: "2025-06-17",
       status: "verified",
       threat: "high",
-      summary: "Detailed analysis of emerging cybercrime syndicate operating across multiple jurisdictions",
-      tags: ["cybercrime", "international", "financial"],
+      summary: "A regenerated access review CSV no longer matches the receipted artifact captured during the original control review.",
+      tags: ["identity", "drift", "csv"],
     },
     {
       id: "INT-2025-002",
-      title: "ROGUE AGENT COMMUNICATIONS",
+      title: "VENDOR POLICY RECEIPT GAP",
       classification: "SECRET",
-      source: "HUMINT",
-      location: "Berlin",
+      source: "VANTA SYNC",
+      location: "Third-party Risk",
       date: "2025-06-16",
       status: "pending",
       threat: "critical",
-      summary: "Intercepted communications suggesting potential security breach in European operations",
-      tags: ["internal", "security", "communications"],
+      summary: "A policy upload entered review without a corresponding signed receipt and needs immediate remediation.",
+      tags: ["vendor", "receipt-gap", "policy"],
     },
     {
       id: "INT-2025-003",
-      title: "ARMS TRAFFICKING ROUTES",
+      title: "DEPLOYMENT SNAPSHOT VERIFIED",
       classification: "CONFIDENTIAL",
-      source: "OSINT",
-      location: "Middle East",
+      source: "GITHUB ACTION",
+      location: "Engineering Controls",
       date: "2025-06-15",
       status: "verified",
       threat: "medium",
-      summary: "Updated intelligence on weapons smuggling corridors through Mediterranean region",
-      tags: ["trafficking", "weapons", "maritime"],
+      summary: "Release evidence and deployment metadata matched the previously signed receipt with no observable drift.",
+      tags: ["deployment", "verified", "release"],
     },
     {
       id: "INT-2025-004",
-      title: "TERRORIST CELL SURVEILLANCE",
+      title: "ENDPOINT SCREENSHOT TAMPER ALERT",
       classification: "TOP SECRET",
-      source: "HUMINT",
-      location: "North Africa",
+      source: "MANUAL REVIEW",
+      location: "Endpoint Security",
       date: "2025-06-14",
       status: "active",
       threat: "critical",
-      summary: "Ongoing surveillance of suspected terrorist cell planning coordinated attacks",
-      tags: ["terrorism", "surveillance", "coordinated"],
+      summary: "A screenshot used for endpoint hardening evidence was modified after receipt issuance and is under investigation.",
+      tags: ["endpoint", "tamper", "screenshot"],
     },
     {
       id: "INT-2025-005",
-      title: "DIPLOMATIC INTELLIGENCE BRIEF",
+      title: "HRIS EXPORT PROVENANCE CHECK",
       classification: "SECRET",
-      source: "DIPLOMATIC",
-      location: "Asia Pacific",
+      source: "WORKDAY EXPORT",
+      location: "People Operations",
       date: "2025-06-13",
       status: "verified",
       threat: "low",
-      summary: "Political developments affecting regional security and operational considerations",
-      tags: ["diplomatic", "political", "regional"],
+      summary: "Exporter metadata, timestamps, and hash lineage align with the receipted record for the quarterly access review.",
+      tags: ["hris", "provenance", "access-review"],
     },
   ]
 
@@ -335,10 +335,10 @@ export default function IntelligencePage() {
                   </div>
 
                   <div>
-                    <h3 className="text-sm font-medium text-neutral-300 tracking-wider mb-2">THREAT ASSESSMENT</h3>
+                    <h3 className="text-sm font-medium text-neutral-300 tracking-wider mb-2">RISK ASSESSMENT</h3>
                     <div className="space-y-2">
                       <div className="flex justify-between text-sm">
-                        <span className="text-neutral-400">Threat Level</span>
+                        <span className="text-neutral-400">Risk Level</span>
                         <Badge className={getThreatColor(selectedReport.threat)}>
                           {selectedReport.threat.toUpperCase()}
                         </Badge>
@@ -362,14 +362,14 @@ export default function IntelligencePage() {
               </div>
 
               <div>
-                <h3 className="text-sm font-medium text-neutral-300 tracking-wider mb-2">EXECUTIVE SUMMARY</h3>
+                <h3 className="text-sm font-medium text-neutral-300 tracking-wider mb-2">ANALYST SUMMARY</h3>
                 <p className="text-sm text-neutral-300 leading-relaxed">{selectedReport.summary}</p>
               </div>
 
               <div className="flex gap-2 pt-4 border-t border-neutral-700">
                 <Button className="bg-orange-500 hover:bg-orange-600 text-white">
                   <Eye className="w-4 h-4 mr-2" />
-                  View Full Report
+                  View Full Analysis
                 </Button>
                 <Button
                   variant="outline"
@@ -382,7 +382,7 @@ export default function IntelligencePage() {
                   variant="outline"
                   className="border-neutral-700 text-neutral-400 hover:bg-neutral-800 hover:text-neutral-300 bg-transparent"
                 >
-                  Share Intel
+                  Share Review
                 </Button>
               </div>
             </CardContent>

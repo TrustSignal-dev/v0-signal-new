@@ -20,74 +20,74 @@ type Operation = {
   objectives: string[]
 }
 
-export default function OperationsPage() {
+export default function OperationsSection() {
   const [selectedOperation, setSelectedOperation] = useState<Operation | null>(null)
 
   const operations: Operation[] = [
     {
-      id: "OP-OMEGA-001",
-      name: "SHADOW PROTOCOL",
+      id: "RUN-2025-001",
+      name: "SOC 2 ACCESS REVIEW",
       status: "active",
       priority: "critical",
-      location: "Eastern Europe",
+      location: "Identity Controls",
       agents: 5,
       progress: 75,
       startDate: "2025-06-15",
       estimatedCompletion: "2025-06-30",
-      description: "Track high-value target in Eastern Europe",
-      objectives: ["Locate target", "Establish surveillance", "Extract intelligence"],
+      description: "Verify imported access review artifacts against signed receipts",
+      objectives: ["Collect export", "Match receipt", "Flag drift"],
     },
     {
-      id: "OP-DELTA-002",
-      name: "GHOST FIRE",
+      id: "RUN-2025-002",
+      name: "VENDOR POLICY INGESTION",
       status: "planning",
       priority: "high",
-      location: "Seoul",
+      location: "Third-party Risk",
       agents: 3,
       progress: 25,
       startDate: "2025-06-20",
       estimatedCompletion: "2025-07-05",
-      description: "Infiltrate cybercrime network in Seoul",
-      objectives: ["Penetrate network", "Gather evidence", "Identify key players"],
+      description: "Prepare a receipt-backed ingestion run for vendor policy evidence",
+      objectives: ["Normalize files", "Mint receipt", "Attach control context"],
     },
     {
-      id: "OP-SIERRA-003",
-      name: "NIGHT STALKER",
+      id: "RUN-2025-003",
+      name: "ENDPOINT HARDENING REVIEW",
       status: "completed",
       priority: "medium",
-      location: "Berlin",
+      location: "Device Security",
       agents: 2,
       progress: 100,
       startDate: "2025-05-28",
       estimatedCompletion: "2025-06-12",
-      description: "Monitor rogue agent communications in Berlin",
-      objectives: ["Intercept communications", "Decode messages", "Report findings"],
+      description: "Completed verification of endpoint hardening screenshots and exports",
+      objectives: ["Collect evidence", "Validate hash", "Publish receipt"],
     },
     {
-      id: "OP-ALPHA-004",
-      name: "CRIMSON TIDE",
+      id: "RUN-2025-004",
+      name: "CHANGE MANAGEMENT SNAPSHOT",
       status: "active",
       priority: "high",
-      location: "Cairo",
+      location: "Engineering Controls",
       agents: 4,
       progress: 60,
       startDate: "2025-06-10",
       estimatedCompletion: "2025-06-25",
-      description: "Support covert extraction in South America",
-      objectives: ["Secure extraction point", "Neutralize threats", "Extract asset"],
+      description: "Review deployment evidence and compare against previous signed snapshots",
+      objectives: ["Ingest snapshot", "Compare diffs", "Approve release evidence"],
     },
     {
-      id: "OP-BRAVO-005",
-      name: "SILENT BLADE",
+      id: "RUN-2025-005",
+      name: "PRIVILEGED ACCESS EXPORT",
       status: "compromised",
       priority: "critical",
-      location: "Moscow",
+      location: "Identity Governance",
       agents: 6,
       progress: 40,
       startDate: "2025-06-05",
       estimatedCompletion: "2025-06-20",
-      description: "Monitor rogue agent communications in Berlin",
-      objectives: ["Assess compromise", "Extract personnel", "Damage control"],
+      description: "Receipt mismatch detected after export regeneration during review",
+      objectives: ["Assess mismatch", "Re-run export", "Escalate review"],
     },
   ]
 
@@ -233,7 +233,7 @@ export default function OperationsPage() {
                 </div>
                 <div className="flex items-center gap-2 text-xs text-neutral-400">
                   <Users className="w-3 h-3" />
-                  <span>{operation.agents} agents assigned</span>
+                  <span>{operation.agents} reviewers assigned</span>
                 </div>
                 <div className="flex items-center gap-2 text-xs text-neutral-400">
                   <Clock className="w-3 h-3" />
@@ -279,7 +279,7 @@ export default function OperationsPage() {
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <div className="space-y-4">
                   <div>
-                    <h3 className="text-sm font-medium text-neutral-300 tracking-wider mb-2">OPERATION STATUS</h3>
+                    <h3 className="text-sm font-medium text-neutral-300 tracking-wider mb-2">RUN STATUS</h3>
                     <div className="flex gap-2">
                       <Badge className={getStatusColor(selectedOperation.status)}>
                         {selectedOperation.status.toUpperCase()}
@@ -291,14 +291,14 @@ export default function OperationsPage() {
                   </div>
 
                   <div>
-                    <h3 className="text-sm font-medium text-neutral-300 tracking-wider mb-2">MISSION DETAILS</h3>
+                    <h3 className="text-sm font-medium text-neutral-300 tracking-wider mb-2">RUN DETAILS</h3>
                     <div className="space-y-2 text-sm">
                       <div className="flex justify-between">
                         <span className="text-neutral-400">Location:</span>
                         <span className="text-white">{selectedOperation.location}</span>
                       </div>
                       <div className="flex justify-between">
-                        <span className="text-neutral-400">Agents:</span>
+                        <span className="text-neutral-400">Reviewers:</span>
                         <span className="text-white font-mono">{selectedOperation.agents}</span>
                       </div>
                       <div className="flex justify-between">
@@ -331,7 +331,7 @@ export default function OperationsPage() {
                   </div>
 
                   <div>
-                    <h3 className="text-sm font-medium text-neutral-300 tracking-wider mb-2">OBJECTIVES</h3>
+                    <h3 className="text-sm font-medium text-neutral-300 tracking-wider mb-2">CHECKLIST</h3>
                     <div className="space-y-2">
                       {selectedOperation.objectives.map((objective: string, index: number) => (
                         <div key={index} className="flex items-center gap-2 text-sm">
@@ -350,18 +350,18 @@ export default function OperationsPage() {
               </div>
 
               <div className="flex gap-2 pt-4 border-t border-neutral-700">
-                <Button className="bg-orange-500 hover:bg-orange-600 text-white">Update Status</Button>
+                <Button className="bg-orange-500 hover:bg-orange-600 text-white">Update Run</Button>
                 <Button
                   variant="outline"
                   className="border-neutral-700 text-neutral-400 hover:bg-neutral-800 hover:text-neutral-300 bg-transparent"
                 >
-                  View Reports
+                  View Receipts
                 </Button>
                 <Button
                   variant="outline"
                   className="border-neutral-700 text-neutral-400 hover:bg-neutral-800 hover:text-neutral-300 bg-transparent"
                 >
-                  Assign Agents
+                  Open Review
                 </Button>
               </div>
             </CardContent>

@@ -2,7 +2,7 @@
 
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 
-export default function CommandCenterPage() {
+export default function CommandCenterSection() {
   return (
     <div className="p-6 space-y-6">
       {/* Main Dashboard Grid */}
@@ -30,28 +30,28 @@ export default function CommandCenterPage() {
 
             <div className="space-y-2">
               {[
-                { id: "G-078W", name: "VENGEFUL SPIRIT", status: "active" },
-                { id: "G-079X", name: "OBSIDIAN SENTINEL", status: "standby" },
-                { id: "G-080Y", name: "GHOSTLY FURY", status: "active" },
-                { id: "G-081Z", name: "CURSED REVENANT", status: "compromised" },
-              ].map((agent) => (
+                { id: "ORG-104", name: "Vanta Evidence Sync", status: "active" },
+                { id: "ORG-231", name: "Drata Daily Snapshot", status: "standby" },
+                { id: "ORG-188", name: "GitHub Control Export", status: "active" },
+                { id: "ORG-319", name: "HRIS Access Review", status: "compromised" },
+              ].map((source) => (
                 <div
-                  key={agent.id}
+                  key={source.id}
                   className="flex items-center justify-between p-2 bg-neutral-800 rounded hover:bg-neutral-700 transition-colors cursor-pointer"
                 >
                   <div className="flex items-center gap-3">
                     <div
                       className={`w-2 h-2 rounded-full ${
-                        agent.status === "active"
+                        source.status === "active"
                           ? "bg-white"
-                          : agent.status === "standby"
+                          : source.status === "standby"
                             ? "bg-neutral-500"
                             : "bg-red-500"
                       }`}
                     ></div>
                     <div>
-                      <div className="text-xs text-white font-mono">{agent.id}</div>
-                      <div className="text-xs text-neutral-500">{agent.name}</div>
+                      <div className="text-xs text-white font-mono">{source.id}</div>
+                      <div className="text-xs text-neutral-500">{source.name}</div>
                     </div>
                   </div>
                 </div>
@@ -70,38 +70,38 @@ export default function CommandCenterPage() {
               {[
                 {
                   time: "25/06/2025 09:29",
-                  agent: "gh0st_Fire",
-                  action: "completed mission in",
-                  location: "Berlin",
-                  target: "zer0_Nigh",
+                  agent: "github-audit-export",
+                  action: "matched signed receipt for",
+                  location: "SOC2 Access Review",
+                  target: "rcpt_01hzg7",
                 },
                 {
                   time: "25/06/2025 08:12",
-                  agent: "dr4g0n_V3in",
-                  action: "extracted high-value target in",
-                  location: "Cairo",
+                  agent: "vanta-evidence-sync",
+                  action: "ingested artifact for",
+                  location: "Vendor Security Policy",
                   target: null,
                 },
                 {
                   time: "24/06/2025 22:55",
-                  agent: "sn4ke_Sh4de",
-                  action: "lost communication in",
-                  location: "Havana",
+                  agent: "okta-review-job",
+                  action: "flagged drift on",
+                  location: "Privileged Access Export",
                   target: null,
                 },
                 {
                   time: "24/06/2025 21:33",
-                  agent: "ph4nt0m_R4ven",
-                  action: "initiated surveillance in",
-                  location: "Tokyo",
+                  agent: "drata-control-run",
+                  action: "queued verification for",
+                  location: "Change Management Snapshot",
                   target: null,
                 },
                 {
                   time: "24/06/2025 19:45",
-                  agent: "v0id_Walk3r",
-                  action: "compromised security in",
-                  location: "Moscow",
-                  target: "d4rk_M4trix",
+                  agent: "manual-review-console",
+                  action: "rejected mismatched evidence for",
+                  location: "Endpoint Hardening Proof",
+                  target: "rcpt_01hy2c",
                 },
               ].map((log, index) => (
                 <div
