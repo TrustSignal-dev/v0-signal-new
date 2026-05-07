@@ -1,8 +1,99 @@
 "use client"
 
+import { useState } from "react"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 
+type ConsistencyResult = {
+  integrityVerified: boolean
+  reason: "match" | "artifact_mismatch" | "missing_hash" | "invalid_receipt"
+  storedArtifactHash: string | null
+  presentedArtifactHash: string | null
+}
+
+function normalizeHash(value: string | null | undefined) {
+  if (!value) return null
+  const trimmed = value.trim()
+  if (!trimmed) return null
+  return trimmed.toLowerCase().startsWith("sha256:") ? trimmed.toLowerCase() : `sha256:${trimmed.toLowerCase()}`
+}
+
+function extractStoredHash(receiptInput: string) {
+  const normalizedInput = receiptInput.trim()
+  if (!normalizedInput) {
+    return { storedHash: null, reason: "missing_hash" as const }
+  }
+
+  try {
+    const parsed = JSON.parse(normalizedInput) as Record<string, unknown>
+    const nestedArtifact =
+      parsed.artifact && typeof parsed.artifact === "object"
+        ? (parsed.artifact as Record<string, unknown>)
+        : null
+
+    const candidate =
+      (typeof parsed.stored_artifact_hash === "string" && parsed.stored_artifact_hash) ||
+      (typeof parsed.artifact_hash === "string" && parsed.artifact_hash) ||
+      (typeof parsed.artifactHash === "string" && parsed.artifactHash) ||
+      (nestedArtifact && typeof nestedArtifact.artifact_hash === "string" && nestedArtifact.artifact_hash) ||
+      (nestedArtifact && typeof nestedArtifact.artifactHash === "string" && nestedArtifact.artifactHash) ||
+      null
+
+    return { storedHash: normalizeHash(candidate), reason: candidate ? null : ("missing_hash" as const) }
+  } catch {
+    const directHash = normalizeHash(normalizedInput)
+    return { storedHash: directHash, reason: directHash ? null : ("invalid_receipt" as const) }
+  }
+}
+
+async function sha256ForFile(file: File) {
+  const buffer = await file.arrayBuffer()
+  const digest = await crypto.subtle.digest("SHA-256", buffer)
+  const hex = Array.from(new Uint8Array(digest))
+    .map((byte) => byte.toString(16).padStart(2, "0"))
+    .join("")
+
+  return `sha256:${hex}`
+}
+
 export default function CommandCenterSection() {
+  const [receiptInput, setReceiptInput] = useState("")
+  const [selectedFileName, setSelectedFileName] = useState<string | null>(null)
+  const [isCheckingConsistency, setIsCheckingConsistency] = useState(false)
+  const [consistencyResult, setConsistencyResult] = useState<ConsistencyResult | null>(null)
+
+  async function handleDocumentSelection(event: React.ChangeEvent<HTMLInputElement>) {
+    const file = event.target.files?.[0] ?? null
+    if (!file) {
+      setSelectedFileName(null)
+      setConsistencyResult(null)
+      return
+    }
+
+    setSelectedFileName(file.name)
+    setIsCheckingConsistency(true)
+
+    const { storedHash, reason } = extractStoredHash(receiptInput)
+    if (!storedHash) {
+      setConsistencyResult({
+        integrityVerified: false,
+        reason: reason ?? "missing_hash",
+        storedArtifactHash: null,
+        presentedArtifactHash: null,
+      })
+      setIsCheckingConsistency(false)
+      return
+    }
+
+    const presentedHash = await sha256ForFile(file)
+    setConsistencyResult({
+      integrityVerified: storedHash === presentedHash,
+      reason: storedHash === presentedHash ? "match" : "artifact_mismatch",
+      storedArtifactHash: storedHash,
+      presentedArtifactHash: presentedHash,
+    })
+    setIsCheckingConsistency(false)
+  }
+
   return (
     <div className="p-6 space-y-6">
       {/* Main Dashboard Grid */}
@@ -154,6 +245,94 @@ export default function CommandCenterSection() {
               <div className="text-white">{"> SIGNATURE VERIFIED"}</div>
               <div className="text-neutral-400">
                 {'> MSG >> "...receipt minted... awaiting verifier acknowledgment"'}
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+
+        <Card className="lg:col-span-12 bg-neutral-900 border-neutral-700">
+          <CardHeader className="pb-3">
+            <CardTitle className="text-sm font-medium text-neutral-300 tracking-wider">
+              ARTIFACT RECEIPT CONSISTENCY
+            </CardTitle>
+          </CardHeader>
+          <CardContent className="space-y-4">
+            <p className="text-sm text-neutral-400">
+              Compare the current document against the receipted artifact hash before a reviewer relies on it.
+              Paste a receipt JSON blob or stored hash, then upload the current document.
+            </p>
+
+            <div className="grid gap-4 lg:grid-cols-[minmax(0,1.4fr)_minmax(0,0.8fr)]">
+              <label className="block">
+                <span className="mb-2 block text-xs font-medium uppercase tracking-[0.22em] text-neutral-500">
+                  Receipt JSON Or Stored Hash
+                </span>
+                <textarea
+                  value={receiptInput}
+                  onChange={(event) => {
+                    setReceiptInput(event.target.value)
+                    setConsistencyResult(null)
+                  }}
+                  placeholder='{"artifact_hash":"sha256:..."}'
+                  className="min-h-36 w-full rounded border border-neutral-700 bg-neutral-800 px-3 py-3 text-sm text-white outline-none transition-colors placeholder:text-neutral-500 focus:border-orange-500"
+                />
+              </label>
+
+              <div className="space-y-4">
+                <label className="block">
+                  <span className="mb-2 block text-xs font-medium uppercase tracking-[0.22em] text-neutral-500">
+                    Current Document
+                  </span>
+                  <input
+                    type="file"
+                    onChange={handleDocumentSelection}
+                    className="block w-full rounded border border-neutral-700 bg-neutral-800 px-3 py-3 text-sm text-neutral-300 file:mr-4 file:rounded file:border-0 file:bg-orange-500 file:px-3 file:py-2 file:text-sm file:font-medium file:text-white hover:file:bg-orange-600"
+                  />
+                </label>
+
+                <div className="rounded border border-neutral-700 bg-neutral-800 p-4 text-sm text-neutral-300">
+                  <div className="text-xs uppercase tracking-[0.22em] text-neutral-500">Selected Document</div>
+                  <div className="mt-2 break-all text-white">{selectedFileName ?? "No document selected"}</div>
+                </div>
+
+                <div className="rounded border border-neutral-700 bg-neutral-800 p-4">
+                  <div className="text-xs uppercase tracking-[0.22em] text-neutral-500">Consistency Status</div>
+                  <div className="mt-3">
+                    {isCheckingConsistency ? (
+                      <span className="text-sm text-white">Computing current document hash...</span>
+                    ) : consistencyResult ? (
+                      <div className="space-y-3">
+                        <div
+                          className={`inline-flex rounded px-2 py-1 text-xs font-medium uppercase tracking-[0.22em] ${
+                            consistencyResult.integrityVerified
+                              ? "bg-white/20 text-white"
+                              : "bg-red-500/20 text-red-400"
+                          }`}
+                        >
+                          {consistencyResult.integrityVerified ? "MATCH" : consistencyResult.reason}
+                        </div>
+                        <div className="space-y-2 text-xs text-neutral-400">
+                          <div>
+                            <div className="uppercase tracking-[0.18em] text-neutral-500">Stored Artifact Hash</div>
+                            <div className="mt-1 break-all font-mono text-white">
+                              {consistencyResult.storedArtifactHash ?? "Unavailable"}
+                            </div>
+                          </div>
+                          <div>
+                            <div className="uppercase tracking-[0.18em] text-neutral-500">Presented Artifact Hash</div>
+                            <div className="mt-1 break-all font-mono text-white">
+                              {consistencyResult.presentedArtifactHash ?? "Unavailable"}
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    ) : (
+                      <span className="text-sm text-neutral-400">
+                        Waiting for receipt data and current document.
+                      </span>
+                    )}
+                  </div>
+                </div>
               </div>
             </div>
           </CardContent>
