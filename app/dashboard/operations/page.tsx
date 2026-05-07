@@ -141,12 +141,12 @@ export default function OperationsPage() {
       {/* Header */}
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
         <div>
-          <h1 className="text-2xl font-bold text-white tracking-wider">OPERATIONS CENTER</h1>
-          <p className="text-sm text-neutral-400">Mission planning and execution oversight</p>
+          <h1 className="text-2xl font-bold text-white tracking-wider">VERIFICATION RUNS</h1>
+          <p className="text-sm text-neutral-400">Track ingestion jobs, evidence review progress, and remediation work</p>
         </div>
         <div className="flex gap-2">
-          <Button className="bg-orange-500 hover:bg-orange-600 text-white">New Operation</Button>
-          <Button className="bg-orange-500 hover:bg-orange-600 text-white">Mission Brief</Button>
+          <Button className="bg-orange-500 hover:bg-orange-600 text-white">Start Run</Button>
+          <Button className="bg-orange-500 hover:bg-orange-600 text-white">Review Queue</Button>
         </div>
       </div>
 
@@ -156,7 +156,7 @@ export default function OperationsPage() {
           <CardContent className="p-4">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-xs text-neutral-400 tracking-wider">ACTIVE OPS</p>
+                <p className="text-xs text-neutral-400 tracking-wider">ACTIVE RUNS</p>
                 <p className="text-2xl font-bold text-white font-mono">23</p>
               </div>
               <Target className="w-8 h-8 text-white" />
@@ -168,7 +168,7 @@ export default function OperationsPage() {
           <CardContent className="p-4">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-xs text-neutral-400 tracking-wider">COMPLETED</p>
+                <p className="text-xs text-neutral-400 tracking-wider">RECEIPTS ISSUED</p>
                 <p className="text-2xl font-bold text-white font-mono">156</p>
               </div>
               <CheckCircle className="w-8 h-8 text-white" />
@@ -180,7 +180,7 @@ export default function OperationsPage() {
           <CardContent className="p-4">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-xs text-neutral-400 tracking-wider">COMPROMISED</p>
+                <p className="text-xs text-neutral-400 tracking-wider">FAILED CHECKS</p>
                 <p className="text-2xl font-bold text-red-500 font-mono">2</p>
               </div>
               <XCircle className="w-8 h-8 text-red-500" />
@@ -192,7 +192,7 @@ export default function OperationsPage() {
           <CardContent className="p-4">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-xs text-neutral-400 tracking-wider">SUCCESS RATE</p>
+                <p className="text-xs text-neutral-400 tracking-wider">MATCH RATE</p>
                 <p className="text-2xl font-bold text-white font-mono">94%</p>
               </div>
               <AlertTriangle className="w-8 h-8 text-white" />

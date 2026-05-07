@@ -106,14 +106,14 @@ export default function AgentNetworkPage() {
       {/* Header */}
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
         <div>
-          <h1 className="text-2xl font-bold text-white tracking-wider">AGENT NETWORK</h1>
-          <p className="text-sm text-neutral-400">Manage and monitor field operatives</p>
+          <h1 className="text-2xl font-bold text-white tracking-wider">ACCOUNT DIRECTORY</h1>
+          <p className="text-sm text-neutral-400">Review signer access, reviewer status, and account risk posture</p>
         </div>
         <div className="flex gap-2">
-          <Button className="bg-orange-500 hover:bg-orange-600 text-white">Deploy Agent</Button>
+          <Button className="bg-orange-500 hover:bg-orange-600 text-white">Invite Signer</Button>
           <Button className="bg-orange-500 hover:bg-orange-600 text-white">
             <Filter className="w-4 h-4 mr-2" />
-            Filter
+            Filter Accounts
           </Button>
         </div>
       </div>
@@ -125,7 +125,7 @@ export default function AgentNetworkPage() {
             <div className="relative">
               <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-neutral-400" />
               <Input
-                placeholder="Search agents..."
+                placeholder="Search accounts..."
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
                 className="pl-10 bg-neutral-800 border-neutral-600 text-white placeholder-neutral-400"
@@ -138,7 +138,7 @@ export default function AgentNetworkPage() {
           <CardContent className="p-4">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-xs text-neutral-400 tracking-wider">ACTIVE AGENTS</p>
+                <p className="text-xs text-neutral-400 tracking-wider">ACTIVE SIGNERS</p>
                 <p className="text-2xl font-bold text-white font-mono">847</p>
               </div>
               <Shield className="w-8 h-8 text-white" />
@@ -150,7 +150,7 @@ export default function AgentNetworkPage() {
           <CardContent className="p-4">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-xs text-neutral-400 tracking-wider">COMPROMISED</p>
+                <p className="text-xs text-neutral-400 tracking-wider">FLAGGED ACCOUNTS</p>
                 <p className="text-2xl font-bold text-red-500 font-mono">3</p>
               </div>
               <Shield className="w-8 h-8 text-red-500" />
@@ -162,7 +162,7 @@ export default function AgentNetworkPage() {
           <CardContent className="p-4">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-xs text-neutral-400 tracking-wider">IN TRAINING</p>
+                <p className="text-xs text-neutral-400 tracking-wider">PENDING REVIEWERS</p>
                 <p className="text-2xl font-bold text-orange-500 font-mono">23</p>
               </div>
               <Shield className="w-8 h-8 text-orange-500" />
@@ -174,19 +174,19 @@ export default function AgentNetworkPage() {
       {/* Agent List */}
       <Card className="bg-neutral-900 border-neutral-700">
         <CardHeader>
-          <CardTitle className="text-sm font-medium text-neutral-300 tracking-wider">AGENT ROSTER</CardTitle>
+          <CardTitle className="text-sm font-medium text-neutral-300 tracking-wider">ACCOUNT ROSTER</CardTitle>
         </CardHeader>
         <CardContent>
           <div className="overflow-x-auto">
             <table className="w-full">
               <thead>
                 <tr className="border-b border-neutral-700">
-                  <th className="text-left py-3 px-4 text-xs font-medium text-neutral-400 tracking-wider">AGENT ID</th>
-                  <th className="text-left py-3 px-4 text-xs font-medium text-neutral-400 tracking-wider">CODENAME</th>
+                  <th className="text-left py-3 px-4 text-xs font-medium text-neutral-400 tracking-wider">ACCOUNT ID</th>
+                  <th className="text-left py-3 px-4 text-xs font-medium text-neutral-400 tracking-wider">DISPLAY NAME</th>
                   <th className="text-left py-3 px-4 text-xs font-medium text-neutral-400 tracking-wider">STATUS</th>
-                  <th className="text-left py-3 px-4 text-xs font-medium text-neutral-400 tracking-wider">LOCATION</th>
-                  <th className="text-left py-3 px-4 text-xs font-medium text-neutral-400 tracking-wider">LAST SEEN</th>
-                  <th className="text-left py-3 px-4 text-xs font-medium text-neutral-400 tracking-wider">MISSIONS</th>
+                  <th className="text-left py-3 px-4 text-xs font-medium text-neutral-400 tracking-wider">REGION</th>
+                  <th className="text-left py-3 px-4 text-xs font-medium text-neutral-400 tracking-wider">LAST SYNC</th>
+                  <th className="text-left py-3 px-4 text-xs font-medium text-neutral-400 tracking-wider">VERIFICATIONS</th>
                   <th className="text-left py-3 px-4 text-xs font-medium text-neutral-400 tracking-wider">RISK</th>
                   <th className="text-left py-3 px-4 text-xs font-medium text-neutral-400 tracking-wider">ACTIONS</th>
                 </tr>

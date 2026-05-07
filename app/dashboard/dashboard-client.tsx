@@ -9,9 +9,18 @@ import OperationsPage from "./operations/page"
 import IntelligencePage from "./intelligence/page"
 import SystemsPage from "./systems/page"
 
+const sections = [
+  { id: "overview", icon: Monitor, label: "INTEGRITY OVERVIEW" },
+  { id: "agents", icon: Users, label: "ACCOUNTS" },
+  { id: "operations", icon: Target, label: "VERIFICATION RUNS" },
+  { id: "intelligence", icon: Shield, label: "EVIDENCE SIGNALS" },
+  { id: "systems", icon: Settings, label: "PLATFORM HEALTH" },
+] as const
+
 export default function TacticalDashboard() {
   const [activeSection, setActiveSection] = useState("overview")
   const [sidebarCollapsed, setSidebarCollapsed] = useState(false)
+  const activeSectionLabel = sections.find((section) => section.id === activeSection)?.label ?? "INTEGRITY OVERVIEW"
 
   return (
     <div className="flex h-screen">
@@ -20,10 +29,23 @@ export default function TacticalDashboard() {
         className={`${sidebarCollapsed ? "w-16" : "w-[17.5rem]"} bg-neutral-900 border-r border-neutral-700 transition-all duration-300 fixed md:relative z-50 md:z-auto h-full md:h-auto ${!sidebarCollapsed ? "md:block" : ""}`}
       >
         <div className="p-4">
-          <div className="flex items-center justify-between mb-8">
-            <div className={`${sidebarCollapsed ? "hidden" : "block"}`}>
-              <h1 className="text-orange-500 font-bold text-lg tracking-wider">TACTICAL OPS</h1>
-              <p className="text-neutral-500 text-xs">v2.1.7 CLASSIFIED</p>
+          <div className="flex items-start justify-between mb-8 gap-3">
+            <div className={`${sidebarCollapsed ? "hidden" : "block"} min-w-0`}>
+              <div className="flex items-center gap-3">
+                <img
+                  src="/icon-light-32x32.png"
+                  alt="TrustSignal"
+                  width="32"
+                  height="32"
+                  className="h-8 w-8"
+                />
+                <span className="text-3xl font-semibold tracking-tight text-white">
+                  trustsignal
+                </span>
+              </div>
+              <p className="mt-3 text-[11px] uppercase tracking-[0.24em] text-neutral-500">
+                Evidence Integrity Infrastructure
+              </p>
             </div>
             <Button
               variant="ghost"
@@ -38,13 +60,7 @@ export default function TacticalDashboard() {
           </div>
 
           <nav className="space-y-2">
-            {[
-              { id: "overview", icon: Monitor, label: "COMMAND CENTER" },
-              { id: "agents", icon: Users, label: "AGENT NETWORK" },
-              { id: "operations", icon: Target, label: "OPERATIONS" },
-              { id: "intelligence", icon: Shield, label: "INTELLIGENCE" },
-              { id: "systems", icon: Settings, label: "SYSTEMS" },
-            ].map((item) => (
+            {sections.map((item) => (
               <button
                 key={item.id}
                 onClick={() => setActiveSection(item.id)}
@@ -64,12 +80,12 @@ export default function TacticalDashboard() {
             <div className="mt-8 p-4 bg-neutral-800 border border-neutral-700 rounded">
               <div className="flex items-center gap-2 mb-2">
                 <div className="w-2 h-2 bg-white rounded-full animate-pulse"></div>
-                <span className="text-xs text-white">SYSTEM ONLINE</span>
+                <span className="text-xs text-white">SIGNING PIPELINE ONLINE</span>
               </div>
               <div className="text-xs text-neutral-500">
                 <div>UPTIME: 72:14:33</div>
-                <div>AGENTS: 847 ACTIVE</div>
-                <div>MISSIONS: 23 ONGOING</div>
+                <div>RECEIPTS: 847 SIGNED</div>
+                <div>REVIEWS: 23 ACTIVE</div>
               </div>
             </div>
           )}
@@ -87,7 +103,7 @@ export default function TacticalDashboard() {
         <div className="h-16 bg-neutral-800 border-b border-neutral-700 flex items-center justify-between px-6">
           <div className="flex items-center gap-4">
             <div className="text-sm text-neutral-400">
-              TACTICAL COMMAND / <span className="text-orange-500">OVERVIEW</span>
+              TRUSTSIGNAL / <span className="text-orange-500">{activeSectionLabel}</span>
             </div>
           </div>
           <div className="flex items-center gap-4">

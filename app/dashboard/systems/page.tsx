@@ -179,12 +179,12 @@ export default function SystemsPage() {
       {/* Header */}
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
         <div>
-          <h1 className="text-2xl font-bold text-white tracking-wider">SYSTEMS MONITOR</h1>
-          <p className="text-sm text-neutral-400">Infrastructure health and performance monitoring</p>
+          <h1 className="text-2xl font-bold text-white tracking-wider">PLATFORM HEALTH</h1>
+          <p className="text-sm text-neutral-400">Monitor signing services, data stores, and verification infrastructure</p>
         </div>
         <div className="flex gap-2">
-          <Button className="bg-orange-500 hover:bg-orange-600 text-white">System Scan</Button>
-          <Button className="bg-orange-500 hover:bg-orange-600 text-white">Maintenance Mode</Button>
+          <Button className="bg-orange-500 hover:bg-orange-600 text-white">Run Health Check</Button>
+          <Button className="bg-orange-500 hover:bg-orange-600 text-white">Maintenance Window</Button>
         </div>
       </div>
 
@@ -194,7 +194,7 @@ export default function SystemsPage() {
           <CardContent className="p-4">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-xs text-neutral-400 tracking-wider">SYSTEMS ONLINE</p>
+                <p className="text-xs text-neutral-400 tracking-wider">SERVICES ONLINE</p>
                 <p className="text-2xl font-bold text-white font-mono">24/26</p>
               </div>
               <CheckCircle className="w-8 h-8 text-white" />
@@ -206,7 +206,7 @@ export default function SystemsPage() {
           <CardContent className="p-4">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-xs text-neutral-400 tracking-wider">WARNINGS</p>
+                <p className="text-xs text-neutral-400 tracking-wider">SERVICE WARNINGS</p>
                 <p className="text-2xl font-bold text-orange-500 font-mono">3</p>
               </div>
               <AlertTriangle className="w-8 h-8 text-orange-500" />
@@ -218,7 +218,7 @@ export default function SystemsPage() {
           <CardContent className="p-4">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-xs text-neutral-400 tracking-wider">AVG UPTIME</p>
+                <p className="text-xs text-neutral-400 tracking-wider">SIGNER UPTIME</p>
                 <p className="text-2xl font-bold text-white font-mono">99.7%</p>
               </div>
               <Activity className="w-8 h-8 text-white" />
