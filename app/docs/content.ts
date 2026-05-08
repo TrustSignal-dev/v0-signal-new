@@ -90,7 +90,7 @@ export const VERIFICATION_RESPONSE = `{
     "status": "PENDING",
     "subjectDigest": "0x8c0f95cda31274e7b61adfd1dd1e0c03a4b96f78d90da52d42fd93d9a38fc112",
     "subjectVersion": "trustsignal.anchor_subject.v1",
-    "note": "Experimental blockchain anchoring"
+    "note": "EVM anchoring on Sepolia testnet (experimental)"
   },
   "revocation": {
     "status": "ACTIVE"

@@ -1,5 +1,7 @@
 # TrustSignal
 
+> Status: active
+
 [![trustsignal.dev](https://img.shields.io/badge/trustsignal.dev-live-brightgreen)](https://trustsignal.dev)
 [![Docs](https://img.shields.io/badge/docs-available-blue)](https://trustsignal.dev/docs)
 [![Pilot](https://img.shields.io/badge/pilot-open-orange)](https://trustsignal.dev/#pilot-request)
@@ -14,7 +16,7 @@ TrustSignal issues signed verification receipts so organizations can prove when 
 ## Developer Access
 
 The public website is the discovery layer. Account creation, sign-in, and API
-key management should live in the central TrustSignal app so every TrustSignal
+access management should live in the central TrustSignal app so every TrustSignal
 service validates against one source of truth.
 
 - Public site entry points:
@@ -25,7 +27,9 @@ service validates against one source of truth.
   - `NEXT_PUBLIC_TRUSTSIGNAL_APP_URL` should be set only when the TrustSignal app is actually deployed
 
 This keeps API key issuance out of the marketing/docs repo while still giving
-developers a clear path into the authenticated product surface.
+developers a clear path into the authenticated product surface. The preferred
+machine flow is registered public keys plus short-lived access tokens; legacy
+API keys remain only as a migration fallback.
 
 ## Supabase
 
@@ -43,6 +47,34 @@ The starter schema treats:
 - `verification_log` as backend-only
 
 Do not expose new tables to clients until the ownership model is explicit in the schema.
+
+### Monetization Setup (Supabase + Stripe)
+
+This app now includes account-scoped auth, API key lifecycle management, and Stripe billing.
+
+Required environment variables:
+
+- `NEXT_PUBLIC_APP_URL`
+- `NEXT_PUBLIC_SUPABASE_URL`
+- `NEXT_PUBLIC_SUPABASE_ANON_KEY`
+- `SUPABASE_SERVICE_ROLE_KEY` (webhook handler only)
+- `API_KEY_PEPPER` (recommended)
+- `STRIPE_SECRET_KEY`
+- `STRIPE_WEBHOOK_SECRET`
+- `STRIPE_PRICE_ID`
+
+Local setup steps:
+
+1. Configure Supabase OAuth providers (Google + GitHub) and add callback URL:
+  - `http://localhost:3000/auth/callback`
+2. Apply SQL migrations from `supabase/migrations/`.
+3. Configure Stripe checkout price and set `STRIPE_PRICE_ID`.
+4. Run Stripe webhook forwarding locally to `/api/billing/webhook`.
+
+Security model for Supabase clients:
+
+- User-facing server components and route handlers use Supabase anon key + session context, with RLS enforcement.
+- Service role key is restricted to webhook-only handlers and is not used in user-scoped request paths.
 
 ---
 
@@ -198,3 +230,8 @@ Operational access and private verification workflows are restricted to TrustSig
 ## Contact
 
 [trustsignal.dev](https://trustsignal.dev) · [info@trustsignal.dev](mailto:info@trustsignal.dev)
+
+
+## Source of Truth
+
+This repository is the source of truth for its documented scope.

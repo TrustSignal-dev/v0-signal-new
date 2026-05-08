@@ -1,19 +1,22 @@
 "use client"
 
+import Image from "next/image"
 import { useState } from "react"
-import { ChevronRight, Monitor, Settings, Shield, Target, Users, Bell, RefreshCw } from "lucide-react"
+import { ChevronRight, Monitor, Settings, Shield, Target, Users, Bell, RefreshCw, Key } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import CommandCenterSection from "./command-center-section"
 import AgentNetworkSection from "./agent-network-section"
 import OperationsSection from "./operations-section"
 import IntelligenceSection from "./intelligence-section"
 import SystemsSection from "./systems-section"
+import ApiKeysSection from "./api-keys-section"
 
 const sections = [
   { id: "overview", icon: Monitor, label: "INTEGRITY OVERVIEW" },
   { id: "agents", icon: Users, label: "ACCOUNTS" },
   { id: "operations", icon: Target, label: "VERIFICATION RUNS" },
   { id: "intelligence", icon: Shield, label: "EVIDENCE SIGNALS" },
+  { id: "apikeys", icon: Key, label: "API KEYS" },
   { id: "systems", icon: Settings, label: "PLATFORM HEALTH" },
 ] as const
 
@@ -32,7 +35,7 @@ export default function TacticalDashboard() {
           <div className="flex items-start justify-between mb-8 gap-3">
             <div className={`${sidebarCollapsed ? "hidden" : "block"} min-w-0`}>
               <div className="flex items-center gap-3">
-                <img
+                <Image
                   src="/icon-light-32x32.png"
                   alt="TrustSignal"
                   width="32"
@@ -123,6 +126,7 @@ export default function TacticalDashboard() {
           {activeSection === "agents" && <AgentNetworkSection />}
           {activeSection === "operations" && <OperationsSection />}
           {activeSection === "intelligence" && <IntelligenceSection />}
+          {activeSection === "apikeys" && <ApiKeysSection />}
           {activeSection === "systems" && <SystemsSection />}
         </div>
       </div>
