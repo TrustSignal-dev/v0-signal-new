@@ -25,11 +25,6 @@ const API_ROUTES = [
       "Retrieve a previously issued verification receipt for downstream storage, review, or audit use.",
   },
   {
-    route: "GET /api/v1/receipt/:receiptId/summary",
-    detail:
-      "Retrieve a high-level summary of a verification receipt for quick review.",
-  },
-  {
     route: "POST /api/v1/receipt/:receiptId/verify",
     detail:
       "Check current integrity status of an artifact against a stored receipt.",
@@ -38,6 +33,16 @@ const API_ROUTES = [
     route: "POST /api/v1/receipt/:receiptId/revoke",
     detail:
       "Revoke a receipt when lifecycle governance requires the prior verification output to be invalidated.",
+  },
+  {
+    route: "POST /api/v1/anchor/:receiptId",
+    detail:
+      "Record verifiable provenance metadata for a receipt when anchor support is enabled.",
+  },
+  {
+    route: "POST /api/v1/verifications/github",
+    detail:
+      "GitHub Actions adapter — create a verification receipt from a workflow event and return a GitHub check run conclusion.",
   },
 ];
 
@@ -122,12 +127,14 @@ export default function ApiPage() {
           The quick evaluator flow is intentionally lighter than production deployment.
         </DocCallout>
         <p className="mt-4 max-w-3xl text-sm leading-6 text-muted-foreground sm:text-base">
-          Public docs live here, but developer account creation and API key issuance
-          are routed through the central TrustSignal app. Start at{" "}
+          Public docs live here. Developer account creation and API key issuance
+          are routed through the configured authenticated TrustSignal surface when
+          it is deployed; otherwise access should remain manual or pilot-gated.
+          Start at{" "}
           <Link href={ACCOUNT_LINKS.getApiKey} className="text-foreground underline">
             Get your API key
           </Link>{" "}
-          to move from documentation into the authenticated developer flow.
+          to move from documentation into the current access path.
         </p>
       </DocSection>
 
@@ -145,8 +152,28 @@ export default function ApiPage() {
         </div>
       </DocSection>
 
+      <DocSection
+        title="Interactive Reference"
+        description="Full OpenAPI 3.0 specification with interactive request/response explorer."
+      >
+        <Link
+          href="/docs/api/reference"
+          className="inline-flex items-center gap-2 rounded-full bg-[#114d3f] px-5 py-3 text-sm font-semibold text-white"
+        >
+          Open API Reference →
+        </Link>
+        <p className="mt-3 text-sm text-muted-foreground">
+          Also available as a{" "}
+          <a href="/openapi.yaml" download className="text-foreground underline">
+            downloadable OpenAPI spec
+          </a>
+          .
+        </p>
+      </DocSection>
+
       <DocFooterLinks
         links={[
+          { href: "/docs/api/reference", label: "Interactive API Reference" },
           { href: "/docs/verification", label: "Quick Verification Example" },
           { href: "/docs/security", label: "Security Model" },
           { href: "/docs/threat-model", label: "Threat Model" },

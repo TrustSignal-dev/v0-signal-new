@@ -66,8 +66,8 @@ export function CtaSection() {
 
                 <p className="text-xl text-muted-foreground mb-12 leading-relaxed max-w-xl">
                   Start with a lightweight pilot, or route developers directly
-                  into the TrustSignal app to create an account and get the API
-                  key they need for production integration.
+                  into the configured authenticated TrustSignal surface when it
+                  is deployed. Otherwise keep onboarding manual and pilot-gated.
                 </p>
 
                 <div className="flex flex-col sm:flex-row items-start gap-4">
@@ -87,12 +87,12 @@ export function CtaSection() {
                     variant="outline"
                     className="h-14 px-8 text-base rounded-full border-foreground/20 hover:bg-foreground/5"
                   >
-                    <Link href={ACCOUNT_LINKS.getApiKey}>Get your API key</Link>
+                    <Link href={ACCOUNT_LINKS.getApiKey}>Request API access</Link>
                   </Button>
                 </div>
 
                 <p className="text-sm text-muted-foreground mt-8 font-mono">
-                  Pilot onboarding and self-serve developer access can now coexist
+                  Pilot onboarding is primary. Self-serve developer access depends on deployment configuration.
                 </p>
               </div>
 
