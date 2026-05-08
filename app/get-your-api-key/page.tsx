@@ -1,33 +1,29 @@
 import type { Metadata } from "next";
-import { AccountAccessPage } from "@/components/account-access-page";
+import { redirect } from "next/navigation";
 import { createPageMetadata } from "@/lib/seo";
-import { ACCOUNT_LINKS } from "@/lib/site";
+import { createSupabaseServerClient } from "@/lib/supabase/server";
+import { ApiKeyGenerator } from "@/components/api-key-generator";
 
 export const metadata: Metadata = createPageMetadata({
-    title: "Get Your API Key",
-    description:
-          "Open the authenticated dashboard to generate and rotate TrustSignal API keys.",
-    path: "/get-your-api-key",
-    keywords: ["TrustSignal API key", "developer portal", "key management"],
+  title: "Get API Access",
+  description:
+    "Generate an Ed25519 key pair and register your TrustSignal machine client to start making API calls.",
+  path: "/get-your-api-key",
+  keywords: ["TrustSignal API access", "machine clients", "short-lived access tokens"],
 });
 
-export default function GetYourApiKeyPage() {
-    return (
-          <AccountAccessPage
-                  eyebrow="TrustSignal developer access"
-                  title="Open your API key dashboard"
-                  description="Sign in with GitHub to open the authenticated dashboard where API keys are generated and rotated."
-                  primaryHref="/auth/sign-in?next=/dashboard"
-                  primaryLabel="Open API key dashboard"
-                  secondaryHref={ACCOUNT_LINKS.signUp}
-                  secondaryLabel="Need an account first?"
-                  steps={[
-                            "Continue with GitHub OAuth.",
-                            "Land in the authenticated dashboard.",
-                            "Generate, copy, and rotate API keys from dashboard settings.",
-                          ]}
-                  callout="API keys are managed in the authenticated TrustSignal dashboard, not on anonymous marketing pages."
-                  icon="key"
-                />
-        );
+export default async function GetYourApiKeyPage() {
+  const supabase = await createSupabaseServerClient();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+
+  if (!user) {
+    redirect("/sign-in");
+  }
+
+  const displayName =
+    user.user_metadata?.full_name ?? user.user_metadata?.name ?? undefined;
+
+  return <ApiKeyGenerator email={user.email ?? ""} displayName={displayName} />;
 }

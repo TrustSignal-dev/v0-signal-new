@@ -11,12 +11,30 @@ import {
   PRIMARY_NAV_LINKS,
 } from "@/lib/site";
 
+interface NavUser {
+  email: string;
+  displayName: string | null;
+}
+
 export function Navigation() {
   const [isScrolled, setIsScrolled] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [isDeveloperMenuOpen, setIsDeveloperMenuOpen] = useState(false);
+  const [navUser, setNavUser] = useState<NavUser | null | undefined>(undefined);
   const pathname = usePathname();
   const developerMenuRef = useRef<HTMLDivElement | null>(null);
+
+  useEffect(() => {
+    fetch("/api/auth/me")
+      .then((r) => (r.ok ? r.json() as Promise<NavUser> : null))
+      .then((u) => setNavUser(u))
+      .catch(() => setNavUser(null));
+  }, [pathname]);
+
+  async function handleSignOut() {
+    await fetch("/api/auth/logout", { method: "POST" });
+    window.location.href = "/";
+  }
 
   const resolveHomeHref = (hash?: string) => {
     if (!hash) return pathname === "/" ? "#top" : "/";
@@ -167,20 +185,41 @@ export function Navigation() {
 
           {/* Desktop CTA */}
           <div className="hidden md:flex items-center gap-4">
-            <Link
-              href={ACCOUNT_LINKS.signIn}
-              className="text-sm text-foreground/70 transition-colors duration-300 hover:text-foreground"
-            >
-              Sign in
-            </Link>
-            <Button
-              asChild
-              size="sm"
-              variant="outline"
-              className={`rounded-full border-foreground/15 transition-all duration-500 ${isScrolled ? "px-4 h-8 text-xs" : "px-5"}`}
-            >
-              <Link href={ACCOUNT_LINKS.getApiKey}>Get API key</Link>
-            </Button>
+            {navUser ? (
+              <>
+                <Link
+                  href={ACCOUNT_LINKS.getApiKey}
+                  className="text-sm text-foreground/70 transition-colors duration-300 hover:text-foreground"
+                >
+                  {navUser.displayName ?? navUser.email}
+                </Link>
+                <Button
+                  size="sm"
+                  variant="outline"
+                  className={`rounded-full border-foreground/15 transition-all duration-500 ${isScrolled ? "px-4 h-8 text-xs" : "px-5"}`}
+                  onClick={handleSignOut}
+                >
+                  Sign out
+                </Button>
+              </>
+            ) : (
+              <>
+                <Link
+                  href={ACCOUNT_LINKS.signIn}
+                  className="text-sm text-foreground/70 transition-colors duration-300 hover:text-foreground"
+                >
+                  Sign in
+                </Link>
+                <Button
+                  asChild
+                  size="sm"
+                  variant="outline"
+                  className={`rounded-full border-foreground/15 transition-all duration-500 ${isScrolled ? "px-4 h-8 text-xs" : "px-5"}`}
+                >
+                  <Link href={ACCOUNT_LINKS.getApiKey}>Get API key</Link>
+                </Button>
+              </>
+            )}
             <Button
               asChild
               size="sm"
@@ -267,21 +306,31 @@ export function Navigation() {
           
           {/* Bottom CTAs */}
           <div className={`flex gap-4 pt-8 border-t border-foreground/10 transition-all duration-500 ${
-            isMobileMenuOpen 
-              ? "opacity-100 translate-y-0" 
+            isMobileMenuOpen
+              ? "opacity-100 translate-y-0"
               : "opacity-0 translate-y-4"
           }`}
           style={{ transitionDelay: isMobileMenuOpen ? "300ms" : "0ms" }}
           >
+            {navUser ? (
+              <Button
+                variant="outline"
+                className="flex-1 rounded-full h-14 text-base border-foreground/15"
+                onClick={() => { setIsMobileMenuOpen(false); void handleSignOut(); }}
+              >
+                Sign out
+              </Button>
+            ) : (
+              <Button
+                asChild
+                variant="outline"
+                className="flex-1 rounded-full h-14 text-base border-foreground/15"
+                onClick={() => setIsMobileMenuOpen(false)}
+              >
+                <Link href={ACCOUNT_LINKS.getApiKey}>Get API key</Link>
+              </Button>
+            )}
             <Button
-              asChild
-              variant="outline"
-              className="flex-1 rounded-full h-14 text-base border-foreground/15"
-              onClick={() => setIsMobileMenuOpen(false)}
-            >
-              <Link href={ACCOUNT_LINKS.getApiKey}>Get API key</Link>
-            </Button>
-            <Button 
               asChild
               className="flex-1 bg-foreground text-background rounded-full h-14 text-base"
               onClick={() => setIsMobileMenuOpen(false)}
