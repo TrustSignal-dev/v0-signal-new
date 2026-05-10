@@ -1,5 +1,5 @@
 import { NextResponse } from 'next/server';
-import { createClient } from '@/lib/supabase/server';
+import { createSupabaseServerClient } from '@/lib/supabase/server';
 import { getStripe, PLANS } from '@/lib/stripe';
 
 /**
@@ -13,7 +13,7 @@ import { getStripe, PLANS } from '@/lib/stripe';
 export async function POST(request: Request) {
   const { origin } = new URL(request.url);
 
-  const supabase = await createClient();
+  const supabase = await createSupabaseServerClient();
   const { data: { user }, error: authError } = await supabase.auth.getUser();
   if (authError || !user) {
     return NextResponse.json({ error: 'unauthenticated' }, { status: 401 });

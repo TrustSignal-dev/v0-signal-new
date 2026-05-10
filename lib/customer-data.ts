@@ -1,7 +1,7 @@
 'use server';
 
 import { createHash, randomBytes } from 'node:crypto';
-import { createClient } from '@/lib/supabase/server';
+import { createSupabaseServerClient } from '@/lib/supabase/server';
 
 export type CustomerApiKey = {
   id: string;
@@ -16,7 +16,7 @@ export type CustomerApiKey = {
 type ApiResult<T> = T | { error: string };
 
 async function getAuthenticatedUserId(): Promise<string> {
-  const supabase = await createClient();
+  const supabase = await createSupabaseServerClient();
   const { data: { user }, error } = await supabase.auth.getUser();
   if (error || !user) {
     throw new Error('unauthenticated');
