@@ -31,6 +31,15 @@ Run the smallest relevant checks before finishing:
 - `npm run build`
 - `npm run messaging:check`
 
+## Branch Scope Discipline
+
+- Keep PRs single-concern and reviewable. Do not combine auth flow, schema/data model, and public messaging refactors in one branch.
+- Use separate branches and PRs for:
+	- auth/session/dashboard behavior,
+	- API key or schema/runtime contract changes,
+	- messaging or docs copy updates.
+- Merge order should preserve production stability: backend/runtime contract first, then auth UX wiring, then messaging/docs.
+
 ## Notes
 
 - This repo currently uses `pnpm-lock.yaml`; keep package-manager usage consistent.
