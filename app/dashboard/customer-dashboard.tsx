@@ -111,7 +111,7 @@ export function CustomerDashboard({ user }: { user: { id: string; email: string 
               <div className="mt-3">
                 <div className="h-2 rounded-full bg-slate-100 overflow-hidden">
                   <div
-                    className="h-full rounded-full bg-[#114d3f] transition-all"
+                    className="h-full rounded-full bg-[#E8503A] transition-all"
                     style={{ width: `${Math.min(100, (usage.used / usage.limit) * 100).toFixed(1)}%` }}
                   />
                 </div>
