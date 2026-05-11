@@ -158,7 +158,7 @@ export default function ApiPage() {
       >
         <Link
           href="/docs/api/reference"
-          className="inline-flex items-center gap-2 rounded-full bg-[#114d3f] px-5 py-3 text-sm font-semibold text-white"
+          className="inline-flex items-center gap-2 rounded-full bg-[#E8503A] px-5 py-3 text-sm font-semibold text-white"
         >
           Open API Reference →
         </Link>
