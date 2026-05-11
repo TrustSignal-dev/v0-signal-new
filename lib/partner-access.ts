@@ -1,23 +1,17 @@
-export const PARTNERS = ["drata", "scrut", "vanta"] as const;
+export const PARTNERS = ["drata"] as const;
 
 export type PartnerSlug = (typeof PARTNERS)[number];
 
 export const PARTNER_LABELS: Record<PartnerSlug, string> = {
   drata: "Drata",
-  scrut: "Scrut.io",
-  vanta: "Vanta",
 };
 
 const PARTNER_PASSWORD_ENV: Record<PartnerSlug, string> = {
   drata: "DRATA_PARTNER_PASSWORD",
-  scrut: "SCRUT_PARTNER_PASSWORD",
-  vanta: "VANTA_PARTNER_PASSWORD",
 };
 
 const PARTNER_COOKIE_NAMES: Record<PartnerSlug, string> = {
   drata: "drata_partner_access",
-  scrut: "scrut_partner_access",
-  vanta: "vanta_partner_access",
 };
 
 export function isPartnerSlug(value: string | null | undefined): value is PartnerSlug {
@@ -59,7 +53,7 @@ export async function verifyPartnerPassword(partner: PartnerSlug, password: stri
 }
 
 function getSessionSecret() {
-  return process.env.PARTNER_SESSION_SECRET || "";
+  return process.env.DRATA_ACCESS_HMAC_SECRET || "";
 }
 
 async function signValue(value: string, secret: string) {

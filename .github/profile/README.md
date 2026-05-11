@@ -16,7 +16,7 @@ TrustSignal adds an integrity layer at the handoff point:
 - **Verifiable provenance** - source metadata travels with the receipt from the start
 - **Later integrity checks** - compare the current artifact against the original receipt before audit review
 - **Tamper detection** - mismatch signals surface when a record no longer matches intake state
-- **No workflow replacement** - fits alongside Vanta, Drata, and existing GRC platforms via a clean API boundary
+- **No workflow replacement** - fits alongside Drata and existing GRC platforms via a clean API boundary
 
 ---
 
@@ -26,7 +26,7 @@ TrustSignal adds an integrity layer at the handoff point:
 POST /api/attest-evidence
 
 {
-  "source": "vanta",
+  "source": "grc_platform",
   "artifact_hash": "sha256:93f6f35...",
   "control_id": "CC6.1",
   "timestamp": "2026-03-11T21:00:00Z"
@@ -45,7 +45,7 @@ POST /api/attest-evidence
 |---|---|
 | Compliance evidence pipelines | Attests artifacts at ingestion, returns signed receipts |
 | Audit-readiness workflows | Provides tamper-evident reference for later review |
-| GRC platform integrations | Sits behind Vanta, Drata, or internal collectors |
+| GRC platform integrations | Sits behind Drata or internal collectors |
 | Security and partner review | Public API contract, claims boundary, and threat model available |
 
 ---

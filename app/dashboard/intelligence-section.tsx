@@ -41,7 +41,7 @@ export default function IntelligenceSection() {
       id: "INT-2025-002",
       title: "VENDOR POLICY RECEIPT GAP",
       classification: "SECRET",
-      source: "VANTA SYNC",
+      source: "GRC SYNC",
       location: "Third-party Risk",
       date: "2025-06-16",
       status: "pending",

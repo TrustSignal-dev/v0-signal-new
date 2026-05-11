@@ -50,7 +50,7 @@ const techSpecs = [
 const codeExample = `// Receipt model
 const auditReadyReceipt = {
   receipt_id: "tsig_rcpt_01JTQY8N1Q0M4F4F5T4J4B8Y9R",
-  source: "vanta",
+  source: "grc_platform",
   artifact_hash: "sha256:93f6f35a550cbe1c3f0b5f0c12b9f0d62f3f9c6f8c6a4eddd8fa1fbfd4654af1",
   control_id: "CC6.1",
   timestamp: "2026-03-11T21:00:00Z",
