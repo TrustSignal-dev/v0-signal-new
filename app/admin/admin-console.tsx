@@ -7,8 +7,6 @@ import type { AdminApiKey } from "@/lib/admin-data";
 
 type ReceiptLookup = {
   status?: string;
-  decision?: string;
-  revoked?: boolean;
   anchor?: {
     status?: string;
     txHash?: string;
@@ -220,7 +218,7 @@ export function AdminConsole({
             <button
               type="submit"
               disabled={isPending}
-              className="rounded-full bg-[#114d3f] px-5 py-3 text-sm font-semibold text-white"
+              className="rounded-full bg-[#E8503A] px-5 py-3 text-sm font-semibold text-white"
             >
               Fetch receipt
             </button>

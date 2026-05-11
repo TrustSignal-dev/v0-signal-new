@@ -163,7 +163,7 @@ export function CustomerDashboard({ user }: { user: { id: string; email: string 
           <button
             type="submit"
             disabled={isPending || !keyName.trim()}
-            className="rounded-full bg-[#114d3f] px-5 py-2.5 text-sm font-semibold text-white disabled:opacity-50"
+            className="rounded-full bg-[#E8503A] px-5 py-2.5 text-sm font-semibold text-white disabled:opacity-50"
           >
             Create
           </button>
