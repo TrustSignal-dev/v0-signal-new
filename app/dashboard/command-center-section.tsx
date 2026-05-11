@@ -218,7 +218,7 @@ export default function CommandCenterSection() {
 
             <div className="space-y-2">
               {[
-                { id: "ORG-104", name: "Vanta Evidence Sync", status: "active" },
+                { id: "ORG-104", name: "GRC Evidence Sync", status: "active" },
                 { id: "ORG-231", name: "Drata Daily Snapshot", status: "standby" },
                 { id: "ORG-188", name: "GitHub Control Export", status: "active" },
                 { id: "ORG-319", name: "HRIS Access Review", status: "compromised" },
@@ -265,7 +265,7 @@ export default function CommandCenterSection() {
                 },
                 {
                   time: "25/06/2025 08:12",
-                  agent: "vanta-evidence-sync",
+                  agent: "grc-evidence-sync",
                   action: "ingested artifact for",
                   location: "Vendor Security Policy",
                   target: null,

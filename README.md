@@ -95,8 +95,8 @@ Submit an artifact or artifact reference -> receive a signed verification receip
 ```
 ┌─────────────────┐    POST /api/attest-evidence    ┌──────────────────┐
 │  Your Workflow  │ ──────────────────────────────► │   TrustSignal    │
-│  (Vanta, Drata, │                                 │  Integrity Layer │
-│   internal GRC) │ ◄────────────────────────────── │                  │
+│    (Drata or    │                                 │  Integrity Layer │
+│  internal GRC)  │ ◄────────────────────────────── │                  │
 └─────────────────┘    Signed receipt + signal      └──────────────────┘
         │
         ▼
@@ -113,7 +113,7 @@ POST /api/attest-evidence
 Content-Type: application/json
 
 {
-  "source": "vanta",
+  "source": "grc_platform",
   "artifact_hash": "sha256:93f6f35a550cbe1c3f0b5f0c12b9f0d62f3f9c6f8c6a4eddd8fa1fbfd4654af1",
   "control_id": "CC6.1",
   "timestamp": "2026-03-11T21:00:00Z",
@@ -132,7 +132,7 @@ HTTP/1.1 201 Created
 {
   "receipt_id": "tsig_rcpt_01JTQY8N1Q0M4F4F5T4J4B8Y9R",
   "status": "signed",
-  "source": "vanta",
+  "source": "grc_platform",
   "control_id": "CC6.1",
   "attested_at": "2026-03-11T21:00:01Z",
   "signature": "tsig_sig_01JTQY8QK6X4YF7M6T2P9A5D3H",
@@ -151,7 +151,7 @@ TrustSignal sits **behind** the system that collected the artifact.
 
 | Layer | What Stays in Place |
 |---|---|
-| Evidence collection | Your existing platform (Vanta, Drata, internal collector) |
+| Evidence collection | Your existing platform (Drata or internal collector) |
 | System of record | Unchanged - TrustSignal adds to it, not replaces it |
 | Review workflow | Existing compliance or audit process |
 | **TrustSignal** | **Attests at ingestion. Signed receipt travels with artifact.** |
@@ -165,7 +165,7 @@ No workflow replacement required. Integrates at clear API boundaries.
 ```typescript
 const auditReadyReceipt = {
   receipt_id: "tsig_rcpt_01JTQY8N1Q0M4F4F5T4J4B8Y9R",
-  source: "vanta",
+  source: "grc_platform",
   artifact_hash: "sha256:93f6f35a550cbe1c3f0b5f0c12b9f0d62f3f9c6f8c6a4eddd8fa1fbfd4654af1",
   control_id: "CC6.1",
   timestamp: "2026-03-11T21:00:00Z",

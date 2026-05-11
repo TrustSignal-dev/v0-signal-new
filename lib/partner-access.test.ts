@@ -3,11 +3,11 @@ import { createPartnerAccessToken, verifyPartnerAccessToken } from "./partner-ac
 
 describe("partner-access session tokens", () => {
   beforeAll(() => {
-    process.env.PARTNER_SESSION_SECRET = "test-secret-at-least-32-chars-long-!!";
+    process.env.DRATA_ACCESS_HMAC_SECRET = "test-secret-at-least-32-chars-long-!!";
   });
 
   it("creates and verifies a valid token", async () => {
-    const partner = "vanta";
+    const partner = "drata";
     const token = await createPartnerAccessToken(partner);
     expect(token).toBeDefined();
     expect(token).toContain(".");
@@ -16,22 +16,21 @@ describe("partner-access session tokens", () => {
     expect(isValid).toBe(true);
   });
 
-  it("rejects token for different partner", async () => {
-    const token = await createPartnerAccessToken("vanta");
-    const isValid = await verifyPartnerAccessToken("drata", token);
+  it("rejects when token is missing", async () => {
+    const isValid = await verifyPartnerAccessToken("drata", undefined);
     expect(isValid).toBe(false);
   });
 
   it("rejects token with invalid signature", async () => {
-    const token = await createPartnerAccessToken("vanta");
+    const token = await createPartnerAccessToken("drata");
     const tamperedToken = token.slice(0, -5) + "abcde";
-    const isValid = await verifyPartnerAccessToken("vanta", tamperedToken);
+    const isValid = await verifyPartnerAccessToken("drata", tamperedToken);
     expect(isValid).toBe(false);
   });
 
   it("rejects expired token", async () => {
-    const partner = "vanta";
-    const secret = process.env.PARTNER_SESSION_SECRET!;
+    const partner = "drata";
+    const secret = process.env.DRATA_ACCESS_HMAC_SECRET!;
     
     // Manually create an expired token
     const iat = Math.floor(Date.now() / 1000) - 3600 * 24; // 1 day ago
@@ -60,7 +59,7 @@ describe("partner-access session tokens", () => {
   });
 
   it("rejects malformed payload", async () => {
-    const secret = process.env.PARTNER_SESSION_SECRET!;
+    const secret = process.env.DRATA_ACCESS_HMAC_SECRET!;
     const payload = "not-json";
     const encoder = new TextEncoder();
     const key = await crypto.subtle.importKey(
@@ -78,7 +77,7 @@ describe("partner-access session tokens", () => {
     const base64Payload = Buffer.from(payload).toString("base64url");
     const malformedToken = `${base64Payload}.${signature}`;
 
-    const isValid = await verifyPartnerAccessToken("vanta", malformedToken);
+    const isValid = await verifyPartnerAccessToken("drata", malformedToken);
     expect(isValid).toBe(false);
   });
 });

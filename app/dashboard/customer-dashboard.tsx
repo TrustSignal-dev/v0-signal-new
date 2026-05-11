@@ -36,6 +36,7 @@ export function CustomerDashboard({ user }: { user: { id: string; email: string 
     });
   }
 
+
   function handleCreateKey(formData: FormData) {
     const name = (formData.get('keyName') as string)?.trim();
     if (!name) return;
@@ -111,7 +112,7 @@ export function CustomerDashboard({ user }: { user: { id: string; email: string 
               <div className="mt-3">
                 <div className="h-2 rounded-full bg-slate-100 overflow-hidden">
                   <div
-                    className="h-full rounded-full bg-[#114d3f] transition-all"
+                    className="h-full rounded-full bg-[#E8503A] transition-all"
                     style={{ width: `${Math.min(100, (usage.used / usage.limit) * 100).toFixed(1)}%` }}
                   />
                 </div>
@@ -125,6 +126,7 @@ export function CustomerDashboard({ user }: { user: { id: string; email: string 
           <p className="text-sm text-slate-400">Load your usage stats above.</p>
         )}
       </section>
+
 
       {error ? (
         <div className="rounded-2xl border border-red-200 bg-red-50 p-4 text-sm text-red-700">
@@ -161,7 +163,7 @@ export function CustomerDashboard({ user }: { user: { id: string; email: string 
           <button
             type="submit"
             disabled={isPending || !keyName.trim()}
-            className="rounded-full bg-[#114d3f] px-5 py-2.5 text-sm font-semibold text-white disabled:opacity-50"
+            className="rounded-full bg-[#E8503A] px-5 py-2.5 text-sm font-semibold text-white disabled:opacity-50"
           >
             Create
           </button>

@@ -1,0 +1,10 @@
+# High-risk surfaces require explicit owner review
+
+# Auth and session flows
+app/auth/** @chrismaz11
+
+# Public API routes and handlers
+app/api/** @chrismaz11
+
+# Dependency automation policy
+.github/dependabot.yml @chrismaz11

@@ -32,7 +32,7 @@ export default function AgentNetworkSection() {
     },
     {
       id: "ACC-118",
-      name: "Vanta Production Sync",
+      name: "GRC Production Sync",
       status: "standby",
       location: "EU-West",
       lastSeen: "15 min ago",

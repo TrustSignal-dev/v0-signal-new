@@ -8,19 +8,17 @@ updates:
     labels:
       - dependencies
       - javascript
-    open-pull-requests-limit: 10
-    groups:
-      next-deps:
-        patterns:
-          - "next"
-          - "@next/*"
-      radix-deps:
-        patterns:
-          - "@radix-ui/*"
-      type-deps:
-        patterns:
-          - "@types/*"
-      minor-patch-deps:
+    open-pull-requests-limit: 5
+    # Patch-only policy for this public frontend. Major/minor updates require
+    # explicit, manual batching and review outside automated Dependabot flow.
+    ignore:
+      - dependency-name: "*"
         update-types:
-          - minor
+          - version-update:semver-major
+          - version-update:semver-minor
+    groups:
+      patch-deps:
+        patterns:
+          - "*"
+        update-types:
           - patch
