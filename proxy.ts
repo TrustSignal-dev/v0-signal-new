@@ -1,9 +1,13 @@
 import { createServerClient } from "@supabase/ssr";
-import { NextResponse, type NextRequest } from "next/server";
+import { type NextRequest, NextResponse } from "next/server";
 
 const SUPABASE_URL = process.env.NEXT_PUBLIC_SUPABASE_URL;
 const SUPABASE_ANON_KEY = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
 
+/**
+ * Edge middleware — refresh Supabase session cookies on every request
+ * and protect /dashboard routes from unauthenticated access.
+ */
 export async function proxy(request: NextRequest) {
   const pathname = request.nextUrl.pathname;
 
@@ -12,8 +16,7 @@ export async function proxy(request: NextRequest) {
   }
 
   if (!SUPABASE_URL || !SUPABASE_ANON_KEY) {
-    const isDashboardRoute = pathname.startsWith("/dashboard");
-    if (isDashboardRoute) {
+    if (pathname.startsWith("/dashboard")) {
       const signInUrl = request.nextUrl.clone();
       signInUrl.pathname = "/sign-in";
       signInUrl.searchParams.set("next", pathname);
@@ -37,10 +40,11 @@ export async function proxy(request: NextRequest) {
         for (const { name, value, options } of cookiesToSet) {
           supabaseResponse.cookies.set(name, value, options);
         }
-      },
+      }
     },
   });
 
+  // Refresh session — must be called before any auth checks.
   const {
     data: { user },
   } = await supabase.auth.getUser();
@@ -57,6 +61,13 @@ export async function proxy(request: NextRequest) {
 
 export const config = {
   matcher: [
+    /*
+     * Match all request paths except:
+     * - _next/static  (static files)
+     * - _next/image   (image optimization)
+     * - favicon.ico
+     * - public assets (.png, .svg, etc.)
+     */
     "/((?!_next/static|_next/image|favicon.ico|.*\\.(?:svg|png|jpg|jpeg|gif|webp)$).*)",
   ],
 };
