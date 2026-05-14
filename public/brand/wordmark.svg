@@ -1,0 +1,7 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 600 120" role="img" aria-label="TrustSignal">
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@700&amp;display=swap');
+    .wm { font-family: 'Space Grotesk', 'Inter', 'Helvetica Neue', system-ui, sans-serif; font-weight: 700; font-size: 96px; letter-spacing: -0.025em; }
+  </style>
+  <text x="0" y="92" class="wm" fill="currentColor">TrustSignal</text>
+</svg>

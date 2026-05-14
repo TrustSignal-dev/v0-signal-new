@@ -1,0 +1,18 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 160" role="img" aria-label="TrustSignal">
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@700&amp;display=swap');
+    .wm { font-family: 'Space Grotesk', 'Inter', 'Helvetica Neue', system-ui, sans-serif; font-weight: 700; font-size: 104px; letter-spacing: -0.025em; }
+  </style>
+  <!-- Mark, scaled into 160x160 region -->
+  <g transform="translate(0,16) scale(1)">
+    <rect x="4" y="60" width="14" height="8" rx="1.5" fill="currentColor"/>
+    <rect x="26" y="48" width="8" height="32" rx="1.5" fill="currentColor"/>
+    <rect x="42" y="36" width="8" height="56" rx="1.5" fill="currentColor"/>
+    <rect x="60" y="24" width="8" height="80" rx="1.5" fill="currentColor"/>
+    <rect x="78" y="36" width="8" height="56" rx="1.5" fill="currentColor"/>
+    <rect x="94" y="48" width="8" height="32" rx="1.5" fill="currentColor"/>
+    <rect x="110" y="60" width="14" height="8" rx="1.5" fill="currentColor"/>
+  </g>
+  <!-- Wordmark -->
+  <text x="160" y="108" class="wm" fill="currentColor">TrustSignal</text>
+</svg>

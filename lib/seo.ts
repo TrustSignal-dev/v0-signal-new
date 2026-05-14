@@ -14,7 +14,7 @@ export const DEFAULT_KEYWORDS = [
   "compliance evidence",
 ] as const;
 
-export const DEFAULT_OG_IMAGE = "/placeholder-logo.png";
+export const DEFAULT_OG_IMAGE = "/api/og";
 
 export function absoluteUrl(path = "/") {
   return new URL(path, SITE_URL).toString();

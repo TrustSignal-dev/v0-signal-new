@@ -1,17 +1,20 @@
-export const PARTNERS = ["drata"] as const;
+export const PARTNERS = ["drata", "ice"] as const;
 
 export type PartnerSlug = (typeof PARTNERS)[number];
 
 export const PARTNER_LABELS: Record<PartnerSlug, string> = {
   drata: "Drata",
+  ice: "ICE Mortgage Technology",
 };
 
 const PARTNER_PASSWORD_ENV: Record<PartnerSlug, string> = {
   drata: "DRATA_PARTNER_PASSWORD",
+  ice: "ICE_PARTNER_PASSWORD",
 };
 
 const PARTNER_COOKIE_NAMES: Record<PartnerSlug, string> = {
   drata: "drata_partner_access",
+  ice: "ice_partner_access",
 };
 
 export function isPartnerSlug(value: string | null | undefined): value is PartnerSlug {
@@ -53,7 +56,14 @@ export async function verifyPartnerPassword(partner: PartnerSlug, password: stri
 }
 
 function getSessionSecret() {
-  return process.env.DRATA_ACCESS_HMAC_SECRET || "";
+  // Shared HMAC secret for all partner-access session tokens.
+  // Falls back to the legacy DRATA_ACCESS_HMAC_SECRET so existing Drata
+  // deployments do not break while we transition.
+  return (
+    process.env.PARTNER_ACCESS_HMAC_SECRET ||
+    process.env.DRATA_ACCESS_HMAC_SECRET ||
+    ""
+  );
 }
 
 async function signValue(value: string, secret: string) {

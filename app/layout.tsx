@@ -51,10 +51,10 @@ export const metadata: Metadata = {
     type: "website",
     images: [
       {
-        url: absoluteUrl("/placeholder-logo.png"),
+        url: absoluteUrl("/api/og"),
         width: 1200,
         height: 630,
-        alt: "TrustSignal",
+        alt: "TrustSignal — evidence integrity infrastructure for compliance workflows",
       },
     ],
   },
@@ -63,7 +63,7 @@ export const metadata: Metadata = {
     title: "TrustSignal | Evidence Integrity Infrastructure for Compliance Workflows",
     description:
       "TrustSignal issues signed verification receipts so compliance and audit teams can prove when evidence was created, where it came from, and whether it has changed.",
-    images: [absoluteUrl("/placeholder-logo.png")],
+    images: [absoluteUrl("/api/og")],
   },
   icons: {
     icon: [
