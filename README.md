@@ -109,18 +109,17 @@ Submit an artifact or artifact reference -> receive a signed verification receip
 ### Verification Request
 
 ```json
-POST /api/attest-evidence
+POST /api/v1/verify
 Content-Type: application/json
 
 {
-  "source": "grc_platform",
+  "source": "encompass",
+  "loan_number": "2026-03-0042",
+  "document_type": "borrower_w2_2025",
+  "event_type": "income_document_received",
   "artifact_hash": "sha256:93f6f35a550cbe1c3f0b5f0c12b9f0d62f3f9c6f8c6a4eddd8fa1fbfd4654af1",
-  "control_id": "CC6.1",
   "timestamp": "2026-03-11T21:00:00Z",
-  "metadata": {
-    "artifact_type": "compliance_evidence",
-    "collector": "aws-config-snapshot"
-  }
+  "policy_profile": "mortgage_loan_file_integrity_v1"
 }
 ```
 
@@ -132,14 +131,12 @@ HTTP/1.1 201 Created
 {
   "receipt_id": "tsig_rcpt_01JTQY8N1Q0M4F4F5T4J4B8Y9R",
   "status": "signed",
-  "source": "grc_platform",
-  "control_id": "CC6.1",
+  "source": "encompass",
+  "loan_number": "2026-03-0042",
+  "document_type": "borrower_w2_2025",
   "attested_at": "2026-03-11T21:00:01Z",
   "signature": "tsig_sig_01JTQY8QK6X4YF7M6T2P9A5D3H",
-  "provenance": {
-    "artifact_type": "compliance_evidence",
-    "collector": "aws-config-snapshot"
-  }
+  "policy_profile": "mortgage_loan_file_integrity_v1"
 }
 ```
 
@@ -151,7 +148,7 @@ TrustSignal sits **behind** the system that collected the artifact.
 
 | Layer | What Stays in Place |
 |---|---|
-| Evidence collection | Your existing platform (Drata or internal collector) |
+| Evidence collection | Your existing platform (Encompass, Drata, or internal collector) |
 | System of record | Unchanged - TrustSignal adds to it, not replaces it |
 | Review workflow | Existing compliance or audit process |
 | **TrustSignal** | **Attests at ingestion. Signed receipt travels with artifact.** |
@@ -165,16 +162,15 @@ No workflow replacement required. Integrates at clear API boundaries.
 ```typescript
 const auditReadyReceipt = {
   receipt_id: "tsig_rcpt_01JTQY8N1Q0M4F4F5T4J4B8Y9R",
-  source: "grc_platform",
+  source: "encompass",
+  loan_number: "2026-03-0042",
+  document_type: "borrower_w2_2025",
+  event_type: "income_document_received",
   artifact_hash: "sha256:93f6f35a550cbe1c3f0b5f0c12b9f0d62f3f9c6f8c6a4eddd8fa1fbfd4654af1",
-  control_id: "CC6.1",
   timestamp: "2026-03-11T21:00:00Z",
   receipt_status: "signed",
   verification_status: "match",
-  provenance: {
-    artifact_type: "compliance_evidence",
-    collector: "aws-config-snapshot"
-  }
+  policy_profile: "mortgage_loan_file_integrity_v1"
 }
 ```
 

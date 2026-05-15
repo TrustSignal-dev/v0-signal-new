@@ -23,9 +23,12 @@ export const metadata: Metadata = createPageMetadata({
 
 const integrationSnippet = `// Existing workflow remains the system of record
 const artifact = {
-  source: "record_system",
+  source: "encompass",
+  loan_number: "2026-03-0042",
+  document_type: "borrower_w2_2025",
+  event_type: "income_document_received",
   artifact_hash: "0x8b7b2f52f2a2e19f8f3fe0d815d1c1d8d1e0d120e8cc60d1baf5e7a6f9d211aa",
-  control_id: "CONTROL_CC_001",
+  policy_profile: "mortgage_loan_file_integrity_v1",
 }
 
 // TrustSignal adds verification and receipt outputs

@@ -26,7 +26,7 @@ export default function OperationsSection() {
   const operations: Operation[] = [
     {
       id: "RUN-2025-001",
-      name: "SOC 2 ACCESS REVIEW",
+      name: "ACCESS REVIEW WORKFLOW",
       status: "active",
       priority: "critical",
       location: "Identity Controls",

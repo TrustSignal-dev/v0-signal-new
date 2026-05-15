@@ -260,7 +260,7 @@ export default function CommandCenterSection() {
                   time: "25/06/2025 09:29",
                   agent: "github-audit-export",
                   action: "matched signed receipt for",
-                  location: "SOC2 Access Review",
+                  location: "Access Review",
                   target: "rcpt_01hzg7",
                 },
                 {

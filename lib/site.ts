@@ -15,7 +15,6 @@ export const PRIMARY_NAV_LINKS = [
   { name: "Problem", href: "#problem" },
   { name: "Integrity Model", href: "#integrity-model" },
   { name: "Integration Fit", href: "#integration" },
-  { name: "Partner Demos", href: "/partner-access" },
   { name: "Claims Boundary", href: "#claims-boundary" },
   { name: "Pilot Request", href: "#pilot-request" },
 ] as const;

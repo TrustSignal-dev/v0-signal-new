@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
-import { ArrowRight, FileCheck2, Shield, ShieldCheck, Workflow } from "lucide-react";
+import { ArrowRight, ExternalLink, FileCheck2, Shield, ShieldCheck, Workflow } from "lucide-react";
 import { AnimatedSphere } from "./animated-sphere";
 
 const heroHighlights = [
@@ -85,22 +85,29 @@ export function HeroSection() {
           >
             <span className="block text-balance">Evidence Integrity</span>
             <span className="block text-balance">Infrastructure</span>
-            <span className="block text-muted-foreground text-balance">for existing compliance workflows</span>
+            <span className="block text-muted-foreground text-balance">for mortgage and compliance workflows</span>
           </h1>
         </div>
         
         {/* Description */}
         <div className="grid lg:grid-cols-2 gap-12 lg:gap-24 items-end">
-          <p 
-            className={`text-xl lg:text-2xl text-muted-foreground leading-relaxed max-w-xl transition-all duration-700 delay-200 ${
+          <div
+            className={`space-y-5 transition-all duration-700 delay-200 ${
               isVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-4"
             }`}
           >
-            TrustSignal issues signed verification receipts so organizations can
-            prove when evidence was created, where it came from, and whether it
-            has changed. It adds an integrity layer to existing workflows
-            without replacing the system of record.
-          </p>
+            <p className="text-xl lg:text-2xl text-muted-foreground leading-relaxed max-w-xl">
+              TrustSignal is evidence integrity infrastructure that protects
+              mortgage loan files from post-sale document tampering. It issues
+              signed verification receipts at each material loan event so teams
+              can prove artifact state at post-close audit or repurchase review
+              — without replacing the system of record.
+            </p>
+            <p className="text-sm text-muted-foreground/70 max-w-xl">
+              The same integrity layer applies to any compliance workflow where
+              evidence provenance must be confirmed later.
+            </p>
+          </div>
           
           {/* CTAs */}
           <div 
@@ -114,9 +121,9 @@ export function HeroSection() {
                 size="lg" 
                 className="bg-foreground hover:bg-foreground/90 text-background px-8 h-14 text-base rounded-full group"
               >
-                <a href="#pilot-request">
-                  Request a Lightweight Pilot
-                  <ArrowRight className="w-4 h-4 ml-2 transition-transform group-hover:translate-x-1" />
+                <a href="https://demo.trustsignal.dev" target="_blank" rel="noreferrer">
+                  Try the Live Demo
+                  <ExternalLink className="w-4 h-4 ml-2" />
                 </a>
               </Button>
               <Button 
@@ -125,7 +132,7 @@ export function HeroSection() {
                 variant="outline" 
                 className="h-14 px-8 text-base rounded-full border-foreground/20 hover:bg-foreground/5"
               >
-                <a href="#integration">See Integration Fit</a>
+                <a href="#pilot-request">Request a Pilot</a>
               </Button>
             </div>
 

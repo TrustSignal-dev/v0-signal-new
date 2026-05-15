@@ -101,13 +101,19 @@ export const RECEIPT_EXAMPLE = `{
   "receiptVersion": "2.0",
   "receiptId": "623e0b54-87b3-42b7-bc89-65fae0ad8d5e",
   "createdAt": "2026-03-12T15:24:01.000Z",
-  "policyProfile": "CONTROL_CC_001",
+  "policyProfile": "mortgage_loan_file_integrity_v1",
+  "subject": {
+    "source": "encompass",
+    "loan_number": "2026-03-0042",
+    "document_type": "borrower_w2_2025",
+    "event_type": "income_document_received"
+  },
   "inputsCommitment": "0x2dded9c1b5c4c6d91df58a1b1793cb527f2b0cf5ddaf447f5b7d9839f7ab7d01",
   "checks": [
     {
-      "checkId": "registry.status",
+      "checkId": "artifact.hash_match",
       "status": "PASS",
-      "details": "Source responded with a current record"
+      "details": "Artifact digest matches the previously receipted state"
     }
   ],
   "decision": "ALLOW",

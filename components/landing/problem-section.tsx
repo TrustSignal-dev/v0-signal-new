@@ -6,21 +6,21 @@ import { AlertTriangle, Clock3, FileSearch, Link2 } from "lucide-react";
 const evidenceRisks = [
   {
     icon: Clock3,
-    title: "Evidence drifts over time",
+    title: "Post-sale document tampering",
     description:
-      "Files, exports, and screenshots can change after initial collection as they move between teams and systems.",
+      "Mortgage loan files pass through many hands between origination and post-close. Documents collected at intake can be modified before repurchase review, shifting repurchase risk onto lenders.",
   },
   {
     icon: FileSearch,
     title: "Provenance gets harder to confirm",
     description:
-      "Weeks or months later, reviewers often cannot easily prove where an artifact came from or when it was captured.",
+      "Weeks or months later, reviewers often cannot easily prove where an artifact came from, when it was captured, or whether it still matches what was originally checked.",
   },
   {
     icon: Link2,
     title: "Audit readiness weakens",
     description:
-      "Teams need a reliable way to verify what was collected, when it was collected, and from which source system.",
+      "Teams need a reliable way to verify what was collected, when it was collected, and from which source system — especially when audit or repurchase review happens long after origination.",
   },
 ] as const;
 
@@ -72,18 +72,18 @@ export function ProblemSection() {
               isVisible ? "translate-y-0 opacity-100" : "translate-y-4 opacity-0"
             }`}
           >
-            Evidence can drift after collection.
+            Mortgage loan files can be tampered with after sale.
             <br />
-            <span className="text-background/55">Verification gets harder later.</span>
+            <span className="text-background/55">Repurchase risk lands on the lender.</span>
           </h2>
           <p
             className={`mt-8 max-w-3xl text-xl leading-relaxed text-background/60 transition-all duration-700 delay-100 ${
               isVisible ? "translate-y-0 opacity-100" : "translate-y-4 opacity-0"
             }`}
           >
-            Compliance and audit teams rely on artifacts that pass through
-            multiple systems. Without a durable integrity reference, provenance
-            can become difficult to validate during later review.
+            Evidence integrity infrastructure protects against post-sale document
+            tampering by anchoring artifact state at each material loan event.
+            When repurchase review demands proof, the signed receipt is already there.
           </p>
         </div>
 

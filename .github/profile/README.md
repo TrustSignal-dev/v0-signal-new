@@ -16,20 +16,23 @@ TrustSignal adds an integrity layer at the handoff point:
 - **Verifiable provenance** - source metadata travels with the receipt from the start
 - **Later integrity checks** - compare the current artifact against the original receipt before audit review
 - **Tamper detection** - mismatch signals surface when a record no longer matches intake state
-- **No workflow replacement** - fits alongside Drata and existing GRC platforms via a clean API boundary
+- **No workflow replacement** - fits alongside Encompass, Drata, and existing GRC platforms via a clean API boundary
 
 ---
 
 ### How It Works
 
 ```
-POST /api/attest-evidence
+POST /api/v1/verify
 
 {
-  "source": "grc_platform",
+  "source": "encompass",
+  "loan_number": "2026-03-0042",
+  "document_type": "borrower_w2_2025",
+  "event_type": "income_document_received",
   "artifact_hash": "sha256:93f6f35...",
-  "control_id": "CC6.1",
-  "timestamp": "2026-03-11T21:00:00Z"
+  "timestamp": "2026-03-11T21:00:00Z",
+  "policy_profile": "mortgage_loan_file_integrity_v1"
 }
 
 -> Returns a signed receipt with verification signal and provenance metadata
@@ -43,9 +46,10 @@ POST /api/attest-evidence
 
 | Use Case | How TrustSignal Fits |
 |---|---|
+| Mortgage loan file integrity | Receipts at URLA intake, income docs, appraisal, closing package, post-close audit |
 | Compliance evidence pipelines | Attests artifacts at ingestion, returns signed receipts |
 | Audit-readiness workflows | Provides tamper-evident reference for later review |
-| GRC platform integrations | Sits behind Drata or internal collectors |
+| GRC platform integrations | Sits behind Encompass, Drata, or internal collectors |
 | Security and partner review | Public API contract, claims boundary, and threat model available |
 
 ---
