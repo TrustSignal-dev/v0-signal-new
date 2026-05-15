@@ -71,55 +71,78 @@ function formatCurrency(value: string): string {
 }
 
 // ---------------------------------------------------------------------------
-// Simulated API responses (used when DEMO_API_KEY is not configured)
+// Simulated API responses
+// Shapes match the real OpenAPI schema (openapi.yaml VerificationResponse /
+// VerificationStatus) so the receipt panel renders identically in sim mode.
 // ---------------------------------------------------------------------------
 
 function makeIngestSim(hash: string): Record<string, unknown> {
   return {
-    id: `doc_${hash.slice(0, 16)}`,
-    artifact_hash: `sha256:${hash}`,
-    document_type: "mortgage_closing_disclosure",
-    created_at: new Date().toISOString(),
-    status: "indexed",
+    status: "prepared",
+    doc_hash: `sha256:${hash}`,
+    transaction_type: "mortgage_closing",
+    bundle_id: `demo-${hash.slice(0, 8)}-${Date.now()}`,
+    message: "Payload prepared. Ready to anchor.",
   };
 }
 
+// Matches VerificationResponse from POST /api/v1/verify
 function makeAnchorSim(hash: string): Record<string, unknown> {
   return {
-    receipt_id: `rcpt_${hash.slice(0, 12)}`,
-    artifact_hash: `sha256:${hash}`,
-    anchored_at: new Date().toISOString(),
-    issuer: "TrustSignal",
-    algorithm: "SHA-256",
-    chain: "ethereum-mainnet",
-    status: "anchored",
-    signature: `0x${hash.slice(0, 64)}`,
+    receiptVersion: "2.0",
+    status: "clean",
+    decision: "ALLOW",
+    reasons: ["receipt issued"],
+    receiptId: `demo-${hash.slice(0, 8)}-${Date.now().toString(36)}`,
+    receiptHash: `0x${hash}`,
+    receiptSignature: {
+      alg: "EdDSA",
+      kid: "trustsignal-demo",
+      signature: `simulated-${hash.slice(0, 32)}`,
+    },
+    anchor: { status: "PENDING", subjectDigest: `0x${hash}` },
+    revocation: { status: "ACTIVE" },
   };
 }
 
+// Matches VerificationStatus from POST /api/v1/receipt/{receiptId}/verify
 function makeVerifySim(
   verified: boolean,
-  submittedHash: string,
   anchoredHash: string,
   receiptId: string,
 ): Record<string, unknown> {
   if (verified) {
     return {
       verified: true,
-      receipt_id: receiptId,
-      artifact_hash: `sha256:${submittedHash}`,
-      verified_at: new Date().toISOString(),
-      message: "Document integrity confirmed. Hash matches anchored record.",
+      integrityVerified: true,
+      signatureVerified: true,
+      signatureStatus: "verified",
+      proofVerified: true,
+      recomputedHash: `0x${anchoredHash}`,
+      storedHash: `0x${anchoredHash}`,
+      inputsCommitment: `0x${anchoredHash.slice(0, 32)}`,
+      receiptSignature: { alg: "EdDSA", kid: "trustsignal-demo" },
+      revoked: false,
     };
   }
+  // "Modified" failure narrative — the stored receipt's hash no longer matches
+  // because the document was altered after anchoring.
+  const modifiedHash = anchoredHash.replace(/^(.{8})/, "deadbeef");
   return {
     verified: false,
-    receipt_id: receiptId,
-    submitted_hash: `sha256:${submittedHash}`,
-    anchored_hash: `sha256:${anchoredHash}`,
+    integrityVerified: false,
+    signatureVerified: true,
+    signatureStatus: "verified",
+    proofVerified: false,
+    recomputedHash: `0x${modifiedHash}`,
+    storedHash: `0x${anchoredHash}`,
+    inputsCommitment: `0x${anchoredHash.slice(0, 32)}`,
+    receiptSignature: { alg: "EdDSA", kid: "trustsignal-demo" },
+    revoked: false,
     mismatch_detail:
-      "Hash mismatch detected. The submitted document does not match the anchored record. Field change detected: interest_rate (6.125% → 5.875%).",
-    verified_at: new Date().toISOString(),
+      "Integrity check failed. Recomputed hash does not match the stored receipt hash. Field change detected: interest_rate (6.125% → 5.875%).",
+    submitted_hash: `0x${modifiedHash}`,
+    anchored_hash: `0x${anchoredHash}`,
   };
 }
 
@@ -450,17 +473,30 @@ function DropZone({
 // ---------------------------------------------------------------------------
 
 function PayloadPanel({ doc, hash }: { doc: DocRecord; hash: string }) {
+  // Real VerificationRequest shape (POST /api/v1/verify)
   const payload = {
-    artifact_hash: hash ? `sha256:${hash}` : "computing…",
-    document_type: doc.document_type,
-    metadata: {
-      borrower_name: doc.borrower_name,
-      loan_amount: doc.loan_amount,
-      interest_rate: doc.interest_rate,
-      closing_date: doc.closing_date,
-      lender_name: doc.lender_name,
-      loan_number: doc.loan_number,
+    bundleId: hash ? `demo-${hash.slice(0, 8)}-${new Date().toISOString().slice(0, 10)}` : "computing…",
+    transactionType: "mortgage_closing",
+    ron: {
+      provider: "demo-notary-systems",
+      notaryId: "DEMO-NOTARY-001",
+      commissionState: "TX",
+      sealPayload: hash ? `sha256:${hash}` : "computing…",
     },
+    doc: {
+      docHash: hash ? `sha256:${hash}` : "computing…",
+    },
+    policy: { profile: "DEMO_MORTGAGE_001" },
+    property: {
+      parcelId: "TRAVIS-TX-2847-MAPLE",
+      county: "Travis",
+      state: "TX",
+    },
+    ocrData: {
+      grantorName: doc.borrower_name,
+      propertyAddress: doc.property_address,
+    },
+    timestamp: new Date().toISOString(),
   };
 
   return (
@@ -469,7 +505,7 @@ function PayloadPanel({ doc, hash }: { doc: DocRecord; hash: string }) {
         className="text-[9px] uppercase tracking-widest text-zinc-600 mb-3"
         style={{ fontFamily: "var(--font-space-mono, monospace)" }}
       >
-        POST /api/v1/documents
+        POST /api/v1/verify
       </p>
       <pre
         className="text-[11px] text-zinc-300 whitespace-pre-wrap leading-relaxed overflow-auto max-h-56"
@@ -646,7 +682,10 @@ function VerifyResult({
   if (!state.response) return null;
 
   const data = state.response;
-  const verified = data.verified === true || data.match === true || data.status === "verified";
+  // VerificationStatus: verified = overall result; also check integrityVerified
+  const verified =
+    data.verified === true &&
+    data.integrityVerified !== false;
   const excluded = new Set(["_simulated", "verified", "match"]);
   const entries = Object.entries(data).filter(([k]) => !excluded.has(k));
   const mismatchDetail = typeof data.mismatch_detail === "string" ? data.mismatch_detail : null;
@@ -865,58 +904,61 @@ export function DemoPlayground() {
     if (!canStart) return;
 
     const selectedHash = hashes.selected;
-    const originalHash = hashes.original;
 
     // ---- INGEST ----
+    // No real API endpoint for standalone ingest; the proxy returns a synthetic
+    // "prepared" acknowledgement so the UI can show the payload-preview step.
     setStep("ingest");
     setIngestState({ status: "loading", response: null, simulated: false });
 
     let ingestData: Record<string, unknown>;
-    let ingestSim = false;
 
     try {
-      const { data, needsSim } = await callProxy("ingest", {
-        artifact_hash: `sha256:${selectedHash}`,
-        document_type: selectedDoc.document_type,
-        metadata: {
-          borrower_name: selectedDoc.borrower_name,
-          loan_amount: selectedDoc.loan_amount,
-          interest_rate: selectedDoc.interest_rate,
-          closing_date: selectedDoc.closing_date,
-          lender_name: selectedDoc.lender_name,
-          loan_number: selectedDoc.loan_number,
-        },
+      const { data } = await callProxy("ingest", {
+        doc_hash: `sha256:${selectedHash}`,
+        transaction_type: "mortgage_closing",
+        bundle_id: `demo-${selectedHash.slice(0, 8)}-${new Date().toISOString().slice(0, 10)}`,
       });
-      if (needsSim) {
-        ingestData = makeIngestSim(selectedHash);
-        ingestSim = true;
-      } else {
-        ingestData = data;
-      }
+      ingestData = data;
     } catch {
       ingestData = makeIngestSim(selectedHash);
-      ingestSim = true;
     }
 
-    setIngestState({ status: "done", response: ingestData, simulated: ingestSim });
+    // Proxy always returns synthetic ingest data (no real upstream); simulated: false
+    // means "this is what the proxy returned" — the proxy comment explains it's synthetic.
+    setIngestState({ status: "done", response: ingestData, simulated: false });
 
     await new Promise((r) => setTimeout(r, 1400));
 
     // ---- ANCHOR ----
+    // Calls POST /api/v1/verify (VerificationRequest → VerificationResponse)
     setStep("anchor");
     setAnchorState({ status: "loading", response: null, simulated: false });
 
-    const docId =
-      typeof ingestData.id === "string" ? ingestData.id : `doc_${selectedHash.slice(0, 12)}`;
+    const verificationPayload = {
+      bundleId: `demo-${selectedHash.slice(0, 8)}-${new Date().toISOString().slice(0, 10)}`,
+      transactionType: "mortgage_closing",
+      ron: {
+        provider: "demo-notary-systems",
+        notaryId: "DEMO-NOTARY-001",
+        commissionState: "TX",
+        sealPayload: `sha256:${selectedHash}`,
+      },
+      doc: { docHash: `sha256:${selectedHash}` },
+      policy: { profile: "DEMO_MORTGAGE_001" },
+      property: { parcelId: "TRAVIS-TX-2847-MAPLE", county: "Travis", state: "TX" },
+      ocrData: {
+        grantorName: selectedDoc.borrower_name,
+        propertyAddress: selectedDoc.property_address,
+      },
+      timestamp: new Date().toISOString(),
+    };
 
     let anchorData: Record<string, unknown>;
     let anchorSim = false;
 
     try {
-      const { data, needsSim } = await callProxy("anchor", {
-        artifact_hash: `sha256:${selectedHash}`,
-        document_id: docId,
-      });
+      const { data, needsSim } = await callProxy("anchor", verificationPayload);
       if (needsSim) {
         anchorData = makeAnchorSim(selectedHash);
         anchorSim = true;
@@ -933,38 +975,45 @@ export function DemoPlayground() {
     await new Promise((r) => setTimeout(r, 1400));
 
     // ---- VERIFY ----
+    // Calls POST /api/v1/receipt/{receiptId}/verify (no body)
+    // Real API returns VerificationStatus { verified, integrityVerified, … }
+    //
+    // For the "modified doc" failure narrative: the real API will return
+    // verified: true (the receipt is valid regardless of which docHash was anchored).
+    // We force simulation for modified docs so the demo shows the intended failure.
     setStep("verify");
     setVerifyState({ status: "loading", response: null, simulated: false });
 
+    // Real API uses camelCase receiptId; simulated uses receipt_id
     const receiptId =
-      typeof anchorData.receipt_id === "string"
-        ? anchorData.receipt_id
-        : `rcpt_${selectedHash.slice(0, 12)}`;
+      typeof anchorData.receiptId === "string"
+        ? anchorData.receiptId
+        : typeof anchorData.receipt_id === "string"
+          ? anchorData.receipt_id
+          : `demo-${selectedHash.slice(0, 8)}`;
 
-    // Always verify using the ORIGINAL document's hash.
-    // - If user chose "original": hashes match → PASS
-    // - If user chose "modified" or "custom": hashes differ → FAIL
-    // Custom uploads verify against themselves (self-anchored → always PASS)
-    const verifyHash = choice === "custom" ? selectedHash : originalHash;
     const isVerified = choice === "original" || choice === "custom";
 
     let verifyData: Record<string, unknown>;
     let verifySim = false;
 
-    try {
-      const { data, needsSim } = await callProxy("verify", {
-        receipt_id: receiptId,
-        artifact_hash: `sha256:${verifyHash}`,
-      });
-      if (needsSim) {
-        verifyData = makeVerifySim(isVerified, verifyHash, selectedHash, receiptId);
-        verifySim = true;
-      } else {
-        verifyData = data;
-      }
-    } catch {
-      verifyData = makeVerifySim(isVerified, verifyHash, selectedHash, receiptId);
+    if (choice === "modified") {
+      // Always simulate failure for the modified-doc demo narrative
+      verifyData = makeVerifySim(false, selectedHash, receiptId);
       verifySim = true;
+    } else {
+      try {
+        const { data, needsSim } = await callProxy("verify", { receipt_id: receiptId });
+        if (needsSim) {
+          verifyData = makeVerifySim(isVerified, selectedHash, receiptId);
+          verifySim = true;
+        } else {
+          verifyData = data;
+        }
+      } catch {
+        verifyData = makeVerifySim(isVerified, selectedHash, receiptId);
+        verifySim = true;
+      }
     }
 
     setVerifyState({ status: "done", response: verifyData, simulated: verifySim });
