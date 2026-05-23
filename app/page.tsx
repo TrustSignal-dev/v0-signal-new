@@ -6,6 +6,7 @@ import { EvidenceFlowMarqueeSection } from "@/components/landing/evidence-flow-m
 import { IntegrationsSection } from "@/components/landing/integrations-section";
 import { DevelopersSection } from "@/components/landing/developers-section";
 import { ClaimsBoundarySection } from "@/components/landing/claims-boundary-section";
+import { PhysicalAttestationSection } from "@/components/landing/physical-attestation-section";
 import { ComplianceWorkflowsSection } from "@/components/landing/compliance-workflows-section";
 import { SecuritySection } from "@/components/landing/security-section";
 import { DemoSection } from "@/components/landing/demo-section";
@@ -20,7 +21,7 @@ export const metadata: Metadata = {
     absolute: "TrustSignal | Evidence Integrity Infrastructure for Compliance Workflows",
   },
   description:
-    "TrustSignal issues signed verification receipts so compliance and audit teams can prove when evidence was created, where it came from, and whether it has changed.",
+    "TrustSignal issues signed cryptographic receipts so compliance and audit teams can prove when evidence was collected, where it came from, and whether it has changed — across any high-trust workflow.",
   keywords: [
     ...DEFAULT_KEYWORDS,
     "compliance workflow",
@@ -75,6 +76,9 @@ export default function Home() {
         <DevelopersSection />
       </RevealOnScroll>
       <RevealOnScroll delayMs={120}>
+        <PhysicalAttestationSection />
+      </RevealOnScroll>
+      <RevealOnScroll delayMs={130}>
         <ClaimsBoundarySection />
       </RevealOnScroll>
       <RevealOnScroll delayMs={140}>

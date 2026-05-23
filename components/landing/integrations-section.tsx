@@ -21,7 +21,38 @@ const integrationSteps = [
   },
 ] as const;
 
+// Default: compliance / SOC 2 example
 const codeExample = `POST /api/v1/verify
+Content-Type: application/json
+
+{
+  "source": "vanta",
+  "control_id": "ctrl-2026-0042",
+  "document_type": "soc2_control_evidence",
+  "event_type": "evidence_artifact_ingested",
+  "artifact_hash": "sha256:93f6f35a550cbe1c3f0b5f0c12b9f0d62f3f9c6f8c6a4eddd8fa1fbfd4654af1",
+  "timestamp": "2026-03-11T21:00:00Z",
+  "policy_profile": "compliance_evidence_integrity_v1"
+}
+
+HTTP/1.1 201 Created
+
+{
+  "receipt_id": "tsig_rcpt_01JTQY8N1Q0M4F4F5T4J4B8Y9R",
+  "status": "signed",
+  "source": "vanta",
+  "control_id": "ctrl-2026-0042",
+  "document_type": "soc2_control_evidence",
+  "attested_at": "2026-03-11T21:00:01Z",
+  "signature": "tsig_sig_01JTQY8QK6X4YF7M6T2P9A5D3H",
+  "proof_verified": true,
+  "proof_status": "zkml_integrity_check_passed",
+  "policy_profile": "compliance_evidence_integrity_v1"
+}`;
+
+// Secondary: mortgage / Encompass example
+const mortgageExample = `// Mortgage / Encompass example
+POST /api/v1/verify
 Content-Type: application/json
 
 {
@@ -32,23 +63,11 @@ Content-Type: application/json
   "artifact_hash": "sha256:93f6f35a550cbe1c3f0b5f0c12b9f0d62f3f9c6f8c6a4eddd8fa1fbfd4654af1",
   "timestamp": "2026-03-11T21:00:00Z",
   "policy_profile": "mortgage_loan_file_integrity_v1"
-}
-
-HTTP/1.1 201 Created
-
-{
-  "receipt_id": "tsig_rcpt_01JTQY8N1Q0M4F4F5T4J4B8Y9R",
-  "status": "signed",
-  "source": "encompass",
-  "loan_number": "2026-03-0042",
-  "document_type": "borrower_w2_2025",
-  "attested_at": "2026-03-11T21:00:01Z",
-  "signature": "tsig_sig_01JTQY8QK6X4YF7M6T2P9A5D3H",
-  "policy_profile": "mortgage_loan_file_integrity_v1"
 }`;
 
 export function IntegrationsSection() {
   const [isVisible, setIsVisible] = useState(false);
+  const [activeTab, setActiveTab] = useState<"compliance" | "mortgage">("compliance");
   const sectionRef = useRef<HTMLElement>(null);
 
   useEffect(() => {
@@ -147,21 +166,37 @@ export function IntegrationsSection() {
             }`}
           >
             <div className="border border-background/10 bg-background/[0.02] shadow-[0_32px_80px_rgba(0,0,0,0.18)]">
-              <div className="flex items-center justify-between border-b border-background/10 px-6 py-4">
-                <span className="text-sm font-mono text-background/45">
-                  Example verification request
-                </span>
+              <div className="flex items-center gap-0 border-b border-background/10">
+                <button
+                  onClick={() => setActiveTab("compliance")}
+                  className={`px-5 py-3 text-xs font-mono transition-colors ${
+                    activeTab === "compliance"
+                      ? "text-background border-b border-background"
+                      : "text-background/40 hover:text-background/70"
+                  }`}
+                >
+                  SOC 2 / Compliance
+                </button>
+                <button
+                  onClick={() => setActiveTab("mortgage")}
+                  className={`px-5 py-3 text-xs font-mono transition-colors ${
+                    activeTab === "mortgage"
+                      ? "text-background border-b border-background"
+                      : "text-background/40 hover:text-background/70"
+                  }`}
+                >
+                  Mortgage / Encompass
+                </button>
               </div>
               <div className="overflow-x-auto p-6 font-mono text-sm">
                 <pre className="whitespace-pre text-background/72">
-                  {codeExample}
+                  {activeTab === "compliance" ? codeExample : mortgageExample}
                 </pre>
               </div>
             </div>
 
             <p className="mt-5 text-sm leading-relaxed text-background/50">
-              The same fields can be emitted from a webhook if your evidence
-              platform already has an event-driven collection flow.
+              The same request shape works for any compliance workflow with an event-driven or webhook-based collection flow. Policy profiles are configured per workflow vertical.
             </p>
             <p className="mt-3 border border-background/10 bg-background/[0.04] px-4 py-3 text-sm leading-relaxed text-background/55">
               Production note: plan for authentication, environment

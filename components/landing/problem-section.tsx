@@ -6,21 +6,21 @@ import { AlertTriangle, Clock3, FileSearch, Link2 } from "lucide-react";
 const evidenceRisks = [
   {
     icon: Clock3,
-    title: "Post-sale document tampering",
+    title: "Post-collection tampering",
     description:
-      "Mortgage loan files pass through many hands between origination and post-close. Documents collected at intake can be modified before repurchase review, shifting repurchase risk onto lenders.",
+      "Compliance artifacts pass through many hands between collection and audit review. Documents ingested at intake can be modified, migrated, or silently overwritten before a reviewer sees them — shifting audit defensibility risk onto the organization.",
   },
   {
     icon: FileSearch,
     title: "Provenance gets harder to confirm",
     description:
-      "Weeks or months later, reviewers often cannot easily prove where an artifact came from, when it was captured, or whether it still matches what was originally checked.",
+      "Weeks or months later, reviewers often cannot prove where an artifact came from, when it was captured, or whether it still matches what was originally checked. Source systems go offline. Logs are controlled by the same infrastructure that stores the evidence.",
   },
   {
     icon: Link2,
     title: "Audit readiness weakens",
     description:
-      "Teams need a reliable way to verify what was collected, when it was collected, and from which source system — especially when audit or repurchase review happens long after origination.",
+      "Teams need a reliable way to verify what was collected, when it was collected, and from which source system — especially when audit review happens long after ingestion. A signed receipt at ingestion answers that question independently of the original collection workflow.",
   },
 ] as const;
 
@@ -72,18 +72,18 @@ export function ProblemSection() {
               isVisible ? "translate-y-0 opacity-100" : "translate-y-4 opacity-0"
             }`}
           >
-            Mortgage loan files can be tampered with after sale.
+            Evidence artifacts can be tampered with after collection.
             <br />
-            <span className="text-background/55">Repurchase risk lands on the lender.</span>
+            <span className="text-background/55">Audit-time integrity is not guaranteed.</span>
           </h2>
           <p
             className={`mt-8 max-w-3xl text-xl leading-relaxed text-background/60 transition-all duration-700 delay-100 ${
               isVisible ? "translate-y-0 opacity-100" : "translate-y-4 opacity-0"
             }`}
           >
-            Evidence integrity infrastructure protects against post-sale document
-            tampering by anchoring artifact state at each material loan event.
-            When repurchase review demands proof, the signed receipt is already there.
+            Evidence integrity infrastructure protects against post-collection
+            tampering by anchoring artifact state at each material workflow event.
+            When audit review demands proof, the signed receipt is already there.
           </p>
         </div>
 

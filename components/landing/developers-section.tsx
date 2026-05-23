@@ -50,15 +50,17 @@ const techSpecs = [
 const codeExample = `// Receipt model
 const auditReadyReceipt = {
   receipt_id: "tsig_rcpt_01JTQY8N1Q0M4F4F5T4J4B8Y9R",
-  source: "encompass",
-  loan_number: "2026-03-0042",
-  document_type: "borrower_w2_2025",
-  event_type: "income_document_received",
+  source: "vanta",
+  control_id: "ctrl-2026-0042",
+  document_type: "soc2_control_evidence",
+  event_type: "evidence_artifact_ingested",
   artifact_hash: "sha256:93f6f35a550cbe1c3f0b5f0c12b9f0d62f3f9c6f8c6a4eddd8fa1fbfd4654af1",
   timestamp: "2026-03-11T21:00:00Z",
   receipt_status: "signed",
   verification_status: "match",
-  policy_profile: "mortgage_loan_file_integrity_v1"
+  proof_verified: true,
+  proof_status: "zkml_integrity_check_passed",
+  policy_profile: "compliance_evidence_integrity_v1"
 }
 
 // TrustSignal sits behind the system that collected

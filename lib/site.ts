@@ -15,9 +15,12 @@ export const PRIMARY_NAV_LINKS = [
   { name: "Problem", href: "#problem" },
   { name: "Integrity Model", href: "#integrity-model" },
   { name: "Integration Fit", href: "#integration" },
+  { name: "Physical Attestation", href: "#physical-attestation" },
   { name: "Claims Boundary", href: "#claims-boundary" },
   { name: "Pilot Request", href: "#pilot-request" },
 ] as const;
+
+export const TRUSTSIGNAL_YOUTUBE_URL = "https://www.youtube.com/@trustsignal-dev";
 
 export const DEVELOPER_DOC_LINKS = [
   {

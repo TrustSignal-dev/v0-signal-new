@@ -133,7 +133,7 @@ function makeVerifySim(
     integrityVerified: false,
     signatureVerified: true,
     signatureStatus: "verified",
-    proofVerified: false,
+    proofVerified: false, // tamper scenario: proof fails when hash mismatch detected
     recomputedHash: `0x${modifiedHash}`,
     storedHash: `0x${anchoredHash}`,
     inputsCommitment: `0x${anchoredHash.slice(0, 32)}`,

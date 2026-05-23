@@ -8,6 +8,7 @@ import {
   ACCOUNT_LINKS,
   CONTACT_EMAIL,
   TRUSTSIGNAL_GITHUB_URL,
+  TRUSTSIGNAL_YOUTUBE_URL,
   PRIMARY_NAV_LINKS,
   TRUSTSIGNAL_REVIEW_REPO_URL,
 } from "@/lib/site";
@@ -38,6 +39,7 @@ const footerLinks = {
 
 const socialLinks = [
   { name: "GitHub", href: TRUSTSIGNAL_GITHUB_URL, external: true },
+  { name: "YouTube", href: TRUSTSIGNAL_YOUTUBE_URL, external: true },
   { name: "Reddit", href: "https://www.reddit.com/r/trustsignal/", external: true },
   { name: "Email", href: `mailto:${CONTACT_EMAIL}`, external: true },
 ];

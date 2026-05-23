@@ -78,7 +78,7 @@ export const CURL_EXAMPLE = `curl -X POST "https://api.trustsignal.dev/api/v1/ve
 export const VERIFICATION_RESPONSE = `{
   "receiptVersion": "2.0",
   "decision": "ALLOW",
-  "reasons": ["receipt issued"],
+  "reasons": ["receipt issued", "zkml_integrity_check_passed"],
   "receiptId": "623e0b54-87b3-42b7-bc89-65fae0ad8d5e",
   "receiptHash": "0x4e7f2ce9d3f7a8d3b0e4c9f2aa17fd59d6b4fda2d7b7b7d1cce8124d7ee39d04",
   "receiptSignature": {
@@ -101,12 +101,12 @@ export const RECEIPT_EXAMPLE = `{
   "receiptVersion": "2.0",
   "receiptId": "623e0b54-87b3-42b7-bc89-65fae0ad8d5e",
   "createdAt": "2026-03-12T15:24:01.000Z",
-  "policyProfile": "mortgage_loan_file_integrity_v1",
+  "policyProfile": "compliance_evidence_integrity_v1",
   "subject": {
-    "source": "encompass",
-    "loan_number": "2026-03-0042",
-    "document_type": "borrower_w2_2025",
-    "event_type": "income_document_received"
+    "source": "vanta",
+    "control_id": "ctrl-2026-0042",
+    "document_type": "soc2_control_evidence",
+    "event_type": "evidence_artifact_ingested"
   },
   "inputsCommitment": "0x2dded9c1b5c4c6d91df58a1b1793cb527f2b0cf5ddaf447f5b7d9839f7ab7d01",
   "checks": [
@@ -114,10 +114,15 @@ export const RECEIPT_EXAMPLE = `{
       "checkId": "artifact.hash_match",
       "status": "PASS",
       "details": "Artifact digest matches the previously receipted state"
+    },
+    {
+      "checkId": "zkml.integrity_proof",
+      "status": "PASS",
+      "details": "ZKML integrity verification passed"
     }
   ],
   "decision": "ALLOW",
-  "reasons": ["receipt issued"],
+  "reasons": ["receipt issued", "zkml_integrity_check_passed"],
   "receiptHash": "0x4e7f2ce9d3f7a8d3b0e4c9f2aa17fd59d6b4fda2d7b7b7d1cce8124d7ee39d04"
 }`;
 
@@ -126,8 +131,8 @@ export const STATUS_EXAMPLE = `{
   "integrityVerified": true,
   "signatureVerified": true,
   "signatureStatus": "verified",
-  "proofVerified": false,
-  "proofNote": "Experimental ZKP proof verification pending",
+  "proofVerified": true,
+  "proofStatus": "zkml_integrity_check_passed",
   "recomputedHash": "0x4e7f2ce9d3f7a8d3b0e4c9f2aa17fd59d6b4fda2d7b7b7d1cce8124d7ee39d04",
   "storedHash": "0x4e7f2ce9d3f7a8d3b0e4c9f2aa17fd59d6b4fda2d7b7b7d1cce8124d7ee39d04",
   "inputsCommitment": "0x2dded9c1b5c4c6d91df58a1b1793cb527f2b0cf5ddaf447f5b7d9839f7ab7d01",

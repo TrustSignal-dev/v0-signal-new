@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
-import { ArrowRight, ExternalLink, FileCheck2, Shield, ShieldCheck, Workflow } from "lucide-react";
+import { ExternalLink, FileCheck2, Nfc, Shield, ShieldCheck, Workflow } from "lucide-react";
 import { AnimatedSphere } from "./animated-sphere";
 
 const heroHighlights = [
@@ -13,13 +13,18 @@ const heroHighlights = [
   },
   {
     icon: ShieldCheck,
-    title: "Signed verification receipts",
-    description: "Issues signed receipts with provenance metadata at verification time.",
+    title: "Signed cryptographic receipts",
+    description: "Issues signed receipts with provenance metadata and ZKML integrity proof at verification time.",
   },
   {
     icon: FileCheck2,
     title: "Later integrity checks",
-    description: "Supports downstream checks to confirm whether records still match.",
+    description: "Supports downstream checks to confirm whether records still match at audit time.",
+  },
+  {
+    icon: Nfc,
+    title: "NFC physical attestation (Enterprise)",
+    description: "Binds physical document presence — location, timestamp, and device — directly to the cryptographic receipt at the moment of collection.",
   },
 ] as const;
 
@@ -85,7 +90,7 @@ export function HeroSection() {
           >
             <span className="block text-balance">Evidence Integrity</span>
             <span className="block text-balance">Infrastructure</span>
-            <span className="block text-muted-foreground text-balance">for mortgage and compliance workflows</span>
+            <span className="block text-muted-foreground text-balance">for compliance and audit workflows</span>
           </h1>
         </div>
         
@@ -98,13 +103,13 @@ export function HeroSection() {
           >
             <p className="text-xl lg:text-2xl text-muted-foreground leading-relaxed max-w-xl">
               TrustSignal is evidence integrity infrastructure that protects
-              mortgage loan files from post-sale document tampering. It issues
-              signed verification receipts at each material loan event so teams
-              can prove artifact state at post-close audit or repurchase review
-              — without replacing the system of record.
+              compliance artifacts from post-collection tampering. It issues
+              signed cryptographic receipts at each material workflow event so
+              teams can prove artifact state at audit time — without replacing
+              the system of record.
             </p>
             <p className="text-sm text-muted-foreground/70 max-w-xl">
-              The same integrity layer applies to any compliance workflow where
+              The same integrity layer applies to any high-trust workflow where
               evidence provenance must be confirmed later.
             </p>
           </div>
@@ -136,7 +141,7 @@ export function HeroSection() {
               </Button>
             </div>
 
-            <div className="mt-8 grid gap-3 sm:grid-cols-3">
+            <div className="mt-8 grid gap-3 sm:grid-cols-2">
               {heroHighlights.map((highlight) => {
                 const Icon = highlight.icon;
 

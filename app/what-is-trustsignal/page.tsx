@@ -115,6 +115,29 @@ export default function WhatIsTrustSignalPage() {
             </p>
 
             <p>
+              TrustSignal also applies ZKML integrity verification at the point
+              of receipt issuance. This means the integrity signal is not only a
+              hash comparison — it is a cryptographically provable attestation
+              that can be evaluated independently from the collection workflow.
+            </p>
+
+            <p>
+              For organizations that handle physical documents — universities
+              issuing diplomas, title companies processing closings, notaries
+              witnessing signatures — TrustSignal also supports NFC physical
+              attestation. A pre-registered NFC sticker is tapped at the moment
+              of physical document collection. The tap event — NFC tag ID,
+              location, timestamp, and device identifier — is cryptographically
+              bound to the receipt alongside the artifact hash and ZKML proof.
+              This creates a single auditable record that covers both the digital
+              integrity of the artifact and the physical presence event at
+              collection. This is an Enterprise-tier capability. It does not
+              replace the cryptographic receipt — it extends it with a physical
+              chain of custody anchor that travels with the document from the
+              moment of handoff.
+            </p>
+
+            <p>
               Signed receipts are central to the product. A receipt records the
               evidence source, the artifact hash, the relevant control or review
               context, and the attestation timestamp. Because the receipt is
