@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
+import Image from "next/image";
 import { Button } from "@/components/ui/button";
 import { MapPin, Nfc, ShieldCheck } from "lucide-react";
 
@@ -119,6 +120,27 @@ export function PhysicalAttestationSection() {
             document physically present? Where and when was it collected? Has
             the digital record changed since?
           </p>
+        </div>
+
+        {/* Sticker product image */}
+        <div
+          className={`mb-16 flex justify-center transition-all duration-700 delay-75 ${
+            isVisible ? "translate-y-0 opacity-100" : "translate-y-8 opacity-0"
+          }`}
+        >
+          <div className="relative">
+            <Image
+              src="/holographic-nfc-sticker.jpg"
+              alt="TrustSignal holographic NFC attestation sticker — circular, rainbow micro-dot diffraction pattern with TrustSignal logo and verification URL"
+              width={280}
+              height={280}
+              className="rounded-full shadow-[0_24px_80px_rgba(0,0,0,0.12)]"
+              priority
+            />
+            <span className="absolute -bottom-4 left-1/2 -translate-x-1/2 whitespace-nowrap font-mono text-xs text-muted-foreground">
+              25 mm holographic NFC sticker — Enterprise tier
+            </span>
+          </div>
         </div>
 
         {/* Use case cards */}
