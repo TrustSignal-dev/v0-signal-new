@@ -55,7 +55,7 @@ export default function TrustSignalPilot() {
   }, []);
 
   return (
-    <section style={styles.section} id="request-pilot">
+    <section style={styles.section} id="pilot-request">
       <style>{css}</style>
 
       <div style={styles.inner}>
