@@ -31,7 +31,7 @@ const NAV_LINKS = [
   { label: "Who it's for", href: "#who-its-for" },
   { label: "How a pilot works", href: "#request-pilot" },
   { label: "Developers", href: "#developers" },
-  { label: "Docs", href: "#docs" },
+  { label: "Docs", href: "/docs" },
 ];
 
 const FOOTER_COLS = [

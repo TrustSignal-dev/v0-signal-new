@@ -74,7 +74,7 @@ export default function TrustSignalDevelopers() {
               ))}
             </ul>
 
-            <a href="#docs" style={styles.link} className="ts-devlink">
+            <a href="/docs" style={styles.link} className="ts-devlink">
               Read the API reference <span aria-hidden="true">&rarr;</span>
             </a>
           </div>
