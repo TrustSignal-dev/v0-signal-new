@@ -3,13 +3,13 @@
 import { useState, useEffect } from "react";
 
 /**
- * TrustSignal — "Who it's for" section (healthcare-led)
+ * TrustSignal — "Who it's for" section
  * Monochrome base with two semantic accents:
- *   Signal Red    #F23A17 = attention / what's at risk  (fraud stats, "the handoff")
- *   Electric Blue #4D5AF0 = trusted action / verified    (the fit, the link)
- * Leads with the highest-priority Phase 1 vertical (healthcare staffing, 9/10)
- * and subordinates the other verticals beneath it, so the page reads focused.
- * Grounded in the healthcare vertical sheet + executive briefing.
+ *   Signal Red    #F23A17 = attention / what's at risk
+ *   Electric Blue #4D5AF0 = trusted action / verified
+ *
+ * Each vertical rotates the full section: heading, subheading, stats, fit copy, and CTA.
+ * Healthcare Staffing leads (highest-priority Phase 1 vertical).
  */
 
 const PALETTE = {
@@ -22,22 +22,97 @@ const PALETTE = {
   line: "rgba(18,19,22,0.12)",
 };
 
-const STATS = [
-  { figure: "7,600+", color: PALETTE.red, label: "fake nursing diplomas surfaced in one federal operation" },
-  { figure: "37%", color: PALETTE.red, label: "of them passed the NCLEX and entered patient care" },
-  { figure: "$6.5B", color: PALETTE.ink, label: "annual US travel-nursing market" },
-];
-
-const OTHER_VERTICALS = [
-  { name: "Education", signal: "Prove the transcript matches what the school issued." },
-  { name: "HR & Staffing", signal: "Tamper-detection for self-submitted PDFs." },
-  { name: "Mortgage & Title", signal: "Prove the deed recorded is the deed signed." },
-  { name: "Government", signal: "Public records that can prove they weren't altered." },
-  { name: "Logistics", signal: "Seal the manifest before customs receives it." },
+const VERTICALS = [
+  {
+    label: "Healthcare Staffing",
+    heading: "Verified at the source.",
+    headingAccent: "Altered at the handoff.",
+    sub:
+      "symplr, Verisys, and Nursys confirm a license at the source. None of them seal the assembled credential packet during the agency-to-facility handoff — the moment it changes hands. That gap is where fraud lives. TrustSignal doesn't replace the source check; it sits after it, sealing the packet so any facility can prove the file is exactly what the agency sent.",
+    stats: [
+      { figure: "7,600+", color: PALETTE.red, label: "fake nursing diplomas surfaced in one federal operation (Op. Nightingale)" },
+      { figure: "37%", color: PALETTE.red, label: "of them passed the NCLEX and entered patient care" },
+      { figure: "$6.5B", color: PALETTE.ink, label: "annual US travel-nursing market" },
+    ],
+    fit: "Attach a tamper-evident receipt to every credential packet before it reaches the facility's MSO. The facility calls the verify endpoint and gets mathematical proof the packet is unchanged — no board re-query, no phone call, no manual process. An NFC tap at the credentialing desk binds physical presence to the submission.",
+    cta: "See how the credential packet handoff gets sealed",
+  },
+  {
+    label: "Education",
+    heading: "Issued by the institution.",
+    headingAccent: "Altered before it arrived.",
+    sub:
+      "Transcript and diploma fraud follows graduates into every job application, licensing board, and graduate admissions process. Registrars issue a document — then lose custody of it. TrustSignal seals the record at issuance so any verifier can confirm the file matches what the school produced, without contacting the school.",
+    stats: [
+      { figure: "72%", color: PALETTE.red, label: "of employers have caught candidates lying on a résumé — SHRM" },
+      { figure: "1 in 4", color: PALETTE.red, label: "U.S. adults have embellished education credentials — HireRight" },
+      { figure: "$0", color: PALETTE.ink, label: "workflow change required for the institution" },
+    ],
+    fit: "Seal transcripts and diplomas at the registrar's export boundary. Any employer, graduate school, or licensing board can verify integrity with a single API call — or an NFC tap on the wallet card — without calling the registrar. The receipt outlives every enrollment system the school ever runs.",
+    cta: "See how transcript integrity gets sealed at issuance",
+  },
+  {
+    label: "HR & Staffing",
+    heading: "Candidates self-submit.",
+    headingAccent: "Nobody seals the file.",
+    sub:
+      "Background screening catches fabricated histories after the hire. It doesn't detect a real document that was quietly altered before submission. Staffing firms and HR teams receive PDFs they cannot prove are unmodified — and regulators are starting to ask for evidence trails that internal logs can't satisfy.",
+    stats: [
+      { figure: "85%", color: PALETTE.red, label: "of employers caught applicants lying — HireRight Global Report" },
+      { figure: "3x", color: PALETTE.red, label: "costlier to replace a bad hire than to prevent one — SHRM estimate" },
+      { figure: "0", color: PALETTE.ink, label: "PII stored by TrustSignal — only a mathematical fingerprint" },
+    ],
+    fit: "Attach a tamper-evident receipt at the intake boundary — when the candidate submits the document, before it enters your ATS. Any reviewer later can confirm the file wasn't touched between submission and review. Your compliance team holds audit-grade proof without IT involvement.",
+    cta: "See how document intake gets sealed at submission",
+  },
+  {
+    label: "Mortgage & Title",
+    heading: "The deed was signed.",
+    headingAccent: "Can you prove it wasn't changed?",
+    sub:
+      "Wire fraud in real estate exploits the closing document handoff — the moment a deed, HUD-1, or closing disclosure moves from one party to another without a tamper-evident seal. Lenders, title agents, and secondary market buyers all rely on trust at that gap. TrustSignal closes it: seal the document at execution and any party can prove what was recorded is what was signed.",
+    stats: [
+      { figure: "50×", color: PALETTE.red, label: "growth in real estate wire fraud losses in under 10 years — FBI" },
+      { figure: "$446M", color: PALETTE.red, label: "in reported wire fraud losses in a single year — FBI IC3 2023" },
+      { figure: "$12,500", color: PALETTE.ink, label: "90-day pilot — fixed fee, no workflow change" },
+    ],
+    fit: "Seal closing packages at execution — before the deed is recorded and before wire instructions are transmitted. The title agent, lender, and secondary market buyer all share one verifiable proof of integrity. An NFC tap at closing binds the physical closing card to the digital receipt.",
+    cta: "See how closing document integrity gets sealed",
+  },
+  {
+    label: "Government",
+    heading: "Public records are public.",
+    headingAccent: "Their integrity isn't.",
+    sub:
+      "Governments produce and certify records that citizens, courts, and businesses rely on. Alteration after issuance — whether by insiders, external fraud, or chain-of-custody failure — is undetectable without a tamper-evident anchor. TrustSignal gives agencies a permanent, verifiable proof layer without IT projects or system replacement.",
+    stats: [
+      { figure: "42%", color: PALETTE.red, label: "of government data breaches involve insider threats — Verizon DBIR" },
+      { figure: "$10,000", color: PALETTE.ink, label: "90-day pilot for public sector — fixed fee, no workflow change" },
+      { figure: "0", color: PALETTE.ink, label: "workflow changes required for staff or citizens" },
+    ],
+    fit: "Seal permits, certificates, and public filings at the point of issuance. Any citizen, court, or federal auditor can verify integrity on demand — without contacting the issuing office. Receipts remain permanently verifiable even if the underlying system is replaced or decommissioned.",
+    cta: "See how public record integrity gets anchored at issuance",
+  },
+  {
+    label: "Logistics",
+    heading: "The manifest was sealed.",
+    headingAccent: "Was it sealed correctly?",
+    sub:
+      "Counterfeit certificates of origin, forged inspection reports, and altered shipping manifests move billions in fraudulent goods across borders every year. Customs, insurers, and downstream buyers have no way to prove the document they received matches the one that was issued — without a tamper-evident anchor at the source.",
+    stats: [
+      { figure: "$4.5T", color: PALETTE.red, label: "estimated annual global cost of supply chain fraud — ICC" },
+      { figure: "2.5%", color: PALETTE.red, label: "of world trade estimated to involve counterfeit or pirated goods — OECD" },
+      { figure: "<3s", color: PALETTE.ink, label: "receipt generation at ingestion — no latency impact" },
+    ],
+    fit: "Seal manifests, certificates of origin, and inspection reports at the point of creation — before handoff to freight forwarders, customs, or downstream buyers. Any party in the chain verifies integrity with one API call. No EDI changes, no system integration — the seal sits at the export boundary.",
+    cta: "See how manifest integrity gets sealed at origin",
+  },
 ];
 
 export default function TrustSignalAudience() {
   const [reduced, setReduced] = useState(false);
+  const [vIndex, setVIndex] = useState(0);
+  const [vVisible, setVVisible] = useState(true);
 
   useEffect(() => {
     const id = "ts-hero-fonts";
@@ -54,62 +129,93 @@ export default function TrustSignalAudience() {
     );
   }, []);
 
+  useEffect(() => {
+    if (reduced) {
+      const t = setInterval(() => setVIndex((i) => (i + 1) % VERTICALS.length), 3200);
+      return () => clearInterval(t);
+    }
+    const t = setInterval(() => {
+      setVVisible(false);
+      setTimeout(() => {
+        setVIndex((i) => (i + 1) % VERTICALS.length);
+        setVVisible(true);
+      }, 380);
+    }, 4000);
+    return () => clearInterval(t);
+  }, [reduced]);
+
+  const v = VERTICALS[vIndex];
+
   return (
     <section style={styles.section} id="who-its-for">
       <style>{css}</style>
 
       <div style={styles.inner}>
-        <div style={styles.eyebrow}>WHO IT&rsquo;S FOR&nbsp;&nbsp;·&nbsp;&nbsp;HEALTHCARE STAFFING</div>
-
-        <h2 style={styles.heading}>
-          Verified at the source.{" "}
-          <span style={styles.headingAccent}>Altered at the handoff.</span>
-        </h2>
-
-        <p style={styles.sub}>
-          symplr, Verisys, and Nursys confirm a license at the source. None of them seal the
-          assembled credential packet during the agency-to-facility handoff &mdash; the moment
-          it changes hands. That gap is where fraud lives. TrustSignal doesn&rsquo;t replace the
-          source check; it sits after it, sealing the packet so any facility can prove the file
-          is exactly what the agency sent.
-        </p>
-
-        <div style={styles.stats}>
-          {STATS.map((s, i) => (
-            <div
-              key={s.figure}
-              style={{ ...styles.stat, animationDelay: reduced ? "0s" : `${0.08 * i}s` }}
-              className="ts-fade"
-            >
-              <div style={{ ...styles.statFigure, color: s.color }}>{s.figure}</div>
-              <div style={styles.statLabel}>{s.label}</div>
-            </div>
-          ))}
+        {/* Eyebrow — rotating vertical label */}
+        <div style={styles.eyebrow}>
+          WHO IT&rsquo;S FOR&nbsp;&nbsp;·&nbsp;&nbsp;
+          <span
+            style={{
+              display: "inline-block",
+              opacity: vVisible ? 1 : 0,
+              transform: reduced ? "none" : vVisible ? "translateY(0)" : "translateY(0.25em)",
+              transition: "opacity 0.38s ease, transform 0.38s ease",
+              willChange: "opacity, transform",
+            }}
+          >
+            {v.label.toUpperCase()}
+          </span>
         </div>
 
-        <div style={styles.fit}>
-          <span style={styles.check} aria-hidden="true">✓</span>
-          <p style={styles.fitText}>
-            Attach a tamper-evident receipt to every credential packet before it reaches the
-            facility&rsquo;s MSO. The facility calls the verify endpoint and gets mathematical
-            proof the packet is unchanged &mdash; no board re-query, no phone call, no manual
-            process. An NFC tap at the credentialing desk binds physical presence to the
-            submission.
-          </p>
+        {/* Heading — also fades with vertical */}
+        <div
+          style={{
+            opacity: vVisible ? 1 : 0,
+            transform: reduced ? "none" : vVisible ? "translateY(0)" : "translateY(0.15em)",
+            transition: "opacity 0.42s ease 0.04s, transform 0.42s ease 0.04s",
+          }}
+        >
+          <h2 style={styles.heading}>
+            {v.heading}{" "}
+            <span style={styles.headingAccent}>{v.headingAccent}</span>
+          </h2>
+
+          <p style={styles.sub}>{v.sub}</p>
+
+          {/* Stats */}
+          <div style={styles.stats}>
+            {v.stats.map((s, i) => (
+              <div
+                key={`${vIndex}-${i}`}
+                style={{ ...styles.stat, animationDelay: reduced ? "0s" : `${0.06 * i}s` }}
+                className="ts-fade"
+              >
+                <div style={{ ...styles.statFigure, color: s.color }}>{s.figure}</div>
+                <div style={styles.statLabel}>{s.label}</div>
+              </div>
+            ))}
+          </div>
+
+          {/* Fit paragraph */}
+          <div style={styles.fit}>
+            <span style={styles.check} aria-hidden="true">✓</span>
+            <p style={styles.fitText}>{v.fit}</p>
+          </div>
+
+          {/* CTA */}
+          <a href="#pilot-request" style={styles.link} className="ts-link">
+            {v.cta} <span aria-hidden="true">&rarr;</span>
+          </a>
         </div>
 
-        <a href="#pilot-request" style={styles.link} className="ts-link">
-          See how the packet handoff gets sealed <span aria-hidden="true">&rarr;</span>
-        </a>
-
-        {/* Subordinated verticals — same gap, more industries */}
+        {/* Subordinated verticals — static list, shows all others */}
         <div style={styles.otherWrap}>
-          <div style={styles.otherHead}>One gap. Eight industries.</div>
+          <div style={styles.otherHead}>One gap. {VERTICALS.length} industries.</div>
           <ul style={styles.otherList}>
-            {OTHER_VERTICALS.map((v) => (
-              <li key={v.name} style={styles.otherItem}>
-                <span style={styles.otherName}>{v.name}</span>
-                <span style={styles.otherSignal}>{v.signal}</span>
+            {VERTICALS.filter((_, i) => i !== vIndex).map((vert) => (
+              <li key={vert.label} style={styles.otherItem}>
+                <span style={styles.otherName}>{vert.label}</span>
+                <span style={styles.otherSignal}>{vert.stats[0].figure}&ensp;{vert.stats[0].label}</span>
               </li>
             ))}
           </ul>
