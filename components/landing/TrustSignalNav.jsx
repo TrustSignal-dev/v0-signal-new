@@ -76,7 +76,7 @@ const navStyles = {
     alignItems: "center",
     textDecoration: "none",
   },
-  logo: { height: "28px", width: "auto" },
+  logo: { height: "36px", width: "auto", maxWidth: "200px" },
   links: { display: "flex", gap: "1.8rem", alignItems: "center" },
   link: {
     fontFamily: "'DM Sans', sans-serif",
