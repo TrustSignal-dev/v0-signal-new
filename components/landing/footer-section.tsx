@@ -25,7 +25,7 @@ const footerLinks = {
     { name: "Contact TrustSignal", href: `mailto:${CONTACT_EMAIL}`, external: true },
   ],
   Company: [
-    { name: "About", href: "#workflows" },
+    { name: "Who it's for", href: "#who-its-for" },
     { name: "What is TrustSignal?", href: "/what-is-trustsignal" },
     { name: "Pilot Request", href: "#pilot-request" },
     { name: "Contact", href: `mailto:${CONTACT_EMAIL}`, external: true },

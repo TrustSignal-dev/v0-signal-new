@@ -105,10 +105,10 @@ export default function TrustSignalHero() {
         </p>
 
         <div style={styles.ctaRow}>
-          <a href="#request-pilot" style={styles.primary} className="ts-primary">
+          <a href="#pilot-request" style={styles.primary} className="ts-primary">
             Request a Pilot
           </a>
-          <a href="#live-demo" style={styles.secondary} className="ts-secondary">
+          <a href="/demo" style={styles.secondary} className="ts-secondary">
             See it verify live <span style={styles.arrow} aria-hidden="true">&rarr;</span>
           </a>
         </div>

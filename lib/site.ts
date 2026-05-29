@@ -12,11 +12,9 @@ export const TRUSTSIGNAL_REVIEW_REPO_URL =
   "https://github.com/TrustSignal-dev/TrustSignal-docs";
 
 export const PRIMARY_NAV_LINKS = [
-  { name: "Problem", href: "#problem" },
-  { name: "Integrity Model", href: "#integrity-model" },
-  { name: "Integration Fit", href: "#integration" },
-  { name: "Physical Attestation", href: "#physical-attestation" },
-  { name: "Claims Boundary", href: "#claims-boundary" },
+  { name: "Who it's for", href: "#who-its-for" },
+  { name: "How a pilot works", href: "#pilot-request" },
+  { name: "Developers", href: "#developers" },
 ] as const;
 
 export const TRUSTSIGNAL_YOUTUBE_URL = "https://www.youtube.com/@trustsignal-dev";

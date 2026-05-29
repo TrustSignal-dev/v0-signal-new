@@ -98,7 +98,7 @@ export default function TrustSignalAudience() {
           </p>
         </div>
 
-        <a href="#request-pilot" style={styles.link} className="ts-link">
+        <a href="#pilot-request" style={styles.link} className="ts-link">
           See how the packet handoff gets sealed <span aria-hidden="true">&rarr;</span>
         </a>
 
