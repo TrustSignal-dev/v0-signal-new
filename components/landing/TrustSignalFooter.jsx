@@ -45,7 +45,7 @@ export default function TrustSignalFooter() {
         <div style={footStyles.grid}>
           <div style={footStyles.brandCol}>
             <div style={footStyles.wordmark}>
-              <img src="/logo-1.svg" alt="TrustSignal Logo" style={footStyles.logo} />
+              <img src="/brand/lockup-horizontal.svg" alt="TrustSignal Logo" style={footStyles.logo} />
             </div>
             <p style={footStyles.tagline}>Evidence integrity infrastructure.</p>
             <p style={footStyles.prove}>Prove. Verify. Trust.</p>

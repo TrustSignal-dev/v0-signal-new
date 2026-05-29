@@ -102,7 +102,7 @@ export default function TrustSignalPilot() {
         </ul>
 
         <div style={styles.ctaRow}>
-          <a href="#contact" style={styles.primary} className="ts-primary">
+          <a href="#pilot-request" style={styles.primary} className="ts-primary">
             Request a Pilot
           </a>
           <span style={styles.priceNote}>

@@ -2,6 +2,15 @@
 
 import { useState, useEffect } from "react";
 
+const VERTICALS = [
+  "Healthcare Staffing",
+  "Education",
+  "HR & Staffing",
+  "Mortgage & Title",
+  "Government",
+  "Logistics",
+];
+
 /**
  * TrustSignal — "Who it's for" section (healthcare-led)
  * Monochrome base with two semantic accents:
@@ -38,6 +47,8 @@ const OTHER_VERTICALS = [
 
 export default function TrustSignalAudience() {
   const [reduced, setReduced] = useState(false);
+  const [vIndex, setVIndex] = useState(0);
+  const [vVisible, setVVisible] = useState(true);
 
   useEffect(() => {
     const id = "ts-hero-fonts";
@@ -54,12 +65,40 @@ export default function TrustSignalAudience() {
     );
   }, []);
 
+  useEffect(() => {
+    if (reduced) {
+      const t = setInterval(() => setVIndex((i) => (i + 1) % VERTICALS.length), 2800);
+      return () => clearInterval(t);
+    }
+    const t = setInterval(() => {
+      setVVisible(false);
+      setTimeout(() => {
+        setVIndex((i) => (i + 1) % VERTICALS.length);
+        setVVisible(true);
+      }, 320);
+    }, 2600);
+    return () => clearInterval(t);
+  }, [reduced]);
+
   return (
     <section style={styles.section} id="who-its-for">
       <style>{css}</style>
 
       <div style={styles.inner}>
-        <div style={styles.eyebrow}>WHO IT&rsquo;S FOR&nbsp;&nbsp;·&nbsp;&nbsp;HEALTHCARE STAFFING</div>
+        <div style={styles.eyebrow}>
+          WHO IT&rsquo;S FOR&nbsp;&nbsp;·&nbsp;&nbsp;
+          <span
+            style={{
+              display: "inline-block",
+              opacity: vVisible ? 1 : 0,
+              transform: reduced ? "none" : vVisible ? "translateY(0)" : "translateY(0.2em)",
+              transition: "opacity 0.32s ease, transform 0.32s ease",
+              willChange: "opacity, transform",
+            }}
+          >
+            {VERTICALS[vIndex].toUpperCase()}
+          </span>
+        </div>
 
         <h2 style={styles.heading}>
           Verified at the source.{" "}

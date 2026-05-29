@@ -38,7 +38,7 @@ export default function TrustSignalNav() {
       <style>{navCss}</style>
       <div style={navStyles.inner}>
         <a href="/" style={navStyles.wordmark}>
-          <img src="/logo-1.svg" alt="TrustSignal Logo" style={navStyles.logo} />
+          <img src="/brand/lockup-horizontal.svg" alt="TrustSignal Logo" style={navStyles.logo} />
         </a>
         <div style={navStyles.links} className="ts-navlinks">
           {NAV_LINKS.map((l) => (
