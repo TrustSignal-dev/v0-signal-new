@@ -11,6 +11,23 @@ const pilotRequestSchema = z.object({
 
 export const runtime = "nodejs";
 
+const resendApiKey = process.env.RESEND_API_KEY;
+const primaryFrom = "pilot@trustsignal.dev";
+const fallbackFrom = "onboarding@resend.dev";
+
+type ResendClient = {
+  emails: {
+    send(args: {
+      from: string;
+      to: string[];
+      subject: string;
+      text: string;
+    }): Promise<unknown>;
+  };
+};
+
+type ResendConstructor = new (apiKey: string) => ResendClient;
+
 export async function POST(request: Request) {
   try {
     const body = await request.json();
@@ -36,20 +53,19 @@ export async function POST(request: Request) {
     const submittedAt = new Date().toISOString();
     const slug = `${submittedAt.replaceAll(":", "-")}-${slugify(company)}-${slugify(name)}`;
 
+    const data = {
+      submittedAt,
+      name,
+      company,
+      address,
+      email,
+      phone,
+    };
+
+    // Save to Blob storage
     await put(
       `pilot-requests/${slug}.json`,
-      JSON.stringify(
-        {
-          submittedAt,
-          name,
-          company,
-          address,
-          email,
-          phone,
-        },
-        null,
-        2,
-      ),
+      JSON.stringify(data, null, 2),
       {
         access: "private",
         token: blobReadWriteToken,
@@ -57,13 +73,51 @@ export async function POST(request: Request) {
       },
     );
 
+    // Send email notification
+    if (resendApiKey) {
+      try {
+        const resend = await createResendClient(resendApiKey);
+        const emailText = `New Pilot Request Received:\n\nSubmitted at: ${submittedAt}\nName: ${name}\nCompany: ${company}\nAddress: ${address}\nEmail: ${email}\nPhone: ${phone}`;
+
+        try {
+          await resend.emails.send({
+            from: primaryFrom,
+            to: ["christopher@trustsignal.dev"],
+            subject: `TrustSignal Pilot Request: ${company}`,
+            text: emailText,
+          });
+        } catch (error) {
+          console.error("Failed to send pilot request email with primary sender.", error);
+          await resend.emails.send({
+            from: fallbackFrom,
+            to: ["christopher@trustsignal.dev"],
+            subject: `TrustSignal Pilot Request: ${company} (Fallback)`,
+            text: emailText,
+          });
+        }
+      } catch (emailError) {
+        console.error("Unable to send pilot request email notification.", emailError);
+      }
+    } else {
+      console.warn("RESEND_API_KEY is not set. Email notification skipped.");
+    }
+
     return Response.json({ ok: true });
-  } catch {
+  } catch (error) {
+    console.error("Unable to process the pilot request.", error);
     return Response.json(
       { error: "Unable to process the request." },
       { status: 500 },
     );
   }
+}
+
+async function createResendClient(apiKey: string) {
+  const resendModule = (await new Function('return import("resend")')()) as {
+    Resend: ResendConstructor;
+  };
+
+  return new resendModule.Resend(apiKey);
 }
 
 function slugify(value: string) {

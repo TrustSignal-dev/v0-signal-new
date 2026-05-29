@@ -3,7 +3,7 @@
 import { useState, useEffect } from "react";
 import TrustSignalHero from "./TrustSignalHero";
 import TrustSignalAudience from "./TrustSignalAudience";
-import TrustSignalPilot from "./TrustSignalPilot";
+import { PilotRequestSection } from "./pilot-request-section";
 import TrustSignalDevelopers from "./TrustSignalDevelopers";
 
 /**
@@ -29,7 +29,7 @@ const PALETTE = {
 
 const NAV_LINKS = [
   { label: "Who it's for", href: "#who-its-for" },
-  { label: "How a pilot works", href: "#request-pilot" },
+  { label: "How a pilot works", href: "#pilot-request" },
   { label: "Developers", href: "#developers" },
   { label: "Docs", href: "/docs" },
 ];
@@ -39,7 +39,7 @@ const FOOTER_COLS = [
     head: "Product", 
     links: [
       { label: "How it works", href: "#who-its-for" },
-      { label: "Pricing", href: "#request-pilot" },
+      { label: "Pricing", href: "#pilot-request" },
       { label: "Developers", href: "#developers" },
       { label: "Live demo", href: "/demo" }
     ] 
@@ -91,7 +91,7 @@ function Nav() {
             </a>
           ))}
         </div>
-        <a href="#request-pilot" style={navStyles.cta} className="ts-navcta">
+        <a href="#pilot-request" style={navStyles.cta} className="ts-navcta">
           Request a Pilot
         </a>
       </div>
@@ -148,7 +148,7 @@ export default function TrustSignalPage() {
       <Nav />
       <TrustSignalHero />
       <TrustSignalAudience />
-      <TrustSignalPilot />
+      <PilotRequestSection />
       <TrustSignalDevelopers />
       <Footer />
     </div>
