@@ -18,6 +18,7 @@ export const PRIMARY_NAV_LINKS = [
 ] as const;
 
 export const TRUSTSIGNAL_YOUTUBE_URL = "https://www.youtube.com/@trustsignal-dev";
+export const TRUSTSIGNAL_SETUP_VIDEO_URL = "https://youtu.be/9F2-6LrB8Po";
 
 export const DEVELOPER_DOC_LINKS = [
   {

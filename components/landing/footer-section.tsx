@@ -9,6 +9,7 @@ import {
   CONTACT_EMAIL,
   TRUSTSIGNAL_GITHUB_URL,
   TRUSTSIGNAL_YOUTUBE_URL,
+  TRUSTSIGNAL_SETUP_VIDEO_URL,
   PRIMARY_NAV_LINKS,
   TRUSTSIGNAL_REVIEW_REPO_URL,
 } from "@/lib/site";
@@ -20,6 +21,7 @@ const footerLinks = {
     { name: "Sign Up", href: ACCOUNT_LINKS.signUp },
     { name: "Sign In", href: ACCOUNT_LINKS.signIn },
     { name: "Documentation", href: "/docs" },
+    { name: "NPX Setup Guide ↗", href: TRUSTSIGNAL_SETUP_VIDEO_URL, external: true },
     { name: "GitHub", href: TRUSTSIGNAL_GITHUB_URL, external: true },
     { name: "Security Overview", href: "/security" },
     { name: "Contact TrustSignal", href: `mailto:${CONTACT_EMAIL}`, external: true },
@@ -123,6 +125,22 @@ export function FooterSection() {
               </div>
             ))}
           </div>
+        </div>
+
+        {/* Setup Video Strip */}
+        <div className="py-6 border-t border-foreground/10 flex flex-col sm:flex-row items-center justify-between gap-3">
+          <p className="text-sm text-muted-foreground">
+            New to TrustSignal?{" "}
+            <a
+              href={TRUSTSIGNAL_SETUP_VIDEO_URL}
+              target="_blank"
+              rel="noreferrer"
+              className="text-foreground underline underline-offset-2 hover:opacity-70 transition-opacity"
+            >
+              Watch the NPX setup guide →
+            </a>
+          </p>
+          <span className="text-xs text-muted-foreground/50">~30 min · no DevOps</span>
         </div>
 
         {/* Bottom Bar */}
