@@ -204,9 +204,9 @@ function StepTracker({ current }: { current: Step }) {
               <div
                 className={cn(
                   "w-9 h-9 rounded-full flex items-center justify-center text-xs font-bold border-2 transition-all duration-300",
-                  active && "border-[#E8503A] bg-[#E8503A] text-white scale-110 shadow-[0_0_16px_#E8503A50]",
-                  done && "border-emerald-500 bg-emerald-500/10 text-emerald-400",
-                  !active && !done && "border-zinc-700 bg-transparent text-zinc-600",
+                  active && "border-[#121316] bg-[#121316] text-white scale-110 shadow-lg",
+                  done && "border-[#4D5AF0] bg-[#4D5AF0] text-white",
+                  !active && !done && "border-[rgba(18,19,22,0.12)] bg-transparent text-[rgba(18,19,22,0.3)]",
                 )}
               >
                 {done ? <Check className="w-4 h-4" /> : s.num}
@@ -214,9 +214,9 @@ function StepTracker({ current }: { current: Step }) {
               <span
                 className={cn(
                   "text-[10px] font-bold tracking-widest transition-colors duration-300",
-                  active ? "text-[#E8503A]" : done ? "text-emerald-500" : "text-zinc-700",
+                  active ? "text-[#121316]" : done ? "text-[#4D5AF0]" : "text-[rgba(18,19,22,0.4)]",
                 )}
-                style={{ fontFamily: "var(--font-space-mono, monospace)" }}
+                style={{ fontFamily: "var(--font-dm-mono, monospace)" }}
               >
                 {s.label}
               </span>
@@ -225,7 +225,7 @@ function StepTracker({ current }: { current: Step }) {
               <div
                 className={cn(
                   "h-px flex-1 max-w-[56px] mx-1 transition-all duration-500",
-                  done ? "bg-emerald-500/40" : "bg-zinc-800",
+                  done ? "bg-[#4D5AF0]/40" : "bg-[rgba(18,19,22,0.12)]",
                 )}
               />
             )}
@@ -250,18 +250,18 @@ function DocField({
   highlight?: boolean;
 }) {
   return (
-    <div className="flex justify-between items-start py-2 border-b border-zinc-800/50 last:border-0 gap-4">
-      <span className="text-zinc-500 text-[11px] uppercase tracking-wider shrink-0">{label}</span>
+    <div className="flex justify-between items-start py-2 border-b border-[rgba(18,19,22,0.08)] last:border-0 gap-4">
+      <span className="text-[rgba(18,19,22,0.6)] text-[11px] uppercase tracking-wider shrink-0">{label}</span>
       <span
         className={cn(
           "text-[12px] text-right leading-relaxed",
-          highlight ? "text-[#E8503A] font-semibold" : "text-zinc-200",
+          highlight ? "text-[#F23A17] font-semibold" : "text-[#121316]",
         )}
-        style={highlight ? undefined : { fontFamily: "var(--font-space-mono, monospace)" }}
+        style={highlight ? undefined : { fontFamily: "var(--font-dm-mono, monospace)" }}
       >
         {value}
         {highlight && (
-          <span className="ml-2 inline-flex items-center gap-1 bg-[#E8503A]/10 text-[#E8503A] text-[9px] px-1.5 py-0.5 rounded font-sans tracking-wider">
+          <span className="ml-2 inline-flex items-center gap-1 bg-[#F23A17]/10 text-[#F23A17] text-[9px] px-1.5 py-0.5 rounded font-sans tracking-wider">
             <AlertTriangle className="w-2.5 h-2.5" />
             CHANGED
           </span>
@@ -286,28 +286,28 @@ function HashPreview({ hash }: { hash: string }) {
   };
 
   return (
-    <div className="mt-3 pt-3 border-t border-zinc-800/50">
+    <div className="mt-3 pt-3 border-t border-[rgba(18,19,22,0.08)]">
       <span
-        className="text-zinc-700 text-[9px] uppercase tracking-widest"
-        style={{ fontFamily: "var(--font-space-mono, monospace)" }}
+        className="text-[rgba(18,19,22,0.4)] text-[9px] uppercase tracking-widest"
+        style={{ fontFamily: "var(--font-dm-mono, monospace)" }}
       >
         SHA-256
       </span>
       <div className="flex items-center gap-2 mt-1">
         <code
-          className="text-zinc-500 text-[11px] flex-1 truncate"
-          style={{ fontFamily: "var(--font-space-mono, monospace)" }}
+          className="text-[rgba(18,19,22,0.6)] text-[11px] flex-1 truncate"
+          style={{ fontFamily: "var(--font-dm-mono, monospace)" }}
         >
           {hash ? `sha256:${truncateHash(hash)}` : "computing…"}
         </code>
         <button
           onClick={handleCopy}
           disabled={!hash}
-          className="text-zinc-700 hover:text-zinc-400 transition-colors p-0.5 disabled:opacity-30"
+          className="text-[rgba(18,19,22,0.4)] hover:text-[#121316] transition-colors p-0.5 disabled:opacity-30"
           title="Copy full hash"
         >
           {copied ? (
-            <Check className="w-3 h-3 text-emerald-400" />
+            <Check className="w-3 h-3 text-[#4D5AF0]" />
           ) : (
             <Copy className="w-3 h-3" />
           )}
@@ -334,10 +334,10 @@ function DocumentCard({ title, badge, doc, hash, selected, onSelect }: DocumentC
   return (
     <button
       className={cn(
-        "relative rounded-2xl border p-5 text-left cursor-pointer transition-all duration-200 bg-zinc-900/60 w-full",
+        "relative rounded-2xl border p-5 text-left cursor-pointer transition-all duration-200 bg-white w-full",
         selected
-          ? "border-[#E8503A] shadow-[0_0_0_1px_#E8503A40,0_0_28px_#E8503A18]"
-          : "border-zinc-800 hover:border-zinc-600",
+          ? "border-[#4D5AF0] shadow-[0_0_0_1px_rgba(77,90,240,0.4),0_8px_24px_rgba(18,19,22,0.04)]"
+          : "border-[rgba(18,19,22,0.12)] hover:border-[rgba(18,19,22,0.3)]",
       )}
       onClick={onSelect}
       type="button"
@@ -345,25 +345,25 @@ function DocumentCard({ title, badge, doc, hash, selected, onSelect }: DocumentC
       {/* Card header */}
       <div className="flex items-start justify-between mb-4 gap-2">
         <div className="flex items-center gap-2">
-          <FileText className="w-4 h-4 text-zinc-500 shrink-0" />
-          <span className="text-sm font-semibold text-zinc-100">{title}</span>
+          <FileText className="w-4 h-4 text-[rgba(18,19,22,0.4)] shrink-0" />
+          <span className="text-sm font-semibold text-[#121316]">{title}</span>
         </div>
         <span
           className={cn(
             "text-[9px] uppercase tracking-widest font-bold px-2 py-1 rounded-full shrink-0",
             badge === "original"
-              ? "bg-emerald-500/10 text-emerald-400 border border-emerald-500/20"
-              : "bg-[#E8503A]/10 text-[#E8503A] border border-[#E8503A]/20",
+              ? "bg-[#4D5AF0]/10 text-[#4D5AF0] border border-[#4D5AF0]/20"
+              : "bg-[#F23A17]/10 text-[#F23A17] border border-[#F23A17]/20",
           )}
-          style={{ fontFamily: "var(--font-space-mono, monospace)" }}
+          style={{ fontFamily: "var(--font-dm-mono, monospace)" }}
         >
           {badge === "original" ? "ORIGINAL" : "MODIFIED"}
         </span>
       </div>
 
       <p
-        className="text-zinc-600 text-[10px] uppercase tracking-widest mb-3"
-        style={{ fontFamily: "var(--font-space-mono, monospace)" }}
+        className="text-[rgba(18,19,22,0.4)] text-[10px] uppercase tracking-widest mb-3"
+        style={{ fontFamily: "var(--font-dm-mono, monospace)" }}
       >
         Mortgage Closing Disclosure
       </p>
@@ -381,7 +381,7 @@ function DocumentCard({ title, badge, doc, hash, selected, onSelect }: DocumentC
       <HashPreview hash={hash} />
 
       {selected && (
-        <span className="absolute top-3 right-3 w-5 h-5 rounded-full bg-[#E8503A] flex items-center justify-center">
+        <span className="absolute top-3 right-3 w-5 h-5 rounded-full bg-[#4D5AF0] flex items-center justify-center">
           <Check className="w-3 h-3 text-white" />
         </span>
       )}
@@ -423,12 +423,12 @@ function DropZone({
       tabIndex={0}
       onKeyDown={(e) => e.key === "Enter" && inputRef.current?.click()}
       className={cn(
-        "relative border-2 border-dashed rounded-xl px-5 py-4 text-center cursor-pointer transition-all duration-200",
+        "relative border border-dashed rounded-xl px-5 py-4 text-center cursor-pointer transition-all duration-200",
         isDragging
-          ? "border-[#E8503A] bg-[#E8503A]/5"
+          ? "border-[#4D5AF0] bg-[#4D5AF0]/5"
           : uploadedFile
-            ? "border-emerald-500/40 bg-emerald-950/20"
-            : "border-zinc-800 hover:border-zinc-700 bg-zinc-900/20",
+            ? "border-[#4D5AF0]/40 bg-[#4D5AF0]/5"
+            : "border-[rgba(18,19,22,0.12)] hover:border-[rgba(18,19,22,0.3)] bg-white",
       )}
     >
       <input
@@ -443,8 +443,8 @@ function DropZone({
       />
       {uploadedFile ? (
         <div className="flex items-center justify-center gap-2">
-          <CheckCircle2 className="w-4 h-4 text-emerald-400 shrink-0" />
-          <p className="text-emerald-400 text-xs font-medium truncate max-w-xs">
+          <CheckCircle2 className="w-4 h-4 text-[#4D5AF0] shrink-0" />
+          <p className="text-[#4D5AF0] text-xs font-medium truncate max-w-xs">
             {uploadedFile.name}
           </p>
         </div>
@@ -453,15 +453,15 @@ function DropZone({
           <Upload
             className={cn(
               "w-4 h-4 mx-auto mb-1.5",
-              isDragging ? "text-[#E8503A]" : "text-zinc-700",
+              isDragging ? "text-[#4D5AF0]" : "text-[rgba(18,19,22,0.4)]",
             )}
           />
-          <p className="text-zinc-600 text-xs">
+          <p className="text-[#2a2b30] text-xs">
             Drop a PDF here or{" "}
-            <span className="text-zinc-400 underline underline-offset-2">browse</span> to upload
+            <span className="text-[#4D5AF0] underline underline-offset-2">browse</span> to upload
             your own document
           </p>
-          <p className="text-zinc-800 text-[10px] mt-1">File is hashed locally — never stored</p>
+          <p className="text-[rgba(18,19,22,0.4)] text-[10px] mt-1">File is hashed locally — never stored</p>
         </>
       )}
     </div>
@@ -500,16 +500,16 @@ function PayloadPanel({ doc, hash }: { doc: DocRecord; hash: string }) {
   };
 
   return (
-    <div className="rounded-xl border border-zinc-800 bg-zinc-950 p-4 h-full">
+    <div className="rounded-xl border border-[rgba(18,19,22,0.12)] bg-[rgba(18,19,22,0.03)] p-4 h-full">
       <p
-        className="text-[9px] uppercase tracking-widest text-zinc-600 mb-3"
-        style={{ fontFamily: "var(--font-space-mono, monospace)" }}
+        className="text-[9px] uppercase tracking-widest text-[rgba(18,19,22,0.4)] mb-3"
+        style={{ fontFamily: "var(--font-dm-mono, monospace)" }}
       >
         POST /api/v1/verify
       </p>
       <pre
-        className="text-[11px] text-zinc-300 whitespace-pre-wrap leading-relaxed overflow-auto max-h-56"
-        style={{ fontFamily: "var(--font-space-mono, monospace)" }}
+        className="text-[11px] text-[#121316] whitespace-pre-wrap leading-relaxed overflow-auto max-h-56"
+        style={{ fontFamily: "var(--font-dm-mono, monospace)" }}
       >
         {JSON.stringify(payload, null, 2)}
       </pre>
@@ -524,10 +524,10 @@ function PayloadPanel({ doc, hash }: { doc: DocRecord; hash: string }) {
 function IngestResponsePanel({ state }: { state: ApiStepState }) {
   if (state.status === "idle") {
     return (
-      <div className="rounded-xl border border-zinc-800 bg-zinc-950 p-4 flex items-center justify-center min-h-[140px]">
+      <div className="rounded-xl border border-[rgba(18,19,22,0.12)] bg-[rgba(18,19,22,0.03)] p-4 flex items-center justify-center min-h-[140px]">
         <p
-          className="text-zinc-700 text-xs"
-          style={{ fontFamily: "var(--font-space-mono, monospace)" }}
+          className="text-[rgba(18,19,22,0.3)] text-xs"
+          style={{ fontFamily: "var(--font-dm-mono, monospace)" }}
         >
           waiting…
         </p>
@@ -537,11 +537,11 @@ function IngestResponsePanel({ state }: { state: ApiStepState }) {
 
   if (state.status === "loading") {
     return (
-      <div className="rounded-xl border border-zinc-800 bg-zinc-950 p-4 flex flex-col items-center justify-center gap-2.5 min-h-[140px]">
-        <Loader2 className="w-5 h-5 text-[#E8503A] animate-spin" />
+      <div className="rounded-xl border border-[rgba(18,19,22,0.12)] bg-[rgba(18,19,22,0.03)] p-4 flex flex-col items-center justify-center gap-2.5 min-h-[140px]">
+        <Loader2 className="w-5 h-5 text-[#4D5AF0] animate-spin" />
         <p
-          className="text-zinc-500 text-xs animate-pulse"
-          style={{ fontFamily: "var(--font-space-mono, monospace)" }}
+          className="text-[rgba(18,19,22,0.4)] text-xs animate-pulse"
+          style={{ fontFamily: "var(--font-dm-mono, monospace)" }}
         >
           ingesting…
         </p>
@@ -550,18 +550,18 @@ function IngestResponsePanel({ state }: { state: ApiStepState }) {
   }
 
   return (
-    <div className="rounded-xl border border-zinc-800 bg-zinc-950 p-4 h-full">
+    <div className="rounded-xl border border-[rgba(18,19,22,0.12)] bg-[rgba(18,19,22,0.03)] p-4 h-full">
       <div className="flex items-center justify-between mb-3">
         <p
-          className="text-[9px] uppercase tracking-widest text-zinc-600"
-          style={{ fontFamily: "var(--font-space-mono, monospace)" }}
+          className="text-[9px] uppercase tracking-widest text-[rgba(18,19,22,0.4)]"
+          style={{ fontFamily: "var(--font-dm-mono, monospace)" }}
         >
           {state.status === "error" ? "Error" : "Response"}
         </p>
         {state.simulated && (
           <span
-            className="text-[9px] uppercase tracking-widest text-zinc-600 bg-zinc-800/60 px-1.5 py-0.5 rounded"
-            style={{ fontFamily: "var(--font-space-mono, monospace)" }}
+            className="text-[9px] uppercase tracking-widest text-[rgba(18,19,22,0.4)] bg-[rgba(18,19,22,0.06)] px-1.5 py-0.5 rounded"
+            style={{ fontFamily: "var(--font-dm-mono, monospace)" }}
           >
             simulated
           </span>
@@ -570,9 +570,9 @@ function IngestResponsePanel({ state }: { state: ApiStepState }) {
       <pre
         className={cn(
           "text-[11px] whitespace-pre-wrap leading-relaxed overflow-auto max-h-56",
-          state.status === "error" ? "text-red-300" : "text-zinc-300",
+          state.status === "error" ? "text-[#F23A17]" : "text-[#121316]",
         )}
-        style={{ fontFamily: "var(--font-space-mono, monospace)" }}
+        style={{ fontFamily: "var(--font-dm-mono, monospace)" }}
       >
         {JSON.stringify(state.response, null, 2)}
       </pre>
@@ -587,11 +587,11 @@ function IngestResponsePanel({ state }: { state: ApiStepState }) {
 function ReceiptPanel({ state }: { state: ApiStepState }) {
   if (state.status === "loading") {
     return (
-      <div className="rounded-2xl border border-zinc-800 bg-zinc-950 p-8 flex flex-col items-center justify-center gap-3">
-        <Loader2 className="w-6 h-6 text-[#E8503A] animate-spin" />
+      <div className="rounded-2xl border border-[rgba(18,19,22,0.12)] bg-[rgba(18,19,22,0.03)] p-8 flex flex-col items-center justify-center gap-3">
+        <Loader2 className="w-6 h-6 text-[#4D5AF0] animate-spin" />
         <p
-          className="text-zinc-500 text-sm animate-pulse"
-          style={{ fontFamily: "var(--font-space-mono, monospace)" }}
+          className="text-[rgba(18,19,22,0.4)] text-sm animate-pulse"
+          style={{ fontFamily: "var(--font-dm-mono, monospace)" }}
         >
           anchoring document…
         </p>
@@ -605,25 +605,25 @@ function ReceiptPanel({ state }: { state: ApiStepState }) {
   const entries = Object.entries(data).filter(([k]) => k !== "_simulated");
 
   return (
-    <div className="rounded-2xl border border-zinc-800 bg-zinc-950 overflow-hidden">
+    <div className="rounded-2xl border border-[rgba(18,19,22,0.12)] bg-white overflow-hidden shadow-sm">
       {/* Header */}
-      <div className="px-5 py-4 border-b border-zinc-800 flex items-center justify-between bg-zinc-900/40">
+      <div className="px-5 py-4 border-b border-[rgba(18,19,22,0.12)] flex items-center justify-between bg-[rgba(18,19,22,0.02)]">
         <div className="flex items-center gap-2.5">
-          <Shield className="w-4 h-4 text-[#E8503A]" />
-          <span className="text-sm font-semibold text-zinc-100">Integrity Receipt</span>
+          <Shield className="w-4 h-4 text-[#4D5AF0]" />
+          <span className="text-sm font-semibold text-[#121316]">Integrity Receipt</span>
         </div>
         <div className="flex items-center gap-2">
           {state.simulated && (
             <span
-              className="text-[9px] uppercase tracking-widest text-zinc-600 bg-zinc-800/60 px-1.5 py-0.5 rounded"
-              style={{ fontFamily: "var(--font-space-mono, monospace)" }}
+              className="text-[9px] uppercase tracking-widest text-[rgba(18,19,22,0.4)] bg-[rgba(18,19,22,0.06)] px-1.5 py-0.5 rounded"
+              style={{ fontFamily: "var(--font-dm-mono, monospace)" }}
             >
               simulated
             </span>
           )}
           <span
-            className="text-emerald-400 text-[10px] flex items-center gap-1"
-            style={{ fontFamily: "var(--font-space-mono, monospace)" }}
+            className="text-[#4D5AF0] text-[10px] flex items-center gap-1"
+            style={{ fontFamily: "var(--font-dm-mono, monospace)" }}
           >
             <CheckCircle2 className="w-3 h-3" />
             anchored
@@ -632,18 +632,18 @@ function ReceiptPanel({ state }: { state: ApiStepState }) {
       </div>
 
       {/* Field rows */}
-      <div className="divide-y divide-zinc-800/50">
+      <div className="divide-y divide-[rgba(18,19,22,0.06)]">
         {entries.map(([key, value]) => (
           <div key={key} className="px-5 py-3 flex gap-4 items-start">
             <span
-              className="text-zinc-600 text-[10px] uppercase tracking-wider shrink-0 w-28 pt-0.5"
-              style={{ fontFamily: "var(--font-space-mono, monospace)" }}
+              className="text-[rgba(18,19,22,0.4)] text-[10px] uppercase tracking-wider shrink-0 w-28 pt-0.5"
+              style={{ fontFamily: "var(--font-dm-mono, monospace)" }}
             >
               {key}
             </span>
             <code
-              className="text-zinc-300 text-[11px] leading-relaxed break-all flex-1"
-              style={{ fontFamily: "var(--font-space-mono, monospace)" }}
+              className="text-[#121316] text-[11px] leading-relaxed break-all flex-1"
+              style={{ fontFamily: "var(--font-dm-mono, monospace)" }}
             >
               {typeof value === "object" ? JSON.stringify(value) : String(value)}
             </code>
@@ -667,11 +667,11 @@ function VerifyResult({
 }) {
   if (state.status === "loading") {
     return (
-      <div className="rounded-2xl border border-zinc-800 bg-zinc-950 p-10 flex flex-col items-center justify-center gap-3">
-        <Loader2 className="w-7 h-7 text-[#E8503A] animate-spin" />
+      <div className="rounded-2xl border border-[rgba(18,19,22,0.12)] bg-[rgba(18,19,22,0.03)] p-10 flex flex-col items-center justify-center gap-3">
+        <Loader2 className="w-7 h-7 text-[#4D5AF0] animate-spin" />
         <p
-          className="text-zinc-500 text-sm animate-pulse"
-          style={{ fontFamily: "var(--font-space-mono, monospace)" }}
+          className="text-[rgba(18,19,22,0.4)] text-sm animate-pulse"
+          style={{ fontFamily: "var(--font-dm-mono, monospace)" }}
         >
           verifying integrity…
         </p>
@@ -696,38 +696,38 @@ function VerifyResult({
 
   if (verified) {
     return (
-      <div className="rounded-2xl border border-emerald-500/30 bg-emerald-950/20 overflow-hidden">
-        <div className="px-6 py-5 border-b border-emerald-500/20 flex items-start gap-3">
-          <ShieldCheck className="w-6 h-6 text-emerald-400 shrink-0 mt-0.5" />
+      <div className="rounded-2xl border border-[#4D5AF0]/30 bg-[#4D5AF0]/5 overflow-hidden">
+        <div className="px-6 py-5 border-b border-[#4D5AF0]/20 flex items-start gap-3">
+          <ShieldCheck className="w-6 h-6 text-[#4D5AF0] shrink-0 mt-0.5" />
           <div className="flex-1">
-            <h3 className="text-emerald-400 font-semibold text-base">
+            <h3 className="text-[#4D5AF0] font-semibold text-base">
               Document Integrity Confirmed
             </h3>
-            <p className="text-emerald-600/80 text-sm mt-0.5">
+            <p className="text-[#4D5AF0]/60 text-sm mt-0.5">
               The submitted document matches the anchored record exactly.
             </p>
           </div>
           {state.simulated && (
             <span
-              className="text-[9px] uppercase tracking-widest text-zinc-600 bg-zinc-800/50 px-1.5 py-0.5 rounded self-start shrink-0"
-              style={{ fontFamily: "var(--font-space-mono, monospace)" }}
+              className="text-[9px] uppercase tracking-widest text-[rgba(18,19,22,0.4)] bg-[rgba(18,19,22,0.06)] px-1.5 py-0.5 rounded self-start shrink-0"
+              style={{ fontFamily: "var(--font-dm-mono, monospace)" }}
             >
               simulated
             </span>
           )}
         </div>
-        <div className="divide-y divide-emerald-900/30">
+        <div className="divide-y divide-[#4D5AF0]/10">
           {remainingEntries.map(([key, value]) => (
             <div key={key} className="px-6 py-2.5 flex gap-4 items-start">
               <span
-                className="text-emerald-800 text-[10px] uppercase tracking-wider shrink-0 w-28 pt-0.5"
-                style={{ fontFamily: "var(--font-space-mono, monospace)" }}
+                className="text-[#4D5AF0]/60 text-[10px] uppercase tracking-wider shrink-0 w-28 pt-0.5"
+                style={{ fontFamily: "var(--font-dm-mono, monospace)" }}
               >
                 {key}
               </span>
               <code
-                className="text-emerald-300 text-[11px] leading-relaxed break-all flex-1"
-                style={{ fontFamily: "var(--font-space-mono, monospace)" }}
+                className="text-[#4D5AF0] text-[11px] leading-relaxed break-all flex-1"
+                style={{ fontFamily: "var(--font-dm-mono, monospace)" }}
               >
                 {typeof value === "object" ? JSON.stringify(value) : String(value)}
               </code>
@@ -740,19 +740,19 @@ function VerifyResult({
 
   // Failure
   return (
-    <div className="rounded-2xl border border-[#E8503A]/40 bg-[#E8503A]/5 overflow-hidden">
-      <div className="px-6 py-5 border-b border-[#E8503A]/20 flex items-start gap-3">
-        <ShieldX className="w-6 h-6 text-[#E8503A] shrink-0 mt-0.5" />
+    <div className="rounded-2xl border border-[#F23A17]/40 bg-[#F23A17]/5 overflow-hidden">
+      <div className="px-6 py-5 border-b border-[#F23A17]/20 flex items-start gap-3">
+        <ShieldX className="w-6 h-6 text-[#F23A17] shrink-0 mt-0.5" />
         <div className="flex-1">
-          <h3 className="text-[#E8503A] font-semibold text-base">Integrity Failure Detected</h3>
-          <p className="text-[#E8503A]/60 text-sm mt-0.5">
+          <h3 className="text-[#F23A17] font-semibold text-base">Integrity Failure Detected</h3>
+          <p className="text-[#F23A17]/60 text-sm mt-0.5">
             The document has been altered since it was anchored.
           </p>
         </div>
         {state.simulated && (
           <span
-            className="text-[9px] uppercase tracking-widest text-zinc-600 bg-zinc-800/50 px-1.5 py-0.5 rounded self-start shrink-0"
-            style={{ fontFamily: "var(--font-space-mono, monospace)" }}
+            className="text-[9px] uppercase tracking-widest text-[rgba(18,19,22,0.4)] bg-[rgba(18,19,22,0.06)] px-1.5 py-0.5 rounded self-start shrink-0"
+            style={{ fontFamily: "var(--font-dm-mono, monospace)" }}
           >
             simulated
           </span>
@@ -761,10 +761,10 @@ function VerifyResult({
 
       <div className="px-6 py-4 space-y-4">
         {mismatchDetail && (
-          <div className="rounded-lg bg-[#E8503A]/10 border border-[#E8503A]/20 px-4 py-3">
+          <div className="rounded-lg bg-[#F23A17]/10 border border-[#F23A17]/20 px-4 py-3">
             <p
-              className="text-[#E8503A] text-xs leading-relaxed"
-              style={{ fontFamily: "var(--font-space-mono, monospace)" }}
+              className="text-[#F23A17] text-xs leading-relaxed"
+              style={{ fontFamily: "var(--font-dm-mono, monospace)" }}
             >
               {mismatchDetail}
             </p>
@@ -776,14 +776,14 @@ function VerifyResult({
             {submittedHash && (
               <div className="flex gap-3 items-start">
                 <span
-                  className="text-zinc-600 text-[10px] uppercase tracking-wider shrink-0 w-28 pt-0.5"
-                  style={{ fontFamily: "var(--font-space-mono, monospace)" }}
+                  className="text-[rgba(18,19,22,0.4)] text-[10px] uppercase tracking-wider shrink-0 w-28 pt-0.5"
+                  style={{ fontFamily: "var(--font-dm-mono, monospace)" }}
                 >
                   submitted
                 </span>
                 <code
-                  className="text-zinc-400 text-[11px] break-all flex-1"
-                  style={{ fontFamily: "var(--font-space-mono, monospace)" }}
+                  className="text-[rgba(18,19,22,0.6)] text-[11px] break-all flex-1"
+                  style={{ fontFamily: "var(--font-dm-mono, monospace)" }}
                 >
                   {submittedHash}
                 </code>
@@ -792,14 +792,14 @@ function VerifyResult({
             {anchoredHash && (
               <div className="flex gap-3 items-start">
                 <span
-                  className="text-[#E8503A] text-[10px] uppercase tracking-wider shrink-0 w-28 pt-0.5"
-                  style={{ fontFamily: "var(--font-space-mono, monospace)" }}
+                  className="text-[#F23A17] text-[10px] uppercase tracking-wider shrink-0 w-28 pt-0.5"
+                  style={{ fontFamily: "var(--font-dm-mono, monospace)" }}
                 >
                   anchored
                 </span>
                 <code
-                  className="text-[#E8503A] text-[11px] break-all flex-1"
-                  style={{ fontFamily: "var(--font-space-mono, monospace)" }}
+                  className="text-[#F23A17] text-[11px] break-all flex-1"
+                  style={{ fontFamily: "var(--font-dm-mono, monospace)" }}
                 >
                   {anchoredHash}
                 </code>
@@ -811,14 +811,14 @@ function VerifyResult({
         {remainingEntries.map(([key, value]) => (
           <div key={key} className="flex gap-3 items-start">
             <span
-              className="text-zinc-600 text-[10px] uppercase tracking-wider shrink-0 w-28 pt-0.5"
-              style={{ fontFamily: "var(--font-space-mono, monospace)" }}
+              className="text-[rgba(18,19,22,0.4)] text-[10px] uppercase tracking-wider shrink-0 w-28 pt-0.5"
+              style={{ fontFamily: "var(--font-dm-mono, monospace)" }}
             >
               {key}
             </span>
             <code
-              className="text-zinc-400 text-[11px] break-all flex-1"
-              style={{ fontFamily: "var(--font-space-mono, monospace)" }}
+              className="text-[rgba(18,19,22,0.6)] text-[11px] break-all flex-1"
+              style={{ fontFamily: "var(--font-dm-mono, monospace)" }}
             >
               {typeof value === "object" ? JSON.stringify(value) : String(value)}
             </code>
@@ -1031,34 +1031,9 @@ export function DemoPlayground() {
 
   return (
     <div
-      className="min-h-screen bg-[#1C1C1E] text-white"
+      className="min-h-screen bg-[#FAFAF8] text-[#2a2b30]"
       style={{ fontFamily: "var(--font-dm-sans, system-ui, sans-serif)" }}
     >
-      {/* ── Header ─────────────────────────────────────── */}
-      <header className="border-b border-zinc-800/60 px-4 py-4">
-        <div className="max-w-3xl mx-auto flex items-center justify-between">
-          <div className="flex items-center gap-3">
-            <span className="text-[#E8503A] font-bold text-lg tracking-tight">TrustSignal</span>
-            <span
-              className="text-zinc-700 text-xs hidden sm:block"
-              style={{ fontFamily: "var(--font-space-mono, monospace)" }}
-            >
-              / integrity-demo
-            </span>
-          </div>
-          {step !== "select" && (
-            <button
-              onClick={reset}
-              className="flex items-center gap-1.5 text-zinc-600 hover:text-zinc-300 text-xs transition-colors"
-              type="button"
-            >
-              <RotateCcw className="w-3.5 h-3.5" />
-              <span>Reset</span>
-            </button>
-          )}
-        </div>
-      </header>
-
       <div className="max-w-3xl mx-auto px-4 py-8 sm:py-12">
         {/* ── Step tracker ───────────────────────────────── */}
         <StepTracker current={step} />
@@ -1067,10 +1042,10 @@ export function DemoPlayground() {
         <div className="mt-8 mb-6 text-center">
           {step === "select" && (
             <>
-              <h1 className="text-2xl sm:text-3xl font-bold text-zinc-100 tracking-tight">
+              <h1 className="text-2xl sm:text-4xl font-bold text-[#121316] tracking-tight" style={{ fontFamily: "var(--font-fraunces, serif)" }}>
                 Select a document to verify
               </h1>
-              <p className="text-zinc-500 mt-2 text-sm max-w-lg mx-auto leading-relaxed">
+              <p className="text-[#2a2b30]/60 mt-2 text-sm max-w-lg mx-auto leading-relaxed">
                 Two mortgage documents — identical except for one field. Select one and watch
                 TrustSignal anchor it and test its integrity.
               </p>
@@ -1078,30 +1053,30 @@ export function DemoPlayground() {
           )}
           {step === "ingest" && (
             <>
-              <h1 className="text-2xl sm:text-3xl font-bold text-zinc-100 tracking-tight">
+              <h1 className="text-2xl sm:text-4xl font-bold text-[#121316] tracking-tight" style={{ fontFamily: "var(--font-fraunces, serif)" }}>
                 Ingesting document
               </h1>
-              <p className="text-zinc-500 mt-2 text-sm">
+              <p className="text-[#2a2b30]/60 mt-2 text-sm">
                 Sending document payload to TrustSignal…
               </p>
             </>
           )}
           {step === "anchor" && (
             <>
-              <h1 className="text-2xl sm:text-3xl font-bold text-zinc-100 tracking-tight">
+              <h1 className="text-2xl sm:text-4xl font-bold text-[#121316] tracking-tight" style={{ fontFamily: "var(--font-fraunces, serif)" }}>
                 Anchoring document
               </h1>
-              <p className="text-zinc-500 mt-2 text-sm">
+              <p className="text-[#2a2b30]/60 mt-2 text-sm">
                 Creating a tamper-evident receipt for this document.
               </p>
             </>
           )}
           {step === "verify" && (
             <>
-              <h1 className="text-2xl sm:text-3xl font-bold text-zinc-100 tracking-tight">
+              <h1 className="text-2xl sm:text-4xl font-bold text-[#121316] tracking-tight" style={{ fontFamily: "var(--font-fraunces, serif)" }}>
                 Verifying integrity
               </h1>
-              <p className="text-zinc-500 mt-2 text-sm">
+              <p className="text-[#2a2b30]/60 mt-2 text-sm">
                 Checking the original document hash against the anchored receipt.
               </p>
             </>
@@ -1143,10 +1118,10 @@ export function DemoPlayground() {
 
             {choice === "custom" && uploadedFile && (
               <div
-                className="flex items-center gap-2 text-zinc-500 text-xs px-1"
-                style={{ fontFamily: "var(--font-space-mono, monospace)" }}
+                className="flex items-center gap-2 text-[#2a2b30]/60 text-xs px-1"
+                style={{ fontFamily: "var(--font-dm-mono, monospace)" }}
               >
-                <CheckCircle2 className="w-3.5 h-3.5 text-emerald-400 shrink-0" />
+                <CheckCircle2 className="w-3.5 h-3.5 text-[#4D5AF0] shrink-0" />
                 Custom document selected — integrity check will verify file hash against receipt
               </div>
             )}
@@ -1157,8 +1132,8 @@ export function DemoPlayground() {
               className={cn(
                 "w-full rounded-xl py-3.5 px-6 font-semibold text-sm flex items-center justify-center gap-2 transition-all duration-200",
                 canStart
-                  ? "bg-[#E8503A] hover:bg-[#d44633] text-white shadow-[0_4px_24px_#E8503A30]"
-                  : "bg-zinc-800/50 text-zinc-600 cursor-not-allowed",
+                  ? "bg-[#4D5AF0] hover:bg-[#3C48D1] text-white shadow-[0_4px_24px_rgba(77,90,240,0.2)]"
+                  : "bg-black/5 text-[#121316]/30 cursor-not-allowed",
               )}
               type="button"
             >
@@ -1173,8 +1148,8 @@ export function DemoPlayground() {
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <div>
               <p
-                className="text-[10px] uppercase tracking-widest text-zinc-600 mb-2 px-1"
-                style={{ fontFamily: "var(--font-space-mono, monospace)" }}
+                className="text-[10px] uppercase tracking-widest text-[#121316]/60 mb-2 px-1"
+                style={{ fontFamily: "var(--font-dm-mono, monospace)" }}
               >
                 Payload
               </p>
@@ -1182,8 +1157,8 @@ export function DemoPlayground() {
             </div>
             <div>
               <p
-                className="text-[10px] uppercase tracking-widest text-zinc-600 mb-2 px-1"
-                style={{ fontFamily: "var(--font-space-mono, monospace)" }}
+                className="text-[10px] uppercase tracking-widest text-[#121316]/60 mb-2 px-1"
+                style={{ fontFamily: "var(--font-dm-mono, monospace)" }}
               >
                 Response
               </p>
@@ -1197,14 +1172,14 @@ export function DemoPlayground() {
           <div>
             {/* Show the ingest result as a subtle summary */}
             {ingestState.response && (
-              <div className="mb-4 rounded-xl border border-zinc-800/50 bg-zinc-900/30 px-4 py-3 flex items-center justify-between">
+              <div className="mb-4 rounded-xl border border-[rgba(18,19,22,0.12)] bg-[rgba(18,19,22,0.02)] px-4 py-3 flex items-center justify-between">
                 <div className="flex items-center gap-2">
-                  <CheckCircle2 className="w-3.5 h-3.5 text-emerald-400 shrink-0" />
-                  <span className="text-zinc-500 text-xs">Ingestion confirmed</span>
+                  <CheckCircle2 className="w-3.5 h-3.5 text-[#4D5AF0] shrink-0" />
+                  <span className="text-[#2a2b30]/60 text-xs">Ingestion confirmed</span>
                   {typeof ingestState.response.id === "string" && (
                     <code
-                      className="text-zinc-600 text-[11px]"
-                      style={{ fontFamily: "var(--font-space-mono, monospace)" }}
+                      className="text-[#121316] text-[11px]"
+                      style={{ fontFamily: "var(--font-dm-mono, monospace)" }}
                     >
                       {ingestState.response.id}
                     </code>
@@ -1221,18 +1196,25 @@ export function DemoPlayground() {
           <div>
             {/* Receipt summary */}
             {anchorState.response && (
-              <div className="mb-4 rounded-xl border border-zinc-800/50 bg-zinc-900/30 px-4 py-3 flex items-center justify-between">
+              <div className="mb-4 rounded-xl border border-[rgba(18,19,22,0.12)] bg-[rgba(18,19,22,0.02)] px-4 py-3 flex items-center justify-between">
                 <div className="flex items-center gap-2">
-                  <Shield className="w-3.5 h-3.5 text-zinc-500 shrink-0" />
-                  <span className="text-zinc-500 text-xs">Receipt</span>
-                  {typeof anchorState.response.receipt_id === "string" && (
+                  <Shield className="w-3.5 h-3.5 text-[#121316]/60 shrink-0" />
+                  <span className="text-[#2a2b30]/60 text-xs">Receipt</span>
+                  {typeof anchorState.response.receiptId === "string" ? (
                     <code
-                      className="text-zinc-600 text-[11px]"
-                      style={{ fontFamily: "var(--font-space-mono, monospace)" }}
+                      className="text-[#121316] text-[11px]"
+                      style={{ fontFamily: "var(--font-dm-mono, monospace)" }}
+                    >
+                      {anchorState.response.receiptId}
+                    </code>
+                  ) : typeof anchorState.response.receipt_id === "string" ? (
+                    <code
+                      className="text-[#121316] text-[11px]"
+                      style={{ fontFamily: "var(--font-dm-mono, monospace)" }}
                     >
                       {anchorState.response.receipt_id}
                     </code>
-                  )}
+                  ) : null}
                 </div>
               </div>
             )}
@@ -1242,7 +1224,7 @@ export function DemoPlayground() {
             {verifyState.status === "done" && (
               <button
                 onClick={reset}
-                className="mt-6 w-full rounded-xl border border-zinc-800 py-3 px-6 font-medium text-sm text-zinc-400 hover:text-zinc-200 hover:border-zinc-600 transition-all duration-200 flex items-center justify-center gap-2"
+                className="mt-6 w-full rounded-xl border border-[rgba(18,19,22,0.12)] py-3 px-6 font-medium text-sm text-[#121316]/60 hover:text-[#121316] hover:border-[rgba(18,19,22,0.24)] transition-all duration-200 flex items-center justify-center gap-2"
                 type="button"
               >
                 <RotateCcw className="w-4 h-4" />
@@ -1252,23 +1234,6 @@ export function DemoPlayground() {
           </div>
         )}
       </div>
-
-      {/* ── Footer ─────────────────────────────────────── */}
-      <footer className="border-t border-zinc-800/40 mt-12 px-4 py-6">
-        <div className="max-w-3xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-2">
-          <p className="text-zinc-700 text-xs">
-            © {new Date().getFullYear()} TrustSignal. Evidence integrity infrastructure.
-          </p>
-          <a
-            href="https://trustsignal.dev"
-            className="text-zinc-700 hover:text-[#E8503A] text-xs transition-colors"
-            target="_blank"
-            rel="noreferrer"
-          >
-            trustsignal.dev →
-          </a>
-        </div>
-      </footer>
     </div>
   );
 }

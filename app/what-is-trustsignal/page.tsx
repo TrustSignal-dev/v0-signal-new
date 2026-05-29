@@ -1,8 +1,8 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { ArrowUpRight, FileCheck2, Fingerprint, Shield } from "lucide-react";
-import { FooterSection } from "@/components/landing/footer-section";
-import { Navigation } from "@/components/landing/navigation";
+import TrustSignalFooter from "@/components/landing/TrustSignalFooter";
+import TrustSignalNav from "@/components/landing/TrustSignalNav";
 import { createPageMetadata, organizationJsonLd } from "@/lib/seo";
 
 export const metadata: Metadata = createPageMetadata({
@@ -39,23 +39,94 @@ const foundations = [
   },
 ] as const;
 
+const PALETTE = {
+  paper: "#FAFAF8",
+  ink: "#121316",
+  body: "#2a2b30",
+  blue: "#4D5AF0",
+  red: "#F23A17",
+  line: "rgba(18,19,22,0.12)",
+  muted: "rgba(18,19,22,0.60)",
+};
+
 export default function WhatIsTrustSignalPage() {
   return (
-    <main id="top" className="relative min-h-screen overflow-x-hidden noise-overlay">
-      <Navigation />
+    <main id="top" style={{ backgroundColor: PALETTE.paper, minHeight: '100vh', position: 'relative', WebkitFontSmoothing: 'antialiased' }}>
+      <link
+        rel="stylesheet"
+        href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,500;0,9..144,600;1,9..144,400&family=DM+Sans:wght@400;500&family=DM+Mono:wght@400;500&display=swap"
+      />
+      <style>{`
+        ::selection { background: #4D5AF0; color: #FFFFFF; }
+        html { scroll-behavior: smooth; }
+        .foundations-grid {
+          display: grid;
+          gap: 1px;
+          background-color: ${PALETTE.line};
+          border: 1px solid ${PALETTE.line};
+        }
+        .hero-layout {
+          display: grid;
+          gap: 3.5rem;
+          grid-template-columns: 1fr;
+        }
+        @media (min-width: 1024px) {
+          .hero-layout {
+            grid-template-columns: minmax(0, 0.95fr) minmax(0, 1.05fr);
+            gap: 5rem;
+          }
+        }
+        .content-links a:hover {
+          color: ${PALETTE.blue} !important;
+        }
+      `}</style>
+      
+      <TrustSignalNav />
 
-      <section className="relative overflow-hidden border-b border-foreground/10 pt-32 lg:pt-40">
-        <div className="mx-auto max-w-[1400px] px-6 pb-20 lg:px-12 lg:pb-24">
-          <div className="grid gap-14 lg:grid-cols-[minmax(0,0.95fr)_minmax(0,1.05fr)] lg:gap-20">
-            <div>
-              <span className="inline-flex items-center gap-3 font-mono text-sm text-muted-foreground">
-                <Shield className="h-4 w-4" />
-                TrustSignal
+      <section style={{ 
+        position: 'relative', 
+        overflow: 'hidden', 
+        borderBottom: `1px solid ${PALETTE.line}`, 
+        paddingTop: '6rem', 
+        paddingBottom: '5rem' 
+      }}>
+        <div style={{ margin: '0 auto', maxWidth: '1240px', padding: '0 1.5rem' }}>
+          <div className="hero-layout">
+            <div style={{ paddingTop: '2rem' }}>
+              <span style={{ 
+                fontFamily: "'DM Mono', monospace", 
+                fontSize: '0.78rem', 
+                textTransform: 'uppercase', 
+                letterSpacing: '0.18em', 
+                color: PALETTE.muted, 
+                display: 'flex', 
+                alignItems: 'center', 
+                gap: '0.6rem', 
+                marginBottom: '1.5rem',
+                fontWeight: 500
+              }}>
+                <Shield size={14} color={PALETTE.blue} />
+                TRUSTSIGNAL
               </span>
-              <h1 className="mt-6 text-5xl font-display tracking-tight lg:text-7xl">
+              <h1 style={{ 
+                fontFamily: "'Fraunces', Georgia, serif", 
+                fontSize: 'clamp(2.5rem, 6vw, 4.4rem)', 
+                lineHeight: 1.04, 
+                color: PALETTE.ink, 
+                fontWeight: 400, 
+                margin: '0 0 2rem 0',
+                letterSpacing: '-0.01em'
+              }}>
                 What is TrustSignal?
               </h1>
-              <p className="mt-8 max-w-2xl text-xl leading-relaxed text-muted-foreground">
+              <p style={{ 
+                fontFamily: "'DM Sans', sans-serif", 
+                fontSize: 'clamp(1.1rem, 1.8vw, 1.25rem)', 
+                lineHeight: 1.6, 
+                color: PALETTE.body, 
+                margin: 0,
+                maxWidth: '620px'
+              }}>
                 TrustSignal is evidence integrity infrastructure for compliance
                 artifacts. It issues signed receipts at ingestion, preserves
                 verifiable provenance, and gives teams a reliable way to confirm
@@ -64,20 +135,46 @@ export default function WhatIsTrustSignalPage() {
               </p>
             </div>
 
-            <div className="grid gap-4 sm:grid-cols-3 lg:grid-cols-1">
+            <div className="foundations-grid">
               {foundations.map((item) => {
                 const Icon = item.icon;
 
                 return (
                   <div
                     key={item.title}
-                    className="border border-foreground/10 bg-foreground/[0.02] p-6"
+                    style={{ 
+                      backgroundColor: PALETTE.paper, 
+                      padding: '2.4rem' 
+                    }}
                   >
-                    <div className="flex h-11 w-11 items-center justify-center border border-foreground/15 bg-background">
-                      <Icon className="h-5 w-5 text-foreground/70" />
+                    <div style={{ 
+                      display: 'flex', 
+                      height: '2.75rem', 
+                      width: '2.75rem', 
+                      alignItems: 'center', 
+                      justifyContent: 'center', 
+                      border: `1px solid ${PALETTE.line}`, 
+                      backgroundColor: PALETTE.paper 
+                    }}>
+                      <Icon size={20} color={PALETTE.ink} style={{ opacity: 0.7 }} />
                     </div>
-                    <h2 className="mt-5 text-2xl font-display">{item.title}</h2>
-                    <p className="mt-3 text-sm leading-relaxed text-muted-foreground">
+                    <h2 style={{ 
+                      fontFamily: "'Fraunces', Georgia, serif", 
+                      fontSize: '1.6rem', 
+                      color: PALETTE.ink, 
+                      fontWeight: 400, 
+                      marginTop: '1.4rem',
+                      marginBottom: '0.8rem'
+                    }}>
+                      {item.title}
+                    </h2>
+                    <p style={{ 
+                      fontFamily: "'DM Sans', sans-serif", 
+                      fontSize: '0.94rem', 
+                      lineHeight: 1.6, 
+                      color: PALETTE.muted, 
+                      margin: 0 
+                    }}>
                       {item.description}
                     </p>
                   </div>
@@ -88,10 +185,15 @@ export default function WhatIsTrustSignalPage() {
         </div>
       </section>
 
-      <section className="py-20 lg:py-24">
-        <div className="mx-auto max-w-[980px] px-6 lg:px-12">
-          <div className="space-y-8 text-lg leading-relaxed text-muted-foreground">
-            <p>
+      <section style={{ padding: '6rem 0 8rem' }}>
+        <div style={{ margin: '0 auto', maxWidth: '860px', padding: '0 1.5rem' }}>
+          <div style={{ 
+            fontFamily: "'DM Sans', sans-serif", 
+            fontSize: 'clamp(1.05rem, 1.6vw, 1.15rem)', 
+            lineHeight: 1.7, 
+            color: PALETTE.body 
+          }} className="content-links">
+            <p style={{ marginBottom: '2rem' }}>
               At a practical level, TrustSignal sits behind an existing
               compliance workflow rather than replacing it. A platform, internal
               system, or evidence collector continues to gather documents,
@@ -102,7 +204,7 @@ export default function WhatIsTrustSignalPage() {
               verification.
             </p>
 
-            <p>
+            <p style={{ marginBottom: '2rem' }}>
               This matters because many compliance programs depend on artifacts
               that move through multiple systems, reviewers, and retention
               stages. Screenshots, documents, or exported control evidence can
@@ -114,14 +216,14 @@ export default function WhatIsTrustSignalPage() {
               the receipted record and detect whether it still matches.
             </p>
 
-            <p>
+            <p style={{ marginBottom: '2rem' }}>
               TrustSignal also applies ZKML integrity verification at the point
               of receipt issuance. This means the integrity signal is not only a
               hash comparison — it is a cryptographically provable attestation
               that can be evaluated independently from the collection workflow.
             </p>
 
-            <p>
+            <p style={{ marginBottom: '2rem' }}>
               For organizations that handle physical documents — universities
               issuing diplomas, title companies processing closings, notaries
               witnessing signatures — TrustSignal also supports NFC physical
@@ -137,7 +239,7 @@ export default function WhatIsTrustSignalPage() {
               moment of handoff.
             </p>
 
-            <p>
+            <p style={{ marginBottom: '2rem' }}>
               Signed receipts are central to the product. A receipt records the
               evidence source, the artifact hash, the relevant control or review
               context, and the attestation timestamp. Because the receipt is
@@ -149,7 +251,7 @@ export default function WhatIsTrustSignalPage() {
               collected?
             </p>
 
-            <p>
+            <p style={{ marginBottom: '2rem' }}>
               Verifiable provenance is equally important. TrustSignal is not
               only about detecting drift; it is also about preserving the chain
               of context around an artifact so later review remains meaningful.
@@ -160,23 +262,23 @@ export default function WhatIsTrustSignalPage() {
               forcing organizations to replatform their evidence systems.
             </p>
 
-            <p>
+            <p style={{ marginBottom: '2rem' }}>
               For users who want the broader product overview, the{" "}
-              <Link href="/" className="text-foreground underline underline-offset-4">
+              <Link href="/" style={{ color: PALETTE.ink, fontWeight: 500, textDecoration: 'underline', textUnderlineOffset: '4px' }}>
                 homepage
               </Link>{" "}
               explains how TrustSignal fits alongside compliance platforms and
               internal workflows. The{" "}
               <Link
                 href="/security"
-                className="text-foreground underline underline-offset-4"
+                style={{ color: PALETTE.ink, fontWeight: 500, textDecoration: 'underline', textUnderlineOffset: '4px' }}
               >
                 security overview
               </Link>{" "}
               describes the public site boundary and operational safeguards. The{" "}
               <Link
                 href="/#developers"
-                className="text-foreground underline underline-offset-4"
+                style={{ color: PALETTE.ink, fontWeight: 500, textDecoration: 'underline', textUnderlineOffset: '4px' }}
               >
                 developers page
               </Link>{" "}
@@ -186,15 +288,23 @@ export default function WhatIsTrustSignalPage() {
                 href="https://github.com/TrustSignal-dev/TrustSignal"
                 target="_blank"
                 rel="noreferrer"
-                className="inline-flex items-center gap-1 text-foreground underline underline-offset-4"
+                style={{ 
+                  display: 'inline-flex', 
+                  alignItems: 'center', 
+                  gap: '0.25rem', 
+                  color: PALETTE.ink, 
+                  fontWeight: 500,
+                  textDecoration: 'underline', 
+                  textUnderlineOffset: '4px' 
+                }}
               >
                 TrustSignal repository
-                <ArrowUpRight className="h-4 w-4" />
+                <ArrowUpRight size={14} color={PALETTE.red} />
               </a>
               .
             </p>
 
-            <p>
+            <p style={{ margin: 0 }}>
               In short, TrustSignal is the integrity layer for compliance
               artifacts. It adds signed receipts, preserves verifiable
               provenance, and supports compliance artifact verification in a way
@@ -213,7 +323,7 @@ export default function WhatIsTrustSignalPage() {
         dangerouslySetInnerHTML={{ __html: JSON.stringify(organizationJsonLd) }}
       />
 
-      <FooterSection />
+      <TrustSignalFooter />
     </main>
   );
 }

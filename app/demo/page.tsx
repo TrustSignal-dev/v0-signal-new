@@ -1,5 +1,7 @@
 import type { Metadata } from "next";
 import { DemoPlayground } from "./demo-playground";
+import TrustSignalNav from "@/components/landing/TrustSignalNav";
+import TrustSignalFooter from "@/components/landing/TrustSignalFooter";
 
 export const metadata: Metadata = {
   title: "Integrity Demo | TrustSignal",
@@ -9,5 +11,11 @@ export const metadata: Metadata = {
 };
 
 export default function DemoPage() {
-  return <DemoPlayground />;
+  return (
+    <div style={{ background: "#FAFAF8", minHeight: "100vh" }}>
+      <TrustSignalNav />
+      <DemoPlayground />
+      <TrustSignalFooter />
+    </div>
+  );
 }
