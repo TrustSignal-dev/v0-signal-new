@@ -35,9 +35,31 @@ const NAV_LINKS = [
 ];
 
 const FOOTER_COLS = [
-  { head: "Product", links: ["How it works", "Pricing", "Developers", "Live demo"] },
-  { head: "Verticals", links: ["Healthcare staffing", "Education", "Mortgage & title", "Government"] },
-  { head: "Company", links: ["Founder's story", "Contact"] },
+  { 
+    head: "Product", 
+    links: [
+      { label: "How it works", href: "#who-its-for" },
+      { label: "Pricing", href: "#request-pilot" },
+      { label: "Developers", href: "#developers" },
+      { label: "Live demo", href: "/demo" }
+    ] 
+  },
+  { 
+    head: "Verticals", 
+    links: [
+      { label: "Healthcare staffing", href: "#who-its-for" },
+      { label: "Education", href: "#who-its-for" },
+      { label: "Mortgage & title", href: "#who-its-for" },
+      { label: "Government", href: "#who-its-for" }
+    ] 
+  },
+  { 
+    head: "Company", 
+    links: [
+      { label: "Founder's story", href: "mailto:christopher@trustsignal.dev" },
+      { label: "Contact", href: "mailto:christopher@trustsignal.dev" }
+    ] 
+  },
 ];
 
 function Nav() {
@@ -101,8 +123,8 @@ function Footer() {
               <div style={footStyles.colHead}>{col.head}</div>
               <ul style={footStyles.colList}>
                 {col.links.map((l) => (
-                  <li key={l} style={footStyles.colItem}>
-                    <a href="#" style={footStyles.colLink} className="ts-footlink">{l}</a>
+                  <li key={l.label} style={footStyles.colItem}>
+                    <a href={l.href} style={footStyles.colLink} className="ts-footlink">{l.label}</a>
                   </li>
                 ))}
               </ul>
