@@ -4,7 +4,7 @@ import TrustSignalNav from "./TrustSignalNav";
 import TrustSignalFooter from "./TrustSignalFooter";
 import TrustSignalHero from "./TrustSignalHero";
 import TrustSignalAudience from "./TrustSignalAudience";
-import { PilotRequestSection } from "./pilot-request-section";
+import TrustSignalPilotSection from "./TrustSignalPilotSection";
 import TrustSignalDevelopers from "./TrustSignalDevelopers";
 
 /**
@@ -23,7 +23,7 @@ export default function TrustSignalPage() {
       <TrustSignalNav />
       <TrustSignalHero />
       <TrustSignalAudience />
-      <PilotRequestSection />
+      <TrustSignalPilotSection />
       <TrustSignalDevelopers />
       <TrustSignalFooter />
     </div>
