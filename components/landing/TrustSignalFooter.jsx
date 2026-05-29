@@ -45,7 +45,7 @@ export default function TrustSignalFooter() {
         <div style={footStyles.grid}>
           <div style={footStyles.brandCol}>
             <div style={footStyles.wordmark}>
-              <span style={footStyles.mark} aria-hidden="true">—||—</span> TrustSignal
+              <img src="/logo-1.svg" alt="TrustSignal Logo" style={footStyles.logo} />
             </div>
             <p style={footStyles.tagline}>Evidence integrity infrastructure.</p>
             <p style={footStyles.prove}>Prove. Verify. Trust.</p>
@@ -96,11 +96,11 @@ const footStyles = {
   },
   brandCol: { maxWidth: "300px" },
   wordmark: {
-    fontFamily: "'Fraunces', Georgia, serif",
-    fontSize: "1.3rem",
-    color: PALETTE.paper,
-    fontWeight: 500,
+    display: "flex",
+    alignItems: "center",
+    marginBottom: "0.9rem",
   },
+  logo: { height: "26px", width: "auto", filter: "invert(1) brightness(2)" },
   mark: { fontFamily: "'DM Mono', monospace", color: PALETTE.blue, fontSize: "0.95rem" },
   tagline: { fontSize: "0.92rem", color: PALETTE.lightMuted, margin: "0.9rem 0 0" },
   prove: {

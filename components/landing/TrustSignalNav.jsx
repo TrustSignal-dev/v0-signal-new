@@ -38,7 +38,7 @@ export default function TrustSignalNav() {
       <style>{navCss}</style>
       <div style={navStyles.inner}>
         <a href="/" style={navStyles.wordmark}>
-          <span style={navStyles.mark} aria-hidden="true">—||—</span> TrustSignal
+          <img src="/logo-1.svg" alt="TrustSignal Logo" style={navStyles.logo} />
         </a>
         <div style={navStyles.links} className="ts-navlinks">
           {NAV_LINKS.map((l) => (
@@ -72,14 +72,11 @@ const navStyles = {
     gap: "1.5rem",
   },
   wordmark: {
-    fontFamily: "'Fraunces', Georgia, serif",
-    fontSize: "1.25rem",
-    color: PALETTE.ink,
+    display: "flex",
+    alignItems: "center",
     textDecoration: "none",
-    fontWeight: 500,
-    whiteSpace: "nowrap",
   },
-  mark: { fontFamily: "'DM Mono', monospace", color: PALETTE.blue, fontSize: "0.9rem" },
+  logo: { height: "28px", width: "auto" },
   links: { display: "flex", gap: "1.8rem", alignItems: "center" },
   link: {
     fontFamily: "'DM Sans', sans-serif",
