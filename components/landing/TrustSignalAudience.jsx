@@ -1,13 +1,13 @@
 "use client";
 
-import { useState, useEffect, useRef } from "react";
+import { useEffect } from "react";
 
 /**
  * TrustSignal — "Who it's for" section
- * Scroll-driven: the section sticks to the viewport while the user scrolls through
- * the verticals one by one. Each scroll step advances the active vertical with a
- * smooth vertical slot-machine animation (up on scroll-down, down on scroll-up).
- * Respects prefers-reduced-motion by falling back to a gentle crossfade.
+ * Stacked, normal-flow layout: every vertical renders in full and grows to fit
+ * its content, so nothing is ever clipped regardless of viewport height or the
+ * sticky nav. A lightweight, CSS-only scroll reveal adds motion where supported
+ * and degrades to plain content everywhere else (incl. prefers-reduced-motion).
  *
  * Monochrome base with two semantic accents:
  *   Signal Red    #F23A17 = attention / what's at risk
@@ -114,15 +114,6 @@ const VERTICALS = [
 const N = VERTICALS.length;
 
 export default function TrustSignalAudience() {
-  const [reduced, setReduced] = useState(false);
-  const [vIndex, setVIndex] = useState(0);
-  const [dir, setDir] = useState(1); // 1 = scrolling down, -1 = scrolling up
-  const [phase, setPhase] = useState("idle"); // "idle" | "exit" | "enter"
-  const wrapRef = useRef(null);
-  const stickyRef = useRef(null);
-  const pendingIndex = useRef(0);
-  const isAnimating = useRef(false);
-
   useEffect(() => {
     const id = "ts-hero-fonts";
     if (!document.getElementById(id)) {
@@ -133,227 +124,93 @@ export default function TrustSignalAudience() {
         "https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,600;1,9..144,400&family=DM+Sans:wght@400;500&family=DM+Mono:wght@400;500&display=swap";
       document.head.appendChild(link);
     }
-    const mq = window.matchMedia?.("(prefers-reduced-motion: reduce)");
-    setReduced(mq?.matches ?? false);
   }, []);
 
-  // Animate to a new vertical
-  const goTo = (nextIndex, scrollDir) => {
-    if (isAnimating.current) return;
-    if (nextIndex === vIndex) return;
-    isAnimating.current = true;
-    setDir(scrollDir);
-    setPhase("exit");
-    pendingIndex.current = nextIndex;
-
-    setTimeout(() => {
-      setVIndex(nextIndex);
-      setPhase("enter");
-      setTimeout(() => {
-        setPhase("idle");
-        isAnimating.current = false;
-      }, 400);
-    }, 300);
-  };
-
-  // Scroll-driven logic
-  useEffect(() => {
-    if (reduced) return; // reduced motion: no scroll hijack
-
-    const wrap = wrapRef.current;
-    if (!wrap) return;
-
-    // Each "virtual scroll step" is 100vh
-    const STEP = typeof window !== "undefined" ? window.innerHeight : 800;
-    // Total scroll height = N steps worth of scroll
-    const totalExtra = STEP * (N - 1);
-
-    // We read scroll position and compute which vertical should show
-    const onScroll = () => {
-      const rect = wrap.getBoundingClientRect();
-      const wrapTop = wrap.offsetTop; // distance from page top to wrap
-      const scrollY = window.scrollY;
-
-      // How far the user has scrolled INTO the section (0 … totalExtra)
-      const scrolledInto = Math.max(0, Math.min(scrollY - wrapTop, totalExtra));
-      const rawIndex = scrolledInto / STEP;
-      const newIndex = Math.min(N - 1, Math.floor(rawIndex + 0.15)); // slight snap bias
-
-      if (newIndex !== pendingIndex.current) {
-        const scrollDir = newIndex > pendingIndex.current ? 1 : -1;
-        pendingIndex.current = newIndex;
-        goTo(newIndex, scrollDir);
-      }
-    };
-
-    window.addEventListener("scroll", onScroll, { passive: true });
-    return () => window.removeEventListener("scroll", onScroll);
-  }, [reduced, vIndex]);
-
-  const v = VERTICALS[vIndex];
-
-  // Animation transforms for slot-machine effect
-  const exitTransform = phase === "exit"
-    ? `translateY(${dir > 0 ? "-18px" : "18px"})`
-    : "translateY(0)";
-  const enterTransform = phase === "enter"
-    ? "translateY(0)"
-    : phase === "idle"
-      ? "translateY(0)"
-      : `translateY(${dir > 0 ? "18px" : "-18px"})`;
-  const contentOpacity = phase === "exit" ? 0 : 1;
-
-  // Total height of the wrapper = sticky height + extra scroll space
-  const sectionHeight = `calc(100vh * ${N})`;
-
   return (
-    <div
-      ref={wrapRef}
-      id="who-its-for"
-      style={{
-        height: reduced ? "auto" : sectionHeight,
-        position: "relative",
-        borderTop: `1px solid ${PALETTE.line}`,
-      }}
-    >
+    <div id="who-its-for" style={styles.wrap}>
       <style>{css}</style>
 
-      {/* Sticky container — pins inside the wrapper */}
-      <div
-        ref={stickyRef}
-        style={{
-          position: reduced ? "relative" : "sticky",
-          top: 0,
-          height: "100vh",
-          overflow: "hidden",
-          background: PALETTE.paper,
-          display: "flex",
-          flexDirection: "column",
-          justifyContent: "center",
-        }}
-      >
-        <section
-          style={styles.section}
-        >
-          <div style={styles.inner}>
-            {/* Eyebrow — rotating vertical label */}
-            <div style={styles.eyebrow}>
-              WHO IT&rsquo;S FOR&nbsp;&nbsp;·&nbsp;&nbsp;
-              <span
-                style={{
-                  display: "inline-block",
-                  opacity: contentOpacity,
-                  transform: reduced ? "none" : (phase === "exit" ? exitTransform : enterTransform),
-                  transition: reduced ? "none" : "opacity 0.28s ease, transform 0.28s ease",
-                  willChange: "opacity, transform",
-                }}
-              >
-                {v.label.toUpperCase()}
-              </span>
+      <div style={styles.inner}>
+        <div style={styles.eyebrow}>
+          WHO IT&rsquo;S FOR&nbsp;&nbsp;·&nbsp;&nbsp;ONE GAP. {N} INDUSTRIES.
+        </div>
+
+        {VERTICALS.map((v, idx) => (
+          <article
+            key={v.label}
+            className="ts-vert"
+            style={{
+              ...styles.vert,
+              borderTop: idx === 0 ? "none" : `1px solid ${PALETTE.line}`,
+              paddingTop: idx === 0 ? 0 : "3.4rem",
+            }}
+          >
+            <div style={styles.vertLabel}>{v.label.toUpperCase()}</div>
+
+            <h2 style={styles.heading}>
+              {v.heading} <span style={styles.headingAccent}>{v.headingAccent}</span>
+            </h2>
+
+            <p style={styles.sub}>{v.sub}</p>
+
+            <div style={styles.stats}>
+              {v.stats.map((s, i) => (
+                <div key={i} style={styles.stat}>
+                  <div style={{ ...styles.statFigure, color: s.color }}>{s.figure}</div>
+                  <div style={styles.statLabel}>{s.label}</div>
+                </div>
+              ))}
             </div>
 
-            {/* Main content — slot-machine animated */}
-            <div
-              style={{
-                opacity: contentOpacity,
-                transform: reduced ? "none" : (phase === "exit" ? exitTransform : enterTransform),
-                transition: reduced ? "none" : "opacity 0.28s ease, transform 0.28s ease",
-                willChange: "opacity, transform",
-              }}
-            >
-              <h2 style={styles.heading}>
-                {v.heading}{" "}
-                <span style={styles.headingAccent}>{v.headingAccent}</span>
-              </h2>
-
-              <p style={styles.sub}>{v.sub}</p>
-
-              {/* Stats */}
-              <div style={styles.stats}>
-                {v.stats.map((s, i) => (
-                  <div key={`${vIndex}-${i}`} style={styles.stat}>
-                    <div style={{ ...styles.statFigure, color: s.color }}>{s.figure}</div>
-                    <div style={styles.statLabel}>{s.label}</div>
-                  </div>
-                ))}
-              </div>
-
-              {/* Fit paragraph */}
-              <div style={styles.fit}>
-                <span style={styles.check} aria-hidden="true">✓</span>
-                <p style={styles.fitText}>{v.fit}</p>
-              </div>
-
-              {/* CTA */}
-              <a href="#pilot-request" style={styles.link} className="ts-link">
-                {v.cta} <span aria-hidden="true">&rarr;</span>
-              </a>
+            <div style={styles.fit}>
+              <span style={styles.check} aria-hidden="true">✓</span>
+              <p style={styles.fitText}>{v.fit}</p>
             </div>
 
-            {/* Progress dots */}
-            {!reduced && (
-              <div style={styles.dots} aria-hidden="true">
-                {VERTICALS.map((vert, i) => (
-                  <div
-                    key={vert.label}
-                    style={{
-                      ...styles.dot,
-                      background: i === vIndex ? PALETTE.ink : PALETTE.line,
-                      transform: i === vIndex ? "scaleX(2.4)" : "scaleX(1)",
-                      transition: "background 0.25s ease, transform 0.25s ease",
-                    }}
-                  />
-                ))}
-              </div>
-            )}
-
-            {/* Scroll hint — shown only at first vertical */}
-            {vIndex === 0 && !reduced && (
-              <div style={styles.scrollHint} className="ts-scroll-hint" aria-hidden="true">
-                scroll to explore ↓
-              </div>
-            )}
-          </div>
-        </section>
+            <a href="#pilot-request" style={styles.link} className="ts-link">
+              {v.cta} <span aria-hidden="true">&rarr;</span>
+            </a>
+          </article>
+        ))}
       </div>
-
-      {/* Subordinated verticals — shown below the sticky zone on mobile / reduced */}
-      {reduced && (
-        <section style={{ ...styles.section, paddingTop: "2rem" }}>
-          <div style={styles.inner}>
-            <div style={styles.otherWrap}>
-              <div style={styles.otherHead}>One gap. {N} industries.</div>
-              <ul style={styles.otherList}>
-                {VERTICALS.filter((_, i) => i !== vIndex).map((vert) => (
-                  <li key={vert.label} style={styles.otherItem}>
-                    <span style={styles.otherName}>{vert.label}</span>
-                    <span style={styles.otherSignal}>{vert.stats[0].figure}&ensp;{vert.stats[0].label}</span>
-                  </li>
-                ))}
-              </ul>
-            </div>
-          </div>
-        </section>
-      )}
     </div>
   );
 }
 
 const styles = {
-  section: {
+  wrap: {
     background: PALETTE.paper,
-    padding: "3rem 1.5rem",
+    borderTop: `1px solid ${PALETTE.line}`,
+    // Clear the sticky nav when the #who-its-for anchor is targeted.
+    scrollMarginTop: "84px",
     fontFamily: "'DM Sans', sans-serif",
     color: PALETTE.body,
     WebkitFontSmoothing: "antialiased",
   },
-  inner: { maxWidth: "980px", width: "100%", margin: "0 auto", position: "relative" },
+  inner: {
+    maxWidth: "980px",
+    width: "100%",
+    margin: "0 auto",
+    padding: "5rem 1.5rem 6rem",
+    position: "relative",
+  },
   eyebrow: {
     fontFamily: "'DM Mono', monospace",
     fontSize: "0.78rem",
     letterSpacing: "0.18em",
     color: PALETTE.muted,
-    marginBottom: "1.2rem",
+    marginBottom: "3rem",
+    fontWeight: 500,
+  },
+  vert: {
+    margin: "0 0 3.4rem",
+  },
+  vertLabel: {
+    fontFamily: "'DM Mono', monospace",
+    fontSize: "0.72rem",
+    letterSpacing: "0.16em",
+    color: PALETTE.blue,
+    marginBottom: "1rem",
     fontWeight: 500,
   },
   heading: {
@@ -424,68 +281,23 @@ const styles = {
     fontWeight: 500,
     fontSize: "0.96rem",
   },
-  dots: {
-    display: "flex",
-    gap: "6px",
-    marginTop: "2rem",
-    alignItems: "center",
-  },
-  dot: {
-    width: "18px",
-    height: "4px",
-    borderRadius: "2px",
-    transformOrigin: "left center",
-  },
-  scrollHint: {
-    fontFamily: "'DM Mono', monospace",
-    fontSize: "0.72rem",
-    letterSpacing: "0.14em",
-    color: PALETTE.muted,
-    marginTop: "1.2rem",
-    opacity: 1,
-    transition: "opacity 0.4s ease",
-  },
-  otherWrap: {
-    paddingTop: "1.2rem",
-    borderTop: `1px solid ${PALETTE.line}`,
-  },
-  otherHead: {
-    fontFamily: "'DM Mono', monospace",
-    fontSize: "0.78rem",
-    letterSpacing: "0.14em",
-    color: PALETTE.muted,
-    marginBottom: "1.4rem",
-  },
-  otherList: {
-    listStyle: "none",
-    padding: 0,
-    margin: 0,
-    display: "grid",
-    gridTemplateColumns: "repeat(auto-fit, minmax(260px, 1fr))",
-    gap: "1.1rem 2rem",
-  },
-  otherItem: {
-    display: "flex",
-    flexDirection: "column",
-    gap: "0.25rem",
-    paddingLeft: "0.9rem",
-    borderLeft: `2px solid ${PALETTE.line}`,
-  },
-  otherName: {
-    fontFamily: "'DM Sans', sans-serif",
-    fontWeight: 500,
-    fontSize: "0.95rem",
-    color: PALETTE.ink,
-  },
-  otherSignal: {
-    fontSize: "0.88rem",
-    lineHeight: 1.45,
-    color: PALETTE.muted,
-  },
 };
 
 const css = `
   .ts-link:hover { color: #3A46D8 !important; text-decoration: underline; }
-  .ts-scroll-hint { animation: tsPulse 2.4s ease-in-out infinite; }
-  @keyframes tsPulse { 0%, 100% { opacity: 0.5; } 50% { opacity: 1; } }
+
+  /* CSS-only scroll reveal where supported; no-op everywhere else. */
+  @supports (animation-timeline: view()) {
+    @media (prefers-reduced-motion: no-preference) {
+      .ts-vert {
+        animation: tsRise linear both;
+        animation-timeline: view();
+        animation-range: entry 0% entry 40%;
+      }
+    }
+  }
+  @keyframes tsRise {
+    from { opacity: 0; transform: translateY(18px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
 `;

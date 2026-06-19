@@ -23,7 +23,9 @@ const nextConfig = {
     root: rootDir,
   },
   images: {
-    unoptimized: true,
+    // Enable Vercel's built-in image optimization (WebP/AVIF + resizing) for
+    // better LCP / Core Web Vitals. All <Image> sources are local public assets.
+    formats: ["image/avif", "image/webp"],
   },
 };
 
