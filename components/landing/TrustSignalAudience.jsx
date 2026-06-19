@@ -133,8 +133,21 @@ export default function TrustSignalAudience() {
         "https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,600;1,9..144,400&family=DM+Sans:wght@400;500&family=DM+Mono:wght@400;500&display=swap";
       document.head.appendChild(link);
     }
+    // Fall back to the static stacked layout (no scroll-hijack, no 100vh pin)
+    // whenever the viewport can't comfortably fit a pinned vertical — otherwise
+    // taller content gets clipped by the sticky panel's overflow:hidden.
     const mq = window.matchMedia?.("(prefers-reduced-motion: reduce)");
-    setReduced(mq?.matches ?? false);
+    const compute = () => {
+      const tooSmall = window.innerWidth < 900 || window.innerHeight < 820;
+      setReduced((mq?.matches ?? false) || tooSmall);
+    };
+    compute();
+    window.addEventListener("resize", compute);
+    mq?.addEventListener?.("change", compute);
+    return () => {
+      window.removeEventListener("resize", compute);
+      mq?.removeEventListener?.("change", compute);
+    };
   }, []);
 
   // Animate to a new vertical
@@ -224,8 +237,8 @@ export default function TrustSignalAudience() {
         style={{
           position: reduced ? "relative" : "sticky",
           top: 0,
-          height: "100vh",
-          overflow: "hidden",
+          height: reduced ? "auto" : "100vh",
+          overflow: reduced ? "visible" : "hidden",
           background: PALETTE.paper,
           display: "flex",
           flexDirection: "column",
