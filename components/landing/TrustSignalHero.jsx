@@ -5,12 +5,8 @@ import { useState, useEffect, useRef } from "react";
 /**
  * TrustSignal — above-the-fold hero
  * Scroll-driven word reveal: the headline record type changes as user scrolls,
- * with a dramatic vertical slot-machine animation. Each word is paired with a
- * striking stat that counts up when it enters view — creating number drama.
- *
- * Monochrome base with two semantic accents:
- *   Electric Blue #4D5AF0 = trusted action / verified  (primary CTA)
- *   Signal Red    #F23A17 = attention / what's at risk  (record type, arrow)
+ * with a vertical slot-machine animation. Each word is paired with a
+ * striking stat that counts up when it enters view.
  */
 
 const RECORD_TYPES = [
@@ -67,63 +63,72 @@ const PALETTE = {
 };
 
 // Animated number counter — counts up from 0 to target when triggered
-function AnimatedStat({ item, active }) {
+function AnimatedStat({ item, active, reduced }) {
   const [displayVal, setDisplayVal] = useState("0");
-  const [prevActive, setPrevActive] = useState(false);
   const rafRef = useRef(null);
 
   useEffect(() => {
-    if (active && !prevActive) {
-      // Start count-up animation
-      const duration = 900;
-      const startTime = performance.now();
-      const target = item.statNumeric;
-      const isDecimal = target % 1 !== 0;
-
-      const animate = (now) => {
-        const elapsed = now - startTime;
-        const progress = Math.min(elapsed / duration, 1);
-        // Ease out expo
-        const eased = progress === 1 ? 1 : 1 - Math.pow(2, -10 * progress);
-        const current = eased * target;
-
-        if (isDecimal) {
-          setDisplayVal(current.toFixed(1));
-        } else if (target > 1000) {
-          setDisplayVal(Math.floor(current).toLocaleString());
-        } else {
-          setDisplayVal(Math.floor(current).toString());
-        }
-
-        if (progress < 1) {
-          rafRef.current = requestAnimationFrame(animate);
-        } else {
-          // Set final display
-          if (isDecimal) setDisplayVal(target.toFixed(1));
-          else if (target > 1000) setDisplayVal(target.toLocaleString());
-          else setDisplayVal(target.toString());
-        }
-      };
-
-      if (rafRef.current) cancelAnimationFrame(rafRef.current);
-      rafRef.current = requestAnimationFrame(animate);
+    if (reduced) {
+      // If reduced motion is preferred, immediately show final value
+      const final =
+        item.statNumeric % 1 !== 0
+          ? item.statNumeric.toFixed(1)
+          : item.statNumeric > 1000
+          ? Math.floor(item.statNumeric).toLocaleString()
+          : Math.floor(item.statNumeric).toString();
+      setDisplayVal(final);
+      return;
     }
 
-    if (!active && prevActive) {
-      // Reset when leaving
+    if (!active) {
       setDisplayVal("0");
+      return;
     }
 
-    setPrevActive(active);
+    const duration = 900;
+    const startTime = performance.now();
+    const target = item.statNumeric;
+    const isDecimal = target % 1 !== 0;
+
+    const animate = (now) => {
+      const elapsed = now - startTime;
+      const progress = Math.min(elapsed / duration, 1);
+      // Ease out expo
+      const eased = progress === 1 ? 1 : 1 - Math.pow(2, -10 * progress);
+      const current = eased * target;
+
+      if (isDecimal) {
+        setDisplayVal(current.toFixed(1));
+      } else if (target > 1000) {
+        setDisplayVal(Math.floor(current).toLocaleString());
+      } else {
+        setDisplayVal(Math.floor(current).toString());
+      }
+
+      if (progress < 1) {
+        rafRef.current = requestAnimationFrame(animate);
+      } else {
+        // Ensure final value
+        if (isDecimal) setDisplayVal(target.toFixed(1));
+        else if (target > 1000) setDisplayVal(target.toLocaleString());
+        else setDisplayVal(target.toString());
+      }
+    };
+
+    if (rafRef.current) cancelAnimationFrame(rafRef.current);
+    rafRef.current = requestAnimationFrame(animate);
+
     return () => {
       if (rafRef.current) cancelAnimationFrame(rafRef.current);
     };
-  }, [active, item, prevActive]);
+  }, [active, item, reduced]);
 
   return (
     <div style={styles.statBox}>
       <div style={styles.statNumber}>
-        {item.statPrefix}{displayVal}{item.statSuffix}
+        {item.statPrefix}
+        {displayVal}
+        {item.statSuffix}
       </div>
       <div style={styles.statLabel}>{item.statLabel}</div>
     </div>
@@ -136,80 +141,84 @@ export default function TrustSignalHero() {
   const [animDir, setAnimDir] = useState("down"); // "down" | "up"
   const [reduced, setReduced] = useState(false);
   const sectionRef = useRef(null);
-  const lastScrollY = useRef(0);
+  const wrapperRef = useRef(null);
+  const lastScrollY = useRef(typeof window !== "undefined" ? window.scrollY : 0);
+  const rAF = useRef(null);
+  const activeIndexRef = useRef(0);
 
   useEffect(() => {
-    const id = "ts-hero-fonts";
-    if (!document.getElementById(id)) {
-      const link = document.createElement("link");
-      link.id = id;
-      link.rel = "stylesheet";
-      link.href =
-        "https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,600;1,9..144,400&family=DM+Sans:wght@400;500&family=DM+Mono:wght@400;500&display=swap";
-      document.head.appendChild(link);
+    const m = window.matchMedia("(prefers-reduced-motion: reduce)");
+    setReduced(m.matches);
+    const listener = (e) => setReduced(e.matches);
+    try {
+      m.addEventListener("change", listener);
+    } catch (e) {
+      // Safari
+      m.addListener(listener);
     }
-    setReduced(
-      window.matchMedia?.("(prefers-reduced-motion: reduce)").matches ?? false
-    );
+    return () => {
+      try {
+        m.removeEventListener("change", listener);
+      } catch (e) {
+        m.removeListener(listener);
+      }
+    };
   }, []);
 
   useEffect(() => {
-    if (reduced) return;
+    if (reduced) return; // no scroll-driven changes when reduced motion is requested
 
-    // Scroll-driven: each "step" is one record type
-    // The section is sticky for RECORD_TYPES.length × viewport heights
-    const handleScroll = () => {
-      const section = sectionRef.current;
-      if (!section) return;
+    const handle = () => {
+      if (rAF.current) return; // throttle to rAF
+      rAF.current = requestAnimationFrame(() => {
+        rAF.current = null;
 
-      const rect = section.getBoundingClientRect();
-      const sectionTop = window.scrollY + rect.top - document.documentElement.scrollTop + rect.top;
-      
-      // Use the sticky container logic: track progress through sticky scroll
-      const scrollY = window.scrollY;
-      const direction = scrollY > lastScrollY.current ? "down" : "up";
-      lastScrollY.current = scrollY;
+        const scrollY = window.scrollY;
+        const direction = scrollY > lastScrollY.current ? "down" : "up";
+        lastScrollY.current = scrollY;
 
-      // The outer wrapper controls scroll depth; read progress from data attr
-      const wrapper = section.closest("[data-scroll-hero]");
-      if (!wrapper) return;
+        const wrapper = wrapperRef.current || sectionRef.current?.closest("[data-scroll-hero]");
+        if (!wrapper || !sectionRef.current) return;
 
-      const wrapperRect = wrapper.getBoundingClientRect();
-      const wrapperTop = wrapperRect.top + scrollY;
-      const wrapperHeight = wrapper.offsetHeight;
-      const stickyHeight = window.innerHeight;
-      const scrollableDepth = wrapperHeight - stickyHeight;
+        const wrapperRect = wrapper.getBoundingClientRect();
+        const wrapperTop = wrapperRect.top + window.scrollY;
+        const wrapperHeight = wrapper.offsetHeight;
+        const stickyHeight = window.innerHeight;
+        const scrollableDepth = Math.max(0, wrapperHeight - stickyHeight);
 
-      const scrolledIn = Math.max(0, scrollY - wrapperTop);
-      const progress = Math.min(scrolledIn / scrollableDepth, 1);
+        const scrolledIn = Math.max(0, scrollY - wrapperTop);
+        const progress = scrollableDepth > 0 ? Math.min(scrolledIn / scrollableDepth, 1) : 0;
 
-      const newIndex = Math.min(
-        Math.floor(progress * RECORD_TYPES.length),
-        RECORD_TYPES.length - 1
-      );
+        const newIndex = Math.min(Math.floor(progress * RECORD_TYPES.length), RECORD_TYPES.length - 1);
 
-      if (newIndex !== activeIndex) {
-        setAnimDir(direction);
-        setPrevIndex(activeIndex);
-        setActiveIndex(newIndex);
-        // Clear prev after animation
-        setTimeout(() => setPrevIndex(null), 500);
-      }
+        if (newIndex !== activeIndexRef.current) {
+          setAnimDir(direction);
+          setPrevIndex(activeIndexRef.current);
+          activeIndexRef.current = newIndex;
+          setActiveIndex(newIndex);
+          // Clear prev after animation
+          setTimeout(() => setPrevIndex(null), 520);
+        }
+      });
     };
 
-    window.addEventListener("scroll", handleScroll, { passive: true });
-    return () => window.removeEventListener("scroll", handleScroll);
-  }, [activeIndex, reduced]);
+    window.addEventListener("scroll", handle, { passive: true });
+    // Run once to set initial state
+    handle();
+    return () => {
+      window.removeEventListener("scroll", handle);
+      if (rAF.current) cancelAnimationFrame(rAF.current);
+    };
+  }, [reduced]);
 
   const current = RECORD_TYPES[activeIndex];
   const prev = prevIndex !== null ? RECORD_TYPES[prevIndex] : null;
 
-  // Slot-machine animation classes
   const wordEnter = animDir === "down" ? "ts-word-enter-down" : "ts-word-enter-up";
   const wordExit = animDir === "down" ? "ts-word-exit-down" : "ts-word-exit-up";
 
   return (
-    <div data-scroll-hero style={styles.scrollWrapper}>
+    <div data-scroll-hero style={styles.scrollWrapper} ref={wrapperRef}>
       <section ref={sectionRef} style={styles.section}>
         <style>{css}</style>
 
@@ -226,20 +235,12 @@ export default function TrustSignalHero() {
               <span style={styles.rotatorWrap}>
                 {/* Exiting word */}
                 {prev && !reduced && (
-                  <span
-                    key={`exit-${prevIndex}`}
-                    style={{ ...styles.rotator, ...styles.rotatorAbsolute }}
-                    className={wordExit}
-                  >
+                  <span key={`exit-${prevIndex}`} style={{ ...styles.rotator, ...styles.rotatorAbsolute }} className={wordExit}>
                     {prev.word}
                   </span>
                 )}
                 {/* Entering word */}
-                <span
-                  key={`enter-${activeIndex}`}
-                  style={styles.rotator}
-                  className={reduced ? "" : wordEnter}
-                >
+                <span key={`enter-${activeIndex}`} style={styles.rotator} className={reduced ? "" : wordEnter}>
                   {current.word}
                 </span>
               </span>
@@ -262,7 +263,7 @@ export default function TrustSignalHero() {
                   transition: "opacity 0.4s ease, transform 0.4s ease",
                 }}
               >
-                <AnimatedStat item={item} active={i === activeIndex} />
+                <AnimatedStat item={item} active={i === activeIndex} reduced={reduced} />
               </div>
             ))}
           </div>
@@ -270,7 +271,7 @@ export default function TrustSignalHero() {
           <p style={styles.sub}>
             TrustSignal issues a cryptographic receipt for every record and anchors it on a
             public blockchain. When a regulator, auditor, or court asks years later, you can
-            prove it&rsquo;s untouched &mdash; in seconds, without trusting us or anyone else.
+            prove it’s untouched — in seconds, without trusting us or anyone else.
           </p>
 
           <div style={styles.ctaRow}>
@@ -278,7 +279,7 @@ export default function TrustSignalHero() {
               Request a Pilot
             </a>
             <a href="/demo" style={styles.secondary} className="ts-secondary">
-              See it verify live <span style={styles.arrow} aria-hidden="true">&rarr;</span>
+              See it verify live <span style={styles.arrow} aria-hidden="true">→</span>
             </a>
           </div>
 
@@ -307,11 +308,13 @@ export default function TrustSignalHero() {
 }
 
 function TrustItem({ children }) {
-  return <span style={styles.trustItem}>{children}</span>;
+  return (
+    <div style={{ fontFamily: "'DM Mono', monospace", fontSize: "0.82rem", color: PALETTE.muted }}>{children}</div>
+  );
 }
 
 function Dot() {
-  return <span style={styles.dot} aria-hidden="true">•</span>;
+  return <div style={{ width: 6, height: 6, borderRadius: 3, background: PALETTE.line }} />;
 }
 
 const styles = {
@@ -323,10 +326,6 @@ const styles = {
   section: {
     minHeight: "100vh",
     background: PALETTE.paper,
-    display: "flex",
-    alignItems: "center",
-    justifyContent: "center",
-    padding: "6rem 1.5rem",
     fontFamily: "'DM Sans', sans-serif",
     color: PALETTE.body,
     WebkitFontSmoothing: "antialiased",
@@ -337,24 +336,13 @@ const styles = {
   inner: { maxWidth: "860px", width: "100%", textAlign: "left" },
   eyebrow: {
     fontFamily: "'DM Mono', monospace",
+    letterSpacing: "0.12em",
     fontSize: "0.78rem",
-    letterSpacing: "0.18em",
     color: PALETTE.muted,
-    marginBottom: "2rem",
-    fontWeight: 500,
+    marginBottom: "1.2rem",
   },
-  headline: {
-    fontFamily: "'Fraunces', Georgia, serif",
-    fontOpticalSizing: "auto",
-    fontWeight: 400,
-    fontSize: "clamp(2.6rem, 6.2vw, 4.6rem)",
-    lineHeight: 1.04,
-    letterSpacing: "-0.01em",
-    color: PALETTE.ink,
-    margin: 0,
-  },
+  headl ine: {},
   rotatorWrap: {
-    display: "inline-block",
     minWidth: "8.5em",
     textAlign: "left",
     verticalAlign: "baseline",
@@ -407,95 +395,29 @@ const styles = {
   sub: {
     fontWeight: 400,
     fontSize: "clamp(1.05rem, 1.6vw, 1.22rem)",
-    lineHeight: 1.6,
-    color: PALETTE.body,
-    maxWidth: "620px",
-    margin: "1.8rem 0 0",
-  },
-  ctaRow: {
-    display: "flex",
-    flexWrap: "wrap",
-    gap: "1rem",
-    alignItems: "center",
-    margin: "2.4rem 0 0",
-  },
-  primary: {
-    background: PALETTE.blue,
-    color: "#FFFFFF",
-    textDecoration: "none",
-    fontWeight: 500,
-    fontSize: "1rem",
-    padding: "0.95rem 1.8rem",
-    borderRadius: "2px",
-    letterSpacing: "0.01em",
-    transition: "transform 0.15s ease, background 0.15s ease",
-    display: "inline-block",
-  },
-  secondary: {
-    color: PALETTE.ink,
-    textDecoration: "none",
-    fontWeight: 500,
-    fontSize: "1rem",
-    padding: "0.95rem 1.4rem",
-    borderRadius: "2px",
-    border: `1px solid ${PALETTE.line}`,
-    transition: "border-color 0.15s ease, background 0.15s ease",
-    display: "inline-block",
-  },
-  arrow: { color: PALETTE.red, fontWeight: 600 },
-  pilotNote: {
-    fontFamily: "'DM Mono', monospace",
-    fontSize: "0.8rem",
-    lineHeight: 1.6,
-    color: PALETTE.muted,
-    margin: "1.6rem 0 0",
+    marginTop: "1.6rem",
     maxWidth: "640px",
   },
-  scrollHint: {
-    display: "flex",
-    alignItems: "center",
-    gap: "0.75rem",
-    marginTop: "2.8rem",
+  ctaRow: { display: "flex", gap: "1rem", marginTop: "1.6rem" },
+  primary: {
+    background: PALETTE.blue,
+    color: "#fff",
+    padding: "0.9rem 1.2rem",
+    textDecoration: "none",
+    borderRadius: 4,
   },
-  scrollHintLine: {
-    display: "block",
-    width: "32px",
-    height: "1px",
-    background: PALETTE.muted,
+  secondary: {
+    border: `1px solid ${PALETTE.line}`,
+    padding: "0.8rem 1.1rem",
+    textDecoration: "none",
+    color: PALETTE.body,
   },
-  scrollHintText: {
-    fontFamily: "'DM Mono', monospace",
-    fontSize: "0.72rem",
-    letterSpacing: "0.12em",
-    color: PALETTE.muted,
-  },
-  trustStrip: {
-    display: "flex",
-    flexWrap: "wrap",
-    alignItems: "center",
-    gap: "0.65rem",
-    marginTop: "2rem",
-    paddingTop: "1.6rem",
-    borderTop: `1px solid ${PALETTE.line}`,
-  },
-  trustItem: {
-    fontFamily: "'DM Mono', monospace",
-    fontSize: "0.76rem",
-    letterSpacing: "0.04em",
-    color: PALETTE.muted,
-  },
-  dot: { color: PALETTE.muted, fontSize: "0.7rem", opacity: 0.7 },
-  srOnly: {
-    position: "absolute",
-    width: "1px",
-    height: "1px",
-    padding: 0,
-    margin: "-1px",
-    overflow: "hidden",
-    clip: "rect(0,0,0,0)",
-    whiteSpace: "nowrap",
-    border: 0,
-  },
+  arrow: { marginLeft: "0.5rem" },
+  pilotNote: { marginTop: "1rem", color: PALETTE.muted, fontSize: "0.9rem" },
+  scrollHint: { display: "flex", alignItems: "center", gap: "0.75rem", marginTop: "2.8rem" },
+  scrollHintLine: { display: "block", width: "32px", height: "1px", background: PALETTE.muted },
+  scrollHintText: { fontFamily: "'DM Mono', monospace", fontSize: "0.72rem", letterSpacing: "0.12em", color: PALETTE.muted },
+  trustStrip: { display: "flex", flexWrap: "wrap", alignItems: "center", gap: "0.65rem", marginTop: "2rem", paddingTop: "1.6rem", borderTop: `1px solid ${PALETTE.line}` },
 };
 
 const css = `
