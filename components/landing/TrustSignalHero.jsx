@@ -108,8 +108,8 @@ export default function TrustSignalHero() {
           <a href="#pilot-request" style={styles.primary} className="ts-primary">
             Request a Pilot
           </a>
-          <a href="/demo" style={styles.secondary} className="ts-secondary">
-            See it verify live <span style={styles.arrow} aria-hidden="true">&rarr;</span>
+          <a href="#pilot-request" style={styles.secondary} className="ts-secondary">
+            See how a pilot works <span style={styles.arrow} aria-hidden="true">&rarr;</span>
           </a>
         </div>
 
@@ -135,7 +135,7 @@ function TrustItem({ children }) {
 }
 
 function Dot() {
-  return <span style={styles.dot} aria-hidden="true">•</span>;
+  return <span style={styles.dot} aria-hidden="true">&bull;</span>;
 }
 
 const styles = {
