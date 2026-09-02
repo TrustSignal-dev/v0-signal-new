@@ -31,4 +31,28 @@ describe("RLS enforcement assumptions", () => {
     );
     expect(webhookContent.includes("createSupabaseAdminClient")).toBe(true);
   });
+
+  it("keeps the customer dashboard behind Supabase auth and account-scoped key routes", () => {
+    const projectRoot = process.cwd();
+    const page = readFileSync(join(projectRoot, "app/dashboard/page.tsx"), "utf8");
+    const dashboard = readFileSync(
+      join(projectRoot, "app/dashboard/customer-dashboard.tsx"),
+      "utf8",
+    );
+
+    expect(page.includes("supabase.auth.getUser()"), "dashboard must verify the session").toBe(
+      true,
+    );
+    expect(page.includes("redirect('/sign-in')"), "unauthenticated users must be redirected").toBe(
+      true,
+    );
+    expect(dashboard.includes("fetch('/api/keys'"), "key operations must use guarded routes").toBe(
+      true,
+    );
+    expect(
+      dashboard.includes("@/lib/customer-data"),
+      "legacy service-role helper must stay removed",
+    ).toBe(false);
+    expect(dashboard.includes("SUPABASE_SERVICE_ROLE_KEY")).toBe(false);
+  });
 });
