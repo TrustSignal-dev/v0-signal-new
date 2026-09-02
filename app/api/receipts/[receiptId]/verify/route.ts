@@ -1,16 +1,12 @@
-import { NextRequest, NextResponse } from "next/server";
+import { NextResponse } from "next/server";
 import { requireAuthenticatedContext } from "@/lib/auth/require-user";
-
-type VerifyReceiptRequest = {
-  artifactHash?: string;
-  artifactReference?: string;
-  apiKey?: string;
-};
-
-const API = process.env.TRUSTSIGNAL_API_URL ?? "https://api.trustsignal.dev";
+import {
+  getTrustSignalApiUrl,
+  getTrustSignalDashboardApiKey,
+} from "@/lib/trustsignal-api";
 
 export async function POST(
-  req: NextRequest,
+  _request: Request,
   context: { params: Promise<{ receiptId: string }> },
 ) {
   const auth = await requireAuthenticatedContext();
@@ -23,37 +19,24 @@ export async function POST(
     return NextResponse.json({ error: "Missing receiptId" }, { status: 400 });
   }
 
-  const body = (await req.json()) as VerifyReceiptRequest;
-  const artifactHash = body.artifactHash?.trim();
-  const artifactReference = body.artifactReference?.trim();
-  const apiKey = body.apiKey?.trim() || process.env.TRUSTSIGNAL_DASHBOARD_API_KEY;
-
-  if (!artifactHash) {
-    return NextResponse.json({ error: "artifactHash is required" }, { status: 400 });
-  }
-
+  const apiKey = getTrustSignalDashboardApiKey();
   if (!apiKey) {
     return NextResponse.json(
       {
-        error:
-          "No API key available. Provide apiKey in request body or set TRUSTSIGNAL_DASHBOARD_API_KEY.",
+        error: "Receipt verification is not configured for this environment.",
+        code: "dashboard_api_key_unavailable",
       },
-      { status: 400 },
+      { status: 503 },
     );
   }
 
   const response = await fetch(
-    `${API}/api/v1/receipt/${encodeURIComponent(receiptId)}/verify`,
+    `${getTrustSignalApiUrl()}/api/v1/receipt/${encodeURIComponent(receiptId)}/verify`,
     {
       method: "POST",
       headers: {
-        "Content-Type": "application/json",
         "x-api-key": apiKey,
       },
-      body: JSON.stringify({
-        artifact_hash: artifactHash,
-        ...(artifactReference ? { artifact_reference: artifactReference } : {}),
-      }),
     },
   );
 
