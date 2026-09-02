@@ -301,7 +301,7 @@ export function CustomerDashboard({ user }: { user: { email: string } }) {
       const response = await fetch('/api/keys', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ name, scopes: ['verify:write', 'verify:read'] }),
+        body: JSON.stringify({ name, scopes: ['read', 'verify'] }),
       });
       const payload = (await response.json().catch(() => ({}))) as {
         key?: CustomerApiKey & { plaintext?: string };
