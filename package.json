@@ -7,7 +7,7 @@
     "demo:record": "node scripts/record-demo.js",
     "dev": "next dev",
     "lint": "eslint .",
-    "messaging:check": "bash scripts/check-public-messaging.sh",
+    "messaging:check": "node scripts/check-public-messaging.mjs",
     "start": "next start",
     "typecheck": "tsc --noEmit --incremental false",
     "test": "vitest run"
@@ -83,7 +83,7 @@
     "@types/react": "^19",
     "@types/react-dom": "^19",
     "baseline-browser-mapping": "^2.10.38",
-    "eslint": "^10.4.1",
+    "eslint": "9.39.5",
     "eslint-config-next": "^16.2.9",
     "postcss": "^8.5.15",
     "tailwindcss": "^4.2.4",
