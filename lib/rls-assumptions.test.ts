@@ -64,6 +64,23 @@ describe("RLS enforcement assumptions", () => {
     ).toBe(false);
   });
 
+  it("keeps user API-key hashing inside the core API trust boundary", () => {
+    const projectRoot = process.cwd();
+    const keyRoute = readFileSync(join(projectRoot, "app/api/keys/route.ts"), "utf8");
+    const revokeRoute = readFileSync(
+      join(projectRoot, "app/api/keys/[keyId]/revoke/route.ts"),
+      "utf8",
+    );
+
+    expect(keyRoute.includes("/api/v1/user/api-keys")).toBe(true);
+    expect(keyRoute.includes("authorization: `Bearer ${accessToken}`")).toBe(true);
+    expect(keyRoute.includes('scopes: ["read", "verify"]')).toBe(true);
+    expect(keyRoute.includes('.from("api_keys")')).toBe(false);
+    expect(keyRoute.includes("generateApiKeySecret")).toBe(false);
+    expect(revokeRoute.includes('method: "DELETE"')).toBe(true);
+    expect(revokeRoute.includes('.from("api_keys")')).toBe(false);
+  });
+
   it("returns OAuth users to the deployment that initiated sign-in", () => {
     const route = readFileSync(join(process.cwd(), "app/api/auth/oauth/route.ts"), "utf8");
 

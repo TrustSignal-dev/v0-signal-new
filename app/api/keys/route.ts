@@ -1,104 +1,94 @@
 import { NextRequest, NextResponse } from "next/server";
-import {
-  buildApiKeyCreatedEvent,
-  buildApiKeyMetadata,
-  generateApiKeySecret,
-} from "@/lib/api-keys";
-import { canManageApiKeys } from "@/lib/auth/permissions";
-import { requireAuthenticatedContext } from "@/lib/auth/require-user";
+import { requireAuthenticatedSession } from "@/lib/auth/require-user";
 import { enforceRateLimit } from "@/lib/rate-limit";
-import { createSupabaseServerClient } from "@/lib/supabase/server";
+import { getTrustSignalApiUrl } from "@/lib/trustsignal-api";
 
-type ApiKeyRow = Record<string, unknown>;
+type CoreApiKeyRecord = {
+  id: string;
+  name: string;
+  prefix: string;
+  scopes: string[];
+  createdAt: string;
+  lastUsedAt: string | null;
+  revokedAt: string | null;
+};
 
-function pickString(row: ApiKeyRow, keys: string[], fallback = "") {
-  for (const key of keys) {
-    const value = row[key];
-    if (typeof value === "string" && value.length > 0) {
-      return value;
-    }
-  }
-  return fallback;
-}
-
-function pickStringOrNull(row: ApiKeyRow, keys: string[]) {
-  for (const key of keys) {
-    const value = row[key];
-    if (typeof value === "string" && value.length > 0) {
-      return value;
-    }
-  }
-  return null;
-}
-
-function pickStringArray(row: ApiKeyRow, keys: string[], fallback: string[] = []) {
-  for (const key of keys) {
-    const value = row[key];
-    if (Array.isArray(value) && value.every((item) => typeof item === "string")) {
-      return value as string[];
-    }
-  }
-  return fallback;
-}
-
-function normalizeApiKey(row: ApiKeyRow) {
+function normalizeApiKey(row: CoreApiKeyRecord) {
   return {
-    id: pickString(row, ["id"]),
-    name: pickString(row, ["name", "key_name", "label", "display_name"], "API key"),
-    key_prefix: pickString(row, ["key_prefix", "prefix", "token_prefix"], ""),
-    last4: pickStringOrNull(row, ["last4", "key_last4", "suffix"]),
-    scopes: pickStringArray(row, ["scopes"]),
-    created_at: pickString(row, ["created_at"]),
-    last_used_at: pickStringOrNull(row, ["last_used_at"]),
-    revoked_at: pickStringOrNull(row, ["revoked_at"]),
-    revoked_reason: pickStringOrNull(row, ["revoked_reason"]),
-    created_by: pickStringOrNull(row, ["created_by"]),
-    revoked_by: pickStringOrNull(row, ["revoked_by"]),
+    id: row.id,
+    name: row.name,
+    key_prefix: row.prefix,
+    scopes: row.scopes,
+    created_at: row.createdAt,
+    last_used_at: row.lastUsedAt,
+    revoked_at: row.revokedAt,
   };
 }
 
+async function requestApi(
+  path: string,
+  accessToken: string,
+  init: RequestInit = {},
+) {
+  return fetch(`${getTrustSignalApiUrl()}${path}`, {
+    ...init,
+    cache: "no-store",
+    headers: {
+      accept: "application/json",
+      authorization: `Bearer ${accessToken}`,
+      ...init.headers,
+    },
+    signal: AbortSignal.timeout(5_000),
+  });
+}
+
+function safeUpstreamStatus(status: number) {
+  return [400, 401, 403, 429, 503].includes(status) ? status : 502;
+}
+
 export async function GET() {
-  const auth = await requireAuthenticatedContext();
+  const auth = await requireAuthenticatedSession();
   if (!auth.ok) {
     return auth.response;
   }
 
-  const supabase = await createSupabaseServerClient();
-  let { data, error } = await supabase
-    .from("api_keys")
-    .select("*")
-    .eq("account_id", auth.context.account.accountId)
-    .order("created_at", { ascending: false });
-
-  // Fall back for deployments where created_at is unavailable in the exposed schema.
-  if (error?.code === "42703") {
-    ({ data, error } = await supabase
-      .from("api_keys")
-      .select("*")
-      .eq("account_id", auth.context.account.accountId));
-  }
-
-  if (error) {
+  let response: Response;
+  try {
+    response = await requestApi(
+      "/api/v1/user/api-keys",
+      auth.context.accessToken,
+    );
+  } catch {
     return NextResponse.json(
-      { error: `Failed to fetch API keys: ${error.message}` },
-      { status: 400 },
+      { error: "API key service is unavailable" },
+      { status: 503 },
     );
   }
 
-  return NextResponse.json({ keys: (data ?? []).map((row) => normalizeApiKey(row as ApiKeyRow)) });
+  if (!response.ok) {
+    return NextResponse.json(
+      { error: "Unable to load API keys" },
+      { status: safeUpstreamStatus(response.status) },
+    );
+  }
+
+  const payload = (await response.json().catch(() => null)) as {
+    keys?: CoreApiKeyRecord[];
+  } | null;
+  if (!payload || !Array.isArray(payload.keys)) {
+    return NextResponse.json(
+      { error: "API key service returned an invalid response" },
+      { status: 502 },
+    );
+  }
+
+  return NextResponse.json({ keys: payload.keys.map(normalizeApiKey) });
 }
 
 export async function POST(req: NextRequest) {
-  const auth = await requireAuthenticatedContext();
+  const auth = await requireAuthenticatedSession();
   if (!auth.ok) {
     return auth.response;
-  }
-
-  if (!canManageApiKeys(auth.context.account.role)) {
-    return NextResponse.json(
-      { error: "Insufficient permissions to create API keys" },
-      { status: 403 },
-    );
   }
 
   const limit = enforceRateLimit({
@@ -113,80 +103,52 @@ export async function POST(req: NextRequest) {
 
   const body = (await req.json()) as { name?: string; scopes?: string[] };
   const name = body.name?.trim();
-  const scopes = Array.isArray(body.scopes) ? body.scopes : ["verify:write", "verify:read"];
 
-  if (!name || name.length < 1 || name.length > 120) {
-    return NextResponse.json({ error: "Name must be 1-120 characters" }, { status: 400 });
+  if (!name || name.length < 3 || name.length > 64) {
+    return NextResponse.json({ error: "Name must be 3-64 characters" }, { status: 400 });
   }
 
-  const secret = generateApiKeySecret();
-  const metadata = buildApiKeyMetadata(secret);
-  const supabase = await createSupabaseServerClient();
-
-  const baseInsert = {
-    account_id: auth.context.account.accountId,
-    key_hash: metadata.keyHash,
-    scopes,
-    created_by: auth.context.user.id,
-  };
-
-  const insertVariants: Array<Record<string, unknown>> = [
-    { ...baseInsert, name, key_prefix: metadata.keyPrefix, last4: metadata.last4 },
-    { ...baseInsert, key_name: name, key_prefix: metadata.keyPrefix, last4: metadata.last4 },
-    { ...baseInsert, name, prefix: metadata.keyPrefix, last4: metadata.last4 },
-    { ...baseInsert, label: name, prefix: metadata.keyPrefix, last4: metadata.last4 },
-    baseInsert,
-  ];
-
-  let inserted: ApiKeyRow | null = null;
-  let insertError: { code?: string; message: string } | null = null;
-
-  for (const payload of insertVariants) {
-    const attempt = await supabase.from("api_keys").insert(payload).select("*").single();
-    if (attempt.data) {
-      inserted = attempt.data as ApiKeyRow;
-      insertError = null;
-      break;
-    }
-
-    if (!attempt.error) {
-      continue;
-    }
-
-    insertError = { code: attempt.error.code, message: attempt.error.message };
-
-    // Try next shape when a column is unknown or a required renamed field is missing.
-    if (attempt.error.code === "42703" || attempt.error.code === "23502") {
-      continue;
-    }
-
-    break;
-  }
-
-  if (insertError || !inserted) {
-    return NextResponse.json(
+  let response: Response;
+  try {
+    response = await requestApi(
+      "/api/v1/user/api-keys",
+      auth.context.accessToken,
       {
-        error: `Could not create API key${insertError ? `: ${insertError.message}` : ""}`,
+        method: "POST",
+        headers: { "content-type": "application/json" },
+        body: JSON.stringify({ name, scopes: ["read", "verify"] }),
       },
-      { status: 400 },
+    );
+  } catch {
+    return NextResponse.json(
+      { error: "API key service is unavailable" },
+      { status: 503 },
     );
   }
 
-  await supabase.from("api_key_events").insert(
-    buildApiKeyCreatedEvent({
-      accountId: auth.context.account.accountId,
-      apiKeyId: pickString(inserted, ["id"]),
-      actorUserId: auth.context.user.id,
-      name,
-      scopes,
-    }),
-  );
+  if (!response.ok) {
+    return NextResponse.json(
+      { error: "Could not create API key" },
+      { status: safeUpstreamStatus(response.status) },
+    );
+  }
+
+  const payload = (await response.json().catch(() => null)) as {
+    key?: string;
+    record?: CoreApiKeyRecord;
+  } | null;
+  if (!payload?.key || !payload.record) {
+    return NextResponse.json(
+      { error: "API key service returned an invalid response" },
+      { status: 502 },
+    );
+  }
 
   return NextResponse.json(
     {
       key: {
-        ...normalizeApiKey(inserted),
-        plaintext: secret,
+        ...normalizeApiKey(payload.record),
+        plaintext: payload.key,
       },
     },
     { status: 201 },
