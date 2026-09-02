@@ -139,6 +139,28 @@ function shortHash(value: string) {
   return `${value.slice(0, 10)}…${value.slice(-8)}`;
 }
 
+async function fetchCustomerApiKeys() {
+  const response = await fetch('/api/keys', { cache: 'no-store' });
+  const payload = (await response.json().catch(() => ({}))) as {
+    keys?: CustomerApiKey[];
+  };
+  if (!response.ok || !Array.isArray(payload.keys)) {
+    throw new Error('Unable to load API keys.');
+  }
+  return payload.keys;
+}
+
+async function fetchBillingStatus() {
+  const response = await fetch('/api/billing/status', { cache: 'no-store' });
+  const payload = (await response.json().catch(() => ({}))) as {
+    billing?: BillingStatus;
+  };
+  if (!response.ok || !payload.billing) {
+    throw new Error('Billing status is unavailable.');
+  }
+  return payload.billing;
+}
+
 function Panel({ children, className = '' }: { children: ReactNode; className?: string }) {
   return (
     <section
@@ -216,15 +238,7 @@ export function CustomerDashboard({ user }: { user: { email: string } }) {
     setLoadingKeys(true);
     setKeyError(null);
     try {
-      const response = await fetch('/api/keys', { cache: 'no-store' });
-      const payload = (await response.json().catch(() => ({}))) as {
-        keys?: CustomerApiKey[];
-      };
-      if (!response.ok || !Array.isArray(payload.keys)) {
-        setKeyError('Unable to load API keys. Please try again.');
-        return;
-      }
-      setKeys(payload.keys);
+      setKeys(await fetchCustomerApiKeys());
     } catch {
       setKeyError('Unable to load API keys. Please try again.');
     } finally {
@@ -236,15 +250,7 @@ export function CustomerDashboard({ user }: { user: { email: string } }) {
     setLoadingBilling(true);
     setBillingError(null);
     try {
-      const response = await fetch('/api/billing/status', { cache: 'no-store' });
-      const payload = (await response.json().catch(() => ({}))) as {
-        billing?: BillingStatus;
-      };
-      if (!response.ok || !payload.billing) {
-        setBillingError('Billing status is unavailable.');
-      } else {
-        setBilling(payload.billing);
-      }
+      setBilling(await fetchBillingStatus());
     } catch {
       setBillingError('Billing status is unavailable.');
     } finally {
@@ -253,9 +259,36 @@ export function CustomerDashboard({ user }: { user: { email: string } }) {
   }, []);
 
   useEffect(() => {
-    void loadKeys();
-    void loadBilling();
-  }, [loadBilling, loadKeys]);
+    let cancelled = false;
+
+    async function loadInitialDashboardData() {
+      const [keysResult, billingResult] = await Promise.allSettled([
+        fetchCustomerApiKeys(),
+        fetchBillingStatus(),
+      ]);
+
+      if (cancelled) return;
+
+      if (keysResult.status === 'fulfilled') {
+        setKeys(keysResult.value);
+      } else {
+        setKeyError('Unable to load API keys. Please try again.');
+      }
+      setLoadingKeys(false);
+
+      if (billingResult.status === 'fulfilled') {
+        setBilling(billingResult.value);
+      } else {
+        setBillingError('Billing status is unavailable.');
+      }
+      setLoadingBilling(false);
+    }
+
+    void loadInitialDashboardData();
+    return () => {
+      cancelled = true;
+    };
+  }, []);
 
   async function handleCreateKey(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
