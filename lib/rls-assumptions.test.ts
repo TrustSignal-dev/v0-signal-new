@@ -63,4 +63,12 @@ describe("RLS enforcement assumptions", () => {
       "dashboard must not claim artifact comparison the API cannot perform",
     ).toBe(false);
   });
+
+  it("returns OAuth users to the deployment that initiated sign-in", () => {
+    const route = readFileSync(join(process.cwd(), "app/api/auth/oauth/route.ts"), "utf8");
+
+    expect(route.includes("req.nextUrl.origin")).toBe(true);
+    expect(route.includes("NEXT_PUBLIC_APP_URL")).toBe(false);
+    expect(route.includes('!next.startsWith("//")')).toBe(true);
+  });
 });

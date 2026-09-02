@@ -14,15 +14,9 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ error: "Unsupported OAuth provider" }, { status: 400 });
   }
 
-  const appUrl = process.env.NEXT_PUBLIC_APP_URL;
-  if (!appUrl) {
-    return NextResponse.json({ error: "NEXT_PUBLIC_APP_URL is not set" }, { status: 500 });
-  }
-
-  const redirectTo = new URL("/auth/callback", appUrl);
-  if (next) {
-    redirectTo.searchParams.set("next", next);
-  }
+  const nextPath = next?.startsWith("/") && !next.startsWith("//") ? next : "/dashboard";
+  const redirectTo = new URL("/auth/callback", req.nextUrl.origin);
+  redirectTo.searchParams.set("next", nextPath);
 
   const supabase = await createSupabaseServerClient();
   const { data, error } = await supabase.auth.signInWithOAuth({
