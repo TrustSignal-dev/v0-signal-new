@@ -17,5 +17,5 @@ export default async function DashboardPage() {
     redirect('/sign-in');
   }
 
-  return <CustomerDashboard user={{ id: user.id, email: user.email ?? '' }} />;
+  return <CustomerDashboard user={{ email: user.email ?? '' }} />;
 }
