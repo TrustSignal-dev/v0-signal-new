@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
+import { useReducedMotion } from "@/hooks/use-reduced-motion";
 
 /**
  * TrustSignal — above-the-fold hero
@@ -32,7 +33,7 @@ const PALETTE = {
 export default function TrustSignalHero() {
   const [index, setIndex] = useState(0);
   const [visible, setVisible] = useState(true);
-  const [reduced, setReduced] = useState(false);
+  const reduced = useReducedMotion();
 
   useEffect(() => {
     const id = "ts-hero-fonts";
@@ -44,9 +45,6 @@ export default function TrustSignalHero() {
         "https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,600;1,9..144,400&family=DM+Sans:wght@400;500&family=DM+Mono:wght@400;500&display=swap";
       document.head.appendChild(link);
     }
-    setReduced(
-      window.matchMedia?.("(prefers-reduced-motion: reduce)").matches ?? false
-    );
   }, []);
 
   useEffect(() => {
@@ -73,7 +71,7 @@ export default function TrustSignalHero() {
 
         <h1 style={styles.headline}>
           <span style={styles.srOnly}>
-            Prove your records haven't changed since the day you filed them.
+            Prove your records haven&apos;t changed since the day you filed them.
           </span>
 
           <span aria-hidden="true">
@@ -94,7 +92,7 @@ export default function TrustSignalHero() {
               </span>
             </span>
             <br />
-            haven't changed since the day you filed them.
+            haven&apos;t changed since the day you filed them.
           </span>
         </h1>
 

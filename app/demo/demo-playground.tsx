@@ -838,7 +838,7 @@ export function DemoPlayground() {
   const [choice, setChoice] = useState<DocChoice | null>(null);
   const [uploadedFile, setUploadedFile] = useState<File | null>(null);
   const [isDragging, setIsDragging] = useState(false);
-  const [hashes, setHashes] = useState({ original: "", modified: "", custom: "", selected: "" });
+  const [hashes, setHashes] = useState({ original: "", modified: "", custom: "" });
 
   const [ingestState, setIngestState] = useState<ApiStepState>(EMPTY_STEP);
   const [anchorState, setAnchorState] = useState<ApiStepState>(EMPTY_STEP);
@@ -859,17 +859,19 @@ export function DemoPlayground() {
     if (!uploadedFile) return;
     uploadedFile.arrayBuffer().then((buf) =>
       sha256hexFromBuffer(buf).then((hash) => {
-        setHashes((h) => ({ ...h, custom: hash, selected: hash }));
+        setHashes((h) => ({ ...h, custom: hash }));
       }),
     );
   }, [uploadedFile]);
 
-  // Keep selected hash in sync with the current choice
-  useEffect(() => {
-    if (choice === "original") setHashes((h) => ({ ...h, selected: h.original }));
-    else if (choice === "modified") setHashes((h) => ({ ...h, selected: h.modified }));
-    // custom: handled by the uploadedFile effect above
-  }, [choice, hashes.original, hashes.modified]);
+  const selectedHash =
+    choice === "original"
+      ? hashes.original
+      : choice === "modified"
+        ? hashes.modified
+        : choice === "custom"
+          ? hashes.custom
+          : "";
 
   const selectedDoc: DocRecord =
     choice === "modified" ? ({ ...MODIFIED_DOC } as DocRecord) : ({ ...ORIGINAL_DOC } as DocRecord);
@@ -898,12 +900,10 @@ export function DemoPlayground() {
     setChoice("custom");
   }, []);
 
-  const canStart = !!choice && !!hashes.selected;
+  const canStart = !!choice && !!selectedHash;
 
   const runDemo = async () => {
     if (!canStart) return;
-
-    const selectedHash = hashes.selected;
 
     // ---- INGEST ----
     // No real API endpoint for standalone ingest; the proxy returns a synthetic
@@ -1023,7 +1023,7 @@ export function DemoPlayground() {
     setStep("select");
     setChoice(null);
     setUploadedFile(null);
-    setHashes((h) => ({ ...h, selected: "", custom: "" }));
+    setHashes((h) => ({ ...h, custom: "" }));
     setIngestState(EMPTY_STEP);
     setAnchorState(EMPTY_STEP);
     setVerifyState(EMPTY_STEP);
@@ -1153,7 +1153,7 @@ export function DemoPlayground() {
               >
                 Payload
               </p>
-              <PayloadPanel doc={selectedDoc} hash={hashes.selected} />
+              <PayloadPanel doc={selectedDoc} hash={selectedHash} />
             </div>
             <div>
               <p

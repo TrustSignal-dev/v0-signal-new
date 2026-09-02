@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
+import Link from "next/link";
 
 const PALETTE = {
   paper: "#FAFAF8",
@@ -37,19 +38,19 @@ export default function TrustSignalNav() {
     >
       <style>{navCss}</style>
       <div style={navStyles.inner}>
-        <a href="/" style={navStyles.wordmark}>
+        <Link href="/" style={navStyles.wordmark}>
           <img src="/brand/lockup-horizontal.svg" alt="TrustSignal Logo" style={navStyles.logo} />
-        </a>
+        </Link>
         <div style={navStyles.links} className="ts-navlinks">
           {NAV_LINKS.map((l) => (
-            <a key={l.label} href={l.href} style={navStyles.link} className="ts-navlink">
+            <Link key={l.label} href={l.href} style={navStyles.link} className="ts-navlink">
               {l.label}
-            </a>
+            </Link>
           ))}
         </div>
-        <a href="/#pilot-request" style={navStyles.cta} className="ts-navcta">
+        <Link href="/#pilot-request" style={navStyles.cta} className="ts-navcta">
           Request a Pilot
-        </a>
+        </Link>
       </div>
     </nav>
   );

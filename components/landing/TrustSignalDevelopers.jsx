@@ -89,11 +89,11 @@ export default function TrustSignalDevelopers() {
 <span style={styles.kw}>$ npx</span>{" trustsignal-setup\n\n"}
 <span style={styles.cmt}>{"# seal at ingestion — docs never leave your infra"}</span>{"\n"}
 <span style={styles.kw}>POST</span>{" /api/v1/receipts\n"}
-{"  → "}<span style={styles.ok}>200</span>{"  { receipt_id, signature: "}<span style={styles.str}>"ed25519:…"</span>{", verify_url }\n\n"}
+{"  → "}<span style={styles.ok}>200</span>{"  { receipt_id, signature: "}<span style={styles.str}>&quot;ed25519:…&quot;</span>{", verify_url }\n\n"}
 <span style={styles.cmt}>{"# verify anytime — on-chain math, no TrustSignal server"}</span>{"\n"}
 <span style={styles.kw}>GET</span>{"  /api/v1/receipt/:id/verify\n"}
-{"  → { status: "}<span style={styles.clean}>"clean"</span>{" }     "}<span style={styles.clean}>✓ unchanged</span>{"\n"}
-{"  → { status: "}<span style={styles.mismatch}>"mismatch"</span>{" }  "}<span style={styles.mismatch}>✗ altered since sealing</span>
+{"  → { status: "}<span style={styles.clean}>&quot;clean&quot;</span>{" }     "}<span style={styles.clean}>✓ unchanged</span>{"\n"}
+{"  → { status: "}<span style={styles.mismatch}>&quot;mismatch&quot;</span>{" }  "}<span style={styles.mismatch}>✗ altered since sealing</span>
             </pre>
           </div>
         </div>

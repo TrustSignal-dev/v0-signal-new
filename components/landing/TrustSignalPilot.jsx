@@ -1,6 +1,7 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useEffect } from "react";
+import { useReducedMotion } from "@/hooks/use-reduced-motion";
 
 /**
  * TrustSignal — "How a pilot works" section
@@ -37,7 +38,7 @@ const TERMS = [
 ];
 
 export default function TrustSignalPilot() {
-  const [reduced, setReduced] = useState(false);
+  const reduced = useReducedMotion();
 
   useEffect(() => {
     const id = "ts-hero-fonts";
@@ -49,9 +50,6 @@ export default function TrustSignalPilot() {
         "https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,600;1,9..144,400&family=DM+Sans:wght@400;500&family=DM+Mono:wght@400;500&display=swap";
       document.head.appendChild(link);
     }
-    setReduced(
-      window.matchMedia?.("(prefers-reduced-motion: reduce)").matches ?? false
-    );
   }, []);
 
   return (
