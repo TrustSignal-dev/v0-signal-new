@@ -23,7 +23,6 @@ import {
   RefreshCw,
   Settings,
   ShieldCheck,
-  UploadCloud,
   Users,
 } from 'lucide-react';
 import Link from 'next/link';
@@ -44,14 +43,8 @@ type ReceiptSummary = {
   receiptId: string;
   hash: string;
   timestamp: string;
-  anchor: string;
-};
-
-type VerificationSummary = {
-  verdict: 'VERIFIED' | 'TAMPERED';
-  hash: string;
-  timestamp: string;
-  anchor: string;
+  signature: string;
+  verdict: 'VERIFIED' | 'ATTENTION';
 };
 
 type BillingStatus = {
@@ -109,7 +102,7 @@ const PROOF_STEPS = [
   },
   {
     label: 'Ready to verify',
-    detail: 'A reviewer can compare the artifact with its signed receipt.',
+    detail: 'A reviewer can recheck the stored receipt, signature, and proof.',
     icon: ShieldCheck,
   },
 ];
@@ -122,46 +115,16 @@ function pickString(data: Record<string, unknown>, keys: string[], fallback = '�
   return fallback;
 }
 
-function pickNestedString(
-  root: Record<string, unknown>,
-  nestedKey: string,
-  keys: string[],
-  fallback = '—',
-) {
-  const nested = root[nestedKey];
-  if (!nested || typeof nested !== 'object') return fallback;
-  return pickString(nested as Record<string, unknown>, keys, fallback);
-}
-
-function buildReceiptSummary(payload: Record<string, unknown>): ReceiptSummary {
-  const nestedAnchor = pickNestedString(payload, 'anchor', ['status', 'tx_hash', 'txHash']);
+function buildVerificationSummary(
+  payload: Record<string, unknown>,
+  receiptId: string,
+): ReceiptSummary {
   return {
-    receiptId: pickString(payload, ['receipt_id', 'receiptId', 'id']),
-    hash: pickString(payload, ['receipt_hash', 'receiptHash', 'artifact_hash', 'artifactHash']),
-    timestamp: pickString(payload, ['created_at', 'createdAt', 'timestamp']),
-    anchor:
-      nestedAnchor !== '—'
-        ? nestedAnchor
-        : pickString(payload, ['anchor', 'anchor_status', 'anchorStatus']),
-  };
-}
-
-function buildVerificationSummary(payload: Record<string, unknown>): VerificationSummary {
-  const nestedAnchor = pickNestedString(payload, 'anchor', ['status', 'tx_hash', 'txHash']);
-  return {
-    verdict: payload.integrity_verified === true ? 'VERIFIED' : 'TAMPERED',
-    hash: pickString(payload, ['presented_artifact_hash', 'artifact_hash', 'artifactHash']),
-    timestamp: pickString(payload, [
-      'verified_at',
-      'verifiedAt',
-      'timestamp',
-      'created_at',
-      'createdAt',
-    ]),
-    anchor:
-      nestedAnchor !== '—'
-        ? nestedAnchor
-        : pickString(payload, ['anchor', 'anchor_status', 'anchorStatus']),
+    receiptId,
+    verdict: payload.verified === true ? 'VERIFIED' : 'ATTENTION',
+    hash: pickString(payload, ['storedHash', 'stored_hash', 'recomputedHash', 'recomputed_hash']),
+    timestamp: new Date().toISOString(),
+    signature: pickString(payload, ['signatureStatus', 'signature_status']),
   };
 }
 
@@ -223,15 +186,11 @@ export function CustomerDashboard({ user }: { user: { email: string } }) {
   const [billingError, setBillingError] = useState<string | null>(null);
   const [creatingKey, setCreatingKey] = useState(false);
   const [billingAction, setBillingAction] = useState<'checkout' | 'portal' | null>(null);
-  const [selectedFile, setSelectedFile] = useState<File | null>(null);
-  const [generatingReceipt, setGeneratingReceipt] = useState(false);
-  const [receiptError, setReceiptError] = useState<string | null>(null);
   const [receipts, setReceipts] = useState<ReceiptSummary[]>([]);
   const [verifyReceiptId, setVerifyReceiptId] = useState('');
-  const [verifyArtifactHash, setVerifyArtifactHash] = useState('');
   const [verifyingReceipt, setVerifyingReceipt] = useState(false);
   const [verifyError, setVerifyError] = useState<string | null>(null);
-  const [verificationResult, setVerificationResult] = useState<VerificationSummary | null>(null);
+  const [verificationResult, setVerificationResult] = useState<ReceiptSummary | null>(null);
   const [activity, setActivity] = useState<SessionEvent[]>([]);
 
   const activeKeys = useMemo(() => keys.filter((key) => !key.revoked_at), [keys]);
@@ -374,48 +333,12 @@ export function CustomerDashboard({ user }: { user: { email: string } }) {
     }
   }
 
-  async function handleGenerateReceipt() {
-    if (!selectedFile) {
-      setReceiptError('Choose a document first.');
-      return;
-    }
-
-    setReceiptError(null);
-    setGeneratingReceipt(true);
-    try {
-      const form = new FormData();
-      form.append('file', selectedFile);
-      const response = await fetch('/api/receipts/create', { method: 'POST', body: form });
-      const payload = (await response.json().catch(() => ({}))) as Record<string, unknown>;
-      if (!response.ok) {
-        setReceiptError('Receipt creation is not available right now. No document was retained.');
-        return;
-      }
-
-      const receipt = buildReceiptSummary(payload);
-      setReceipts((current) => [receipt, ...current].slice(0, 10));
-      setVerifyReceiptId(receipt.receiptId === '—' ? '' : receipt.receiptId);
-      setVerifyArtifactHash(receipt.hash === '—' ? '' : receipt.hash);
-      setSelectedFile(null);
-      addActivity('Receipt issued', `${receipt.receiptId} was created for a document fingerprint.`, 'success');
-    } catch {
-      setReceiptError('Receipt creation is not available right now. No document was retained.');
-    } finally {
-      setGeneratingReceipt(false);
-    }
-  }
-
   async function handleVerifyReceipt(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
     const receiptId = verifyReceiptId.trim();
-    const artifactHash = verifyArtifactHash.trim().toLowerCase();
 
     if (!receiptId) {
       setVerifyError('Enter a receipt ID.');
-      return;
-    }
-    if (!/^[a-f0-9]{64}$/.test(artifactHash)) {
-      setVerifyError('Enter the complete 64-character SHA-256 artifact hash.');
       return;
     }
 
@@ -425,24 +348,27 @@ export function CustomerDashboard({ user }: { user: { email: string } }) {
     try {
       const response = await fetch(`/api/receipts/${encodeURIComponent(receiptId)}/verify`, {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ artifactHash }),
       });
       const payload = (await response.json().catch(() => ({}))) as Record<string, unknown>;
       if (!response.ok) {
-        setVerifyError('The receipt could not be verified. Check the ID and hash, then try again.');
+        setVerifyError(
+          response.status === 503
+            ? 'Receipt verification is not configured for this environment yet.'
+            : 'The receipt could not be verified. Check the ID and try again.',
+        );
         return;
       }
 
-      const summary = buildVerificationSummary(payload);
+      const summary = buildVerificationSummary(payload, receiptId);
       setVerificationResult(summary);
+      setReceipts((current) => [summary, ...current.filter((item) => item.receiptId !== receiptId)].slice(0, 10));
       addActivity(
         'Receipt checked',
         `${receiptId} returned ${summary.verdict.toLowerCase()}.`,
         summary.verdict === 'VERIFIED' ? 'success' : 'attention',
       );
     } catch {
-      setVerifyError('The receipt could not be verified. Check the ID and hash, then try again.');
+      setVerifyError('The receipt could not be verified. Check the ID and try again.');
     } finally {
       setVerifyingReceipt(false);
     }
@@ -569,11 +495,11 @@ export function CustomerDashboard({ user }: { user: { email: string } }) {
                   </p>
                   <h1 className="max-w-3xl text-4xl font-medium tracking-[-0.045em] text-neutral-950 sm:text-5xl">
                     {latestReceipt
-                      ? 'Your latest proof is ready to review.'
+                      ? 'Your latest receipt check is ready to review.'
                       : 'Your evidence trail starts here.'}
                   </h1>
                   <p className="mt-4 max-w-2xl text-base font-normal leading-7 text-neutral-600">
-                    Create signed receipt metadata, manage scoped API keys, and verify that a record has not changed—without storing the source document in this dashboard.
+                    Manage scoped API keys and recheck the integrity, signature, and proof status of receipts issued through TrustSignal integrations.
                   </p>
                 </div>
                 <div className="hidden justify-items-center gap-2 text-center text-neutral-700 lg:grid">
@@ -587,7 +513,7 @@ export function CustomerDashboard({ user }: { user: { email: string } }) {
                     <ShieldCheck className="size-12" strokeWidth={1.35} aria-hidden="true" />
                   </div>
                   <span className="font-subtitle text-[10px] font-semibold uppercase tracking-[0.2em]">
-                    {latestReceipt ? 'Proof created' : 'Ready for proof'}
+                    {latestReceipt ? 'Receipt checked' : 'Ready to verify'}
                   </span>
                 </div>
               </section>
@@ -600,7 +526,7 @@ export function CustomerDashboard({ user }: { user: { email: string } }) {
                   </p>
                 </Panel>
                 <Panel className="p-4">
-                  <p className="text-xs font-medium text-neutral-500">Receipts this session</p>
+                  <p className="text-xs font-medium text-neutral-500">Receipts checked this session</p>
                   <p className="mt-2 text-3xl font-semibold tracking-[-0.04em]">{receipts.length}</p>
                 </Panel>
                 <Panel className="p-4">
@@ -636,11 +562,11 @@ export function CustomerDashboard({ user }: { user: { email: string } }) {
                       <p className="mt-1 break-all font-mono text-sm font-medium">{latestReceipt.receiptId}</p>
                     </div>
                     <div>
-                      <p className="text-[10px] font-semibold uppercase tracking-[0.18em] text-neutral-500">Fingerprint</p>
+                      <p className="text-[10px] font-semibold uppercase tracking-[0.18em] text-neutral-500">Stored receipt hash</p>
                       <p className="mt-1 font-mono text-sm font-medium">{shortHash(latestReceipt.hash)}</p>
                     </div>
                     <div>
-                      <p className="text-[10px] font-semibold uppercase tracking-[0.18em] text-neutral-500">Issued</p>
+                      <p className="text-[10px] font-semibold uppercase tracking-[0.18em] text-neutral-500">Checked</p>
                       <p className="mt-1 text-sm font-medium">{formatDate(latestReceipt.timestamp)}</p>
                     </div>
                     <button
@@ -654,9 +580,9 @@ export function CustomerDashboard({ user }: { user: { email: string } }) {
                 ) : (
                   <div className="flex flex-wrap items-center gap-3 pt-5">
                     <div className="min-w-0 flex-1">
-                      <strong className="text-sm font-semibold">No receipt has been created in this session.</strong>
+                      <strong className="text-sm font-semibold">No receipt has been checked in this session.</strong>
                       <p className="mt-1 text-xs font-normal text-neutral-500">
-                        Create one from a document fingerprint or verify an existing receipt.
+                        Enter a receipt ID to verify its stored integrity and signature.
                       </p>
                     </div>
                     <button
@@ -676,7 +602,7 @@ export function CustomerDashboard({ user }: { user: { email: string } }) {
                     <div>
                       <h2 className="text-lg font-medium">Recent receipt activity</h2>
                       <p className="mt-1 text-sm font-normal text-neutral-500">
-                        Only receipts created during this signed-in session are shown here.
+                        Only receipts checked during this signed-in session are shown here.
                       </p>
                     </div>
                     <button
@@ -695,22 +621,30 @@ export function CustomerDashboard({ user }: { user: { email: string } }) {
                           type="button"
                           onClick={() => {
                             setVerifyReceiptId(receipt.receiptId);
-                            setVerifyArtifactHash(receipt.hash);
                             setActiveSection('receipts');
                           }}
                           className="grid w-full gap-2 py-4 text-left sm:grid-cols-[1.2fr_1fr_auto] sm:items-center"
                         >
                           <span className="font-mono text-xs font-medium">{receipt.receiptId}</span>
                           <span className="text-xs font-normal text-neutral-500">{formatDate(receipt.timestamp)}</span>
-                          <span className="inline-flex items-center gap-1.5 text-xs font-semibold text-emerald-700">
-                            <CircleCheckBig className="size-4" aria-hidden="true" /> Signed
+                          <span
+                            className={`inline-flex items-center gap-1.5 text-xs font-semibold ${
+                              receipt.verdict === 'VERIFIED' ? 'text-emerald-700' : 'text-amber-700'
+                            }`}
+                          >
+                            {receipt.verdict === 'VERIFIED' ? (
+                              <CircleCheckBig className="size-4" aria-hidden="true" />
+                            ) : (
+                              <AlertTriangle className="size-4" aria-hidden="true" />
+                            )}
+                            {receipt.verdict === 'VERIFIED' ? 'Verified' : 'Attention'}
                           </span>
                         </button>
                       ))}
                     </div>
                   ) : (
                     <div className="mt-4 grid min-h-32 place-items-center rounded-xl border border-dashed border-neutral-300 text-center">
-                      <p className="text-sm font-normal text-neutral-500">Issued receipts will appear here for this session.</p>
+                      <p className="text-sm font-normal text-neutral-500">Checked receipts will appear here for this session.</p>
                     </div>
                   )}
                 </Panel>
@@ -748,55 +682,42 @@ export function CustomerDashboard({ user }: { user: { email: string } }) {
             <>
               <SectionHeading
                 eyebrow="Cryptographic receipts"
-                title="Create and verify proof."
-                description="TrustSignal sends the document to the receipt service for fingerprinting. The dashboard keeps only the returned proof metadata in this session."
+                title="Verify signed proof."
+                description="Check a TrustSignal receipt by ID. The API recomputes its canonical hash and verifies its signature and proof status without accepting document content in this dashboard."
               />
               <div className="grid gap-5 xl:grid-cols-2">
                 <Panel>
                   <div className="flex items-start gap-3">
                     <span className="grid size-10 place-items-center rounded-xl bg-neutral-100">
-                      <UploadCloud className="size-5" aria-hidden="true" />
+                      <PlugZap className="size-5" aria-hidden="true" />
                     </span>
                     <div>
-                      <h2 className="text-lg font-medium">Create a receipt</h2>
+                      <h2 className="text-lg font-medium">Receipt issuance</h2>
                       <p className="mt-1 text-sm font-normal text-neutral-500">
-                        Choose a document to create signed proof metadata.
+                        Receipts are issued by your application or integration using the TrustSignal API.
                       </p>
                     </div>
                   </div>
-                  <label className="mt-6 block text-sm font-semibold">
-                    Document
-                    <input
-                      type="file"
-                      accept=".pdf,.doc,.docx,.txt,.csv,.json,.xml,.md"
-                      onChange={(event) => {
-                        setSelectedFile(event.target.files?.[0] ?? null);
-                        setReceiptError(null);
-                      }}
-                      className="mt-2 block w-full rounded-xl border border-neutral-300 bg-white px-3 py-3 text-sm font-normal file:mr-3 file:rounded-lg file:border-0 file:bg-neutral-100 file:px-3 file:py-2 file:text-xs file:font-semibold"
-                    />
-                  </label>
-                  <p className="mt-2 text-xs font-normal text-neutral-500">
-                    Accepted: PDF, Office documents, text, CSV, JSON, XML, and Markdown.
-                  </p>
-                  {receiptError ? (
-                    <p role="alert" className="mt-4 rounded-lg bg-red-50 p-3 text-sm font-normal text-red-700">
-                      {receiptError}
-                    </p>
-                  ) : null}
-                  <button
-                    type="button"
-                    onClick={() => void handleGenerateReceipt()}
-                    disabled={!selectedFile || generatingReceipt}
-                    className="mt-5 inline-flex min-h-11 w-full items-center justify-center gap-2 rounded-lg bg-neutral-900 px-4 text-sm font-semibold text-white hover:bg-neutral-800 disabled:cursor-not-allowed disabled:opacity-50"
+                  <ol className="mt-6 grid gap-3 text-sm font-normal text-neutral-600">
+                    <li className="rounded-xl border border-neutral-200 p-4">
+                      <strong className="block font-semibold text-neutral-950">1. Create an API key</strong>
+                      Use an owner- or admin-managed credential with verification scope.
+                    </li>
+                    <li className="rounded-xl border border-neutral-200 p-4">
+                      <strong className="block font-semibold text-neutral-950">2. Issue through the API</strong>
+                      Send the complete workflow evidence required by the documented verification contract.
+                    </li>
+                    <li className="rounded-xl border border-neutral-200 p-4">
+                      <strong className="block font-semibold text-neutral-950">3. Return here to check it</strong>
+                      Paste the receipt ID to recheck the stored receipt later.
+                    </li>
+                  </ol>
+                  <Link
+                    href="/docs/api"
+                    className="mt-5 inline-flex min-h-11 w-full items-center justify-center gap-2 rounded-lg bg-neutral-900 px-4 text-sm font-semibold text-white hover:bg-neutral-800"
                   >
-                    {generatingReceipt ? (
-                      <RefreshCw className="size-4 animate-spin" aria-hidden="true" />
-                    ) : (
-                      <Fingerprint className="size-4" aria-hidden="true" />
-                    )}
-                    {generatingReceipt ? 'Creating receipt…' : 'Create receipt'}
-                  </button>
+                    Open API documentation <ArrowRight className="size-4" aria-hidden="true" />
+                  </Link>
                 </Panel>
 
                 <Panel>
@@ -807,7 +728,7 @@ export function CustomerDashboard({ user }: { user: { email: string } }) {
                     <div>
                       <h2 className="text-lg font-medium">Verify a receipt</h2>
                       <p className="mt-1 text-sm font-normal text-neutral-500">
-                        Compare a receipt with the artifact’s complete SHA-256 hash.
+                        Recompute the stored receipt hash and verify its signature and proof status.
                       </p>
                     </div>
                   </div>
@@ -818,18 +739,7 @@ export function CustomerDashboard({ user }: { user: { email: string } }) {
                         value={verifyReceiptId}
                         onChange={(event) => setVerifyReceiptId(event.target.value)}
                         autoComplete="off"
-                        placeholder="rct_…"
-                        className="mt-2 block w-full rounded-xl border border-neutral-300 bg-white px-3 py-3 font-mono text-sm font-normal outline-none focus:border-neutral-700"
-                      />
-                    </label>
-                    <label className="block text-sm font-semibold">
-                      Artifact SHA-256
-                      <input
-                        value={verifyArtifactHash}
-                        onChange={(event) => setVerifyArtifactHash(event.target.value)}
-                        autoComplete="off"
-                        spellCheck={false}
-                        placeholder="64-character hash"
+                        placeholder="Receipt UUID"
                         className="mt-2 block w-full rounded-xl border border-neutral-300 bg-white px-3 py-3 font-mono text-sm font-normal outline-none focus:border-neutral-700"
                       />
                     </label>
@@ -874,14 +784,14 @@ export function CustomerDashboard({ user }: { user: { email: string } }) {
                       </p>
                       <h2 className="mt-1 text-xl font-medium">
                         {verificationResult.verdict === 'VERIFIED'
-                          ? 'Receipt and artifact match.'
-                          : 'The artifact does not match this receipt.'}
+                          ? 'Receipt integrity and signature verified.'
+                          : 'Receipt checks require attention.'}
                       </h2>
                     </div>
                   </div>
                   <dl className="mt-5 grid gap-4 text-sm sm:grid-cols-3">
                     <div>
-                      <dt className="text-xs font-normal text-neutral-500">Fingerprint</dt>
+                      <dt className="text-xs font-normal text-neutral-500">Stored receipt hash</dt>
                       <dd className="mt-1 break-all font-mono font-medium">{verificationResult.hash}</dd>
                     </div>
                     <div>
@@ -889,8 +799,8 @@ export function CustomerDashboard({ user }: { user: { email: string } }) {
                       <dd className="mt-1 font-medium">{formatDate(verificationResult.timestamp)}</dd>
                     </div>
                     <div>
-                      <dt className="text-xs font-normal text-neutral-500">Anchor</dt>
-                      <dd className="mt-1 font-medium">{verificationResult.anchor}</dd>
+                      <dt className="text-xs font-normal text-neutral-500">Signature</dt>
+                      <dd className="mt-1 font-medium">{verificationResult.signature}</dd>
                     </div>
                   </dl>
                 </Panel>
@@ -899,7 +809,7 @@ export function CustomerDashboard({ user }: { user: { email: string } }) {
               <Panel className="mt-5">
                 <div className="flex items-start justify-between gap-4">
                   <div>
-                    <h2 className="text-lg font-medium">Receipts created this session</h2>
+                    <h2 className="text-lg font-medium">Receipts checked this session</h2>
                     <p className="mt-1 text-sm font-normal text-neutral-500">
                       Persistent account history will appear here once the tenant-scoped receipt index is connected.
                     </p>
@@ -912,9 +822,9 @@ export function CustomerDashboard({ user }: { user: { email: string } }) {
                       <thead>
                         <tr className="border-b border-neutral-200 text-xs text-neutral-500">
                           <th className="py-3 pr-4 font-medium">Receipt</th>
-                          <th className="py-3 pr-4 font-medium">Fingerprint</th>
-                          <th className="py-3 pr-4 font-medium">Issued</th>
-                          <th className="py-3 font-medium">Anchor</th>
+                          <th className="py-3 pr-4 font-medium">Stored hash</th>
+                          <th className="py-3 pr-4 font-medium">Checked</th>
+                          <th className="py-3 font-medium">Signature</th>
                         </tr>
                       </thead>
                       <tbody>
@@ -923,7 +833,7 @@ export function CustomerDashboard({ user }: { user: { email: string } }) {
                             <td className="py-4 pr-4 font-mono text-xs font-medium">{receipt.receiptId}</td>
                             <td className="py-4 pr-4 font-mono text-xs font-normal">{shortHash(receipt.hash)}</td>
                             <td className="py-4 pr-4 font-normal text-neutral-600">{formatDate(receipt.timestamp)}</td>
-                            <td className="py-4 font-medium">{receipt.anchor}</td>
+                            <td className="py-4 font-medium">{receipt.signature}</td>
                           </tr>
                         ))}
                       </tbody>
@@ -931,7 +841,7 @@ export function CustomerDashboard({ user }: { user: { email: string } }) {
                   </div>
                 ) : (
                   <div className="mt-4 grid min-h-28 place-items-center rounded-xl border border-dashed border-neutral-300">
-                    <p className="text-sm font-normal text-neutral-500">No receipts created in this session.</p>
+                    <p className="text-sm font-normal text-neutral-500">No receipts checked in this session.</p>
                   </div>
                 )}
               </Panel>

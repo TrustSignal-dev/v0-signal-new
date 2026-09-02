@@ -54,5 +54,13 @@ describe("RLS enforcement assumptions", () => {
       "legacy service-role helper must stay removed",
     ).toBe(false);
     expect(dashboard.includes("SUPABASE_SERVICE_ROLE_KEY")).toBe(false);
+    expect(
+      dashboard.includes("/api/receipts/create"),
+      "dashboard must not upload documents to an unsupported receipt route",
+    ).toBe(false);
+    expect(
+      dashboard.includes("artifactHash"),
+      "dashboard must not claim artifact comparison the API cannot perform",
+    ).toBe(false);
   });
 });
