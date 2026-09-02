@@ -21,14 +21,14 @@ const integrationSteps = [
   },
 ] as const;
 
-// Default: compliance / SOC 2 example
+// Default: control-evidence compliance example
 const codeExample = `POST /api/v1/verify
 Content-Type: application/json
 
 {
   "source": "vanta",
   "control_id": "ctrl-2026-0042",
-  "document_type": "soc2_control_evidence",
+  "document_type": "control_evidence",
   "event_type": "evidence_artifact_ingested",
   "artifact_hash": "sha256:93f6f35a550cbe1c3f0b5f0c12b9f0d62f3f9c6f8c6a4eddd8fa1fbfd4654af1",
   "timestamp": "2026-03-11T21:00:00Z",
@@ -175,7 +175,7 @@ export function IntegrationsSection() {
                       : "text-background/40 hover:text-background/70"
                   }`}
                 >
-                  SOC 2 / Compliance
+                  Control evidence
                 </button>
                 <button
                   onClick={() => setActiveTab("mortgage")}
