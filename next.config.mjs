@@ -19,6 +19,7 @@ const withMDX = createMDX({
 
 /** @type {import('next').NextConfig} */
 const nextConfig = {
+  poweredByHeader: false,
   turbopack: {
     root: rootDir,
   },
@@ -26,6 +27,27 @@ const nextConfig = {
     // Enable Vercel's built-in image optimization (WebP/AVIF + resizing) for
     // better LCP / Core Web Vitals. All <Image> sources are local public assets.
     formats: ["image/avif", "image/webp"],
+  },
+  async headers() {
+    return [
+      {
+        source: "/:path*",
+        headers: [
+          {
+            key: "Content-Security-Policy",
+            value: "base-uri 'self'; object-src 'none'; frame-ancestors 'none'; form-action 'self'; upgrade-insecure-requests",
+          },
+          { key: "X-Content-Type-Options", value: "nosniff" },
+          { key: "X-Frame-Options", value: "DENY" },
+          { key: "Referrer-Policy", value: "strict-origin-when-cross-origin" },
+          {
+            key: "Permissions-Policy",
+            value: "camera=(), microphone=(), geolocation=(), payment=(), usb=()",
+          },
+          { key: "Cross-Origin-Opener-Policy", value: "same-origin" },
+        ],
+      },
+    ];
   },
 };
 

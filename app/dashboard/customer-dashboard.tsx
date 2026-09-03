@@ -44,7 +44,17 @@ type ReceiptSummary = {
   hash: string;
   timestamp: string;
   signature: string;
-  verdict: 'VERIFIED' | 'ATTENTION';
+  verdict: 'VERIFIED' | 'ATTENTION' | 'STORED';
+  source: 'account' | 'verification';
+};
+
+type CustomerReceipt = {
+  receiptId: string;
+  status: 'clean' | 'failure' | 'revoked' | 'compliance_gap';
+  riskScore: number;
+  createdAt: string;
+  anchorStatus: string;
+  revoked: boolean;
 };
 
 type BillingStatus = {
@@ -125,6 +135,18 @@ function buildVerificationSummary(
     hash: pickString(payload, ['storedHash', 'stored_hash', 'recomputedHash', 'recomputed_hash']),
     timestamp: new Date().toISOString(),
     signature: pickString(payload, ['signatureStatus', 'signature_status']),
+    source: 'verification',
+  };
+}
+
+function buildStoredReceiptSummary(receipt: CustomerReceipt): ReceiptSummary {
+  return {
+    receiptId: receipt.receiptId,
+    hash: '—',
+    timestamp: receipt.createdAt,
+    signature: receipt.revoked ? 'Revoked' : 'Not rechecked',
+    verdict: receipt.status === 'clean' ? 'STORED' : 'ATTENTION',
+    source: 'account',
   };
 }
 
@@ -159,6 +181,17 @@ async function fetchBillingStatus() {
     throw new Error('Billing status is unavailable.');
   }
   return payload.billing;
+}
+
+async function fetchCustomerReceipts() {
+  const response = await fetch('/api/receipts', { cache: 'no-store' });
+  const payload = (await response.json().catch(() => ({}))) as {
+    receipts?: CustomerReceipt[];
+  };
+  if (!response.ok || !Array.isArray(payload.receipts)) {
+    throw new Error('Unable to load receipts.');
+  }
+  return payload.receipts.map(buildStoredReceiptSummary);
 }
 
 function Panel({ children, className = '' }: { children: ReactNode; className?: string }) {
@@ -201,6 +234,7 @@ export function CustomerDashboard({ user }: { user: { email: string } }) {
   const [billing, setBilling] = useState<BillingStatus | null>(null);
   const [loadingKeys, setLoadingKeys] = useState(true);
   const [loadingBilling, setLoadingBilling] = useState(true);
+  const [loadingReceipts, setLoadingReceipts] = useState(true);
   const [keyName, setKeyName] = useState('');
   const [newKeySecret, setNewKeySecret] = useState<string | null>(null);
   const [copiedSecret, setCopiedSecret] = useState(false);
@@ -212,6 +246,7 @@ export function CustomerDashboard({ user }: { user: { email: string } }) {
   const [verifyReceiptId, setVerifyReceiptId] = useState('');
   const [verifyingReceipt, setVerifyingReceipt] = useState(false);
   const [verifyError, setVerifyError] = useState<string | null>(null);
+  const [receiptsError, setReceiptsError] = useState<string | null>(null);
   const [verificationResult, setVerificationResult] = useState<ReceiptSummary | null>(null);
   const [activity, setActivity] = useState<SessionEvent[]>([]);
 
@@ -262,9 +297,10 @@ export function CustomerDashboard({ user }: { user: { email: string } }) {
     let cancelled = false;
 
     async function loadInitialDashboardData() {
-      const [keysResult, billingResult] = await Promise.allSettled([
+      const [keysResult, billingResult, receiptsResult] = await Promise.allSettled([
         fetchCustomerApiKeys(),
         fetchBillingStatus(),
+        fetchCustomerReceipts(),
       ]);
 
       if (cancelled) return;
@@ -282,6 +318,13 @@ export function CustomerDashboard({ user }: { user: { email: string } }) {
         setBillingError('Billing status is unavailable.');
       }
       setLoadingBilling(false);
+
+      if (receiptsResult.status === 'fulfilled') {
+        setReceipts(receiptsResult.value);
+      } else {
+        setReceiptsError('Unable to load receipt history. Please try again.');
+      }
+      setLoadingReceipts(false);
     }
 
     void loadInitialDashboardData();
@@ -394,7 +437,7 @@ export function CustomerDashboard({ user }: { user: { email: string } }) {
 
       const summary = buildVerificationSummary(payload, receiptId);
       setVerificationResult(summary);
-      setReceipts((current) => [summary, ...current.filter((item) => item.receiptId !== receiptId)].slice(0, 10));
+      setReceipts((current) => [summary, ...current.filter((item) => item.receiptId !== receiptId)].slice(0, 50));
       addActivity(
         'Receipt checked',
         `${receiptId} returned ${summary.verdict.toLowerCase()}.`,
@@ -528,7 +571,9 @@ export function CustomerDashboard({ user }: { user: { email: string } }) {
                   </p>
                   <h1 className="max-w-3xl text-4xl font-medium tracking-[-0.045em] text-neutral-950 sm:text-5xl">
                     {latestReceipt
-                      ? 'Your latest receipt check is ready to review.'
+                      ? latestReceipt.source === 'verification'
+                        ? 'Your latest receipt check is ready to review.'
+                        : 'Your latest receipt is ready to inspect.'
                       : 'Your evidence trail starts here.'}
                   </h1>
                   <p className="mt-4 max-w-2xl text-base font-normal leading-7 text-neutral-600">
@@ -546,7 +591,11 @@ export function CustomerDashboard({ user }: { user: { email: string } }) {
                     <ShieldCheck className="size-12" strokeWidth={1.35} aria-hidden="true" />
                   </div>
                   <span className="font-subtitle text-[10px] font-semibold uppercase tracking-[0.2em]">
-                    {latestReceipt ? 'Receipt checked' : 'Ready to verify'}
+                    {latestReceipt
+                      ? latestReceipt.source === 'verification'
+                        ? 'Receipt checked'
+                        : 'Receipt stored'
+                      : 'Ready to verify'}
                   </span>
                 </div>
               </section>
@@ -559,8 +608,10 @@ export function CustomerDashboard({ user }: { user: { email: string } }) {
                   </p>
                 </Panel>
                 <Panel className="p-4">
-                  <p className="text-xs font-medium text-neutral-500">Receipts checked this session</p>
-                  <p className="mt-2 text-3xl font-semibold tracking-[-0.04em]">{receipts.length}</p>
+                  <p className="text-xs font-medium text-neutral-500">Account receipts</p>
+                  <p className="mt-2 text-3xl font-semibold tracking-[-0.04em]">
+                    {loadingReceipts ? '—' : receipts.length}
+                  </p>
                 </Panel>
                 <Panel className="p-4">
                   <p className="text-xs font-medium text-neutral-500">Monthly verifications</p>
@@ -599,7 +650,9 @@ export function CustomerDashboard({ user }: { user: { email: string } }) {
                       <p className="mt-1 font-mono text-sm font-medium">{shortHash(latestReceipt.hash)}</p>
                     </div>
                     <div>
-                      <p className="text-[10px] font-semibold uppercase tracking-[0.18em] text-neutral-500">Checked</p>
+                      <p className="text-[10px] font-semibold uppercase tracking-[0.18em] text-neutral-500">
+                        {latestReceipt.source === 'verification' ? 'Checked' : 'Created'}
+                      </p>
                       <p className="mt-1 text-sm font-medium">{formatDate(latestReceipt.timestamp)}</p>
                     </div>
                     <button
@@ -613,9 +666,9 @@ export function CustomerDashboard({ user }: { user: { email: string } }) {
                 ) : (
                   <div className="flex flex-wrap items-center gap-3 pt-5">
                     <div className="min-w-0 flex-1">
-                      <strong className="text-sm font-semibold">No receipt has been checked in this session.</strong>
+                      <strong className="text-sm font-semibold">No receipts have been issued for this account.</strong>
                       <p className="mt-1 text-xs font-normal text-neutral-500">
-                        Enter a receipt ID to verify its stored integrity and signature.
+                        Issue one through the API, or enter a receipt ID to verify its integrity and signature.
                       </p>
                     </div>
                     <button
@@ -635,7 +688,7 @@ export function CustomerDashboard({ user }: { user: { email: string } }) {
                     <div>
                       <h2 className="text-lg font-medium">Recent receipt activity</h2>
                       <p className="mt-1 text-sm font-normal text-neutral-500">
-                        Only receipts checked during this signed-in session are shown here.
+                        Tenant-scoped receipts issued for this signed-in account.
                       </p>
                     </div>
                     <button
@@ -662,22 +715,34 @@ export function CustomerDashboard({ user }: { user: { email: string } }) {
                           <span className="text-xs font-normal text-neutral-500">{formatDate(receipt.timestamp)}</span>
                           <span
                             className={`inline-flex items-center gap-1.5 text-xs font-semibold ${
-                              receipt.verdict === 'VERIFIED' ? 'text-emerald-700' : 'text-amber-700'
+                              receipt.verdict === 'VERIFIED'
+                                ? 'text-emerald-700'
+                                : receipt.verdict === 'STORED'
+                                  ? 'text-neutral-600'
+                                  : 'text-amber-700'
                             }`}
                           >
                             {receipt.verdict === 'VERIFIED' ? (
                               <CircleCheckBig className="size-4" aria-hidden="true" />
+                            ) : receipt.verdict === 'STORED' ? (
+                              <ReceiptText className="size-4" aria-hidden="true" />
                             ) : (
                               <AlertTriangle className="size-4" aria-hidden="true" />
                             )}
-                            {receipt.verdict === 'VERIFIED' ? 'Verified' : 'Attention'}
+                            {receipt.verdict === 'VERIFIED'
+                              ? 'Verified now'
+                              : receipt.verdict === 'STORED'
+                                ? 'Stored'
+                                : 'Attention'}
                           </span>
                         </button>
                       ))}
                     </div>
                   ) : (
                     <div className="mt-4 grid min-h-32 place-items-center rounded-xl border border-dashed border-neutral-300 text-center">
-                      <p className="text-sm font-normal text-neutral-500">Checked receipts will appear here for this session.</p>
+                      <p className="text-sm font-normal text-neutral-500">
+                        {receiptsError ?? 'Issued receipts will appear here.'}
+                      </p>
                     </div>
                   )}
                 </Panel>
@@ -842,9 +907,9 @@ export function CustomerDashboard({ user }: { user: { email: string } }) {
               <Panel className="mt-5">
                 <div className="flex items-start justify-between gap-4">
                   <div>
-                    <h2 className="text-lg font-medium">Receipts checked this session</h2>
+                    <h2 className="text-lg font-medium">Account receipt history</h2>
                     <p className="mt-1 text-sm font-normal text-neutral-500">
-                      Persistent account history will appear here once the tenant-scoped receipt index is connected.
+                      Only receipts owned by this signed-in account are returned by the core API.
                     </p>
                   </div>
                   <span className="rounded-full bg-neutral-100 px-3 py-1 text-xs font-semibold">{receipts.length}</span>
@@ -856,7 +921,7 @@ export function CustomerDashboard({ user }: { user: { email: string } }) {
                         <tr className="border-b border-neutral-200 text-xs text-neutral-500">
                           <th className="py-3 pr-4 font-medium">Receipt</th>
                           <th className="py-3 pr-4 font-medium">Stored hash</th>
-                          <th className="py-3 pr-4 font-medium">Checked</th>
+                          <th className="py-3 pr-4 font-medium">Created / checked</th>
                           <th className="py-3 font-medium">Signature</th>
                         </tr>
                       </thead>
@@ -874,7 +939,9 @@ export function CustomerDashboard({ user }: { user: { email: string } }) {
                   </div>
                 ) : (
                   <div className="mt-4 grid min-h-28 place-items-center rounded-xl border border-dashed border-neutral-300">
-                    <p className="text-sm font-normal text-neutral-500">No receipts checked in this session.</p>
+                    <p className="text-sm font-normal text-neutral-500">
+                      {loadingReceipts ? 'Loading receipt history…' : receiptsError ?? 'No receipts issued for this account.'}
+                    </p>
                   </div>
                 )}
               </Panel>

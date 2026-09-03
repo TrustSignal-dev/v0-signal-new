@@ -1,4 +1,5 @@
 import { NextResponse } from 'next/server';
+import { sanitizeNextPath } from '@/lib/auth/redirect';
 import { createSupabaseServerClient } from '@/lib/supabase/server';
 
 /**
@@ -9,7 +10,7 @@ import { createSupabaseServerClient } from '@/lib/supabase/server';
  */
 export async function GET(request: Request) {
   const { origin, searchParams } = new URL(request.url);
-  const next = searchParams.get('next') ?? '/dashboard';
+  const next = sanitizeNextPath(searchParams.get('next'));
 
   const supabase = await createSupabaseServerClient();
   const { data, error } = await supabase.auth.signInWithOAuth({
@@ -21,7 +22,7 @@ export async function GET(request: Request) {
   });
 
   if (error || !data.url) {
-    console.error('[auth/sign-in] OAuth initiation failed:', error?.message);
+    console.error('[auth/sign-in] OAuth initiation failed');
     return NextResponse.redirect(`${origin}/sign-in?error=oauth_init_failed`);
   }
 

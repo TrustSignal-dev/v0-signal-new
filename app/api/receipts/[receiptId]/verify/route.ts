@@ -1,15 +1,12 @@
 import { NextResponse } from "next/server";
-import { requireAuthenticatedContext } from "@/lib/auth/require-user";
-import {
-  getTrustSignalApiUrl,
-  getTrustSignalDashboardApiKey,
-} from "@/lib/trustsignal-api";
+import { requireAuthenticatedSession } from "@/lib/auth/require-user";
+import { getTrustSignalApiUrl } from "@/lib/trustsignal-api";
 
 export async function POST(
   _request: Request,
   context: { params: Promise<{ receiptId: string }> },
 ) {
-  const auth = await requireAuthenticatedContext();
+  const auth = await requireAuthenticatedSession();
   if (!auth.ok) {
     return auth.response;
   }
@@ -19,26 +16,26 @@ export async function POST(
     return NextResponse.json({ error: "Missing receiptId" }, { status: 400 });
   }
 
-  const apiKey = getTrustSignalDashboardApiKey();
-  if (!apiKey) {
-    return NextResponse.json(
+  let response: Response;
+  try {
+    response = await fetch(
+      `${getTrustSignalApiUrl()}/api/v1/user/receipts/${encodeURIComponent(receiptId)}/verify`,
       {
-        error: "Receipt verification is not configured for this environment.",
-        code: "dashboard_api_key_unavailable",
+        method: "POST",
+        cache: "no-store",
+        headers: {
+          accept: "application/json",
+          authorization: `Bearer ${auth.context.accessToken}`,
+        },
+        signal: AbortSignal.timeout(5_000),
       },
+    );
+  } catch {
+    return NextResponse.json(
+      { error: "Receipt verification service is unavailable" },
       { status: 503 },
     );
   }
-
-  const response = await fetch(
-    `${getTrustSignalApiUrl()}/api/v1/receipt/${encodeURIComponent(receiptId)}/verify`,
-    {
-      method: "POST",
-      headers: {
-        "x-api-key": apiKey,
-      },
-    },
-  );
 
   const data = (await response.json().catch(() => ({}))) as Record<string, unknown>;
 
@@ -48,7 +45,10 @@ export async function POST(
       (typeof data.message === "string" && data.message) ||
       "Receipt verification failed";
 
-    return NextResponse.json({ error: message, details: data }, { status: response.status });
+    const status = [400, 401, 404, 429, 503].includes(response.status)
+      ? response.status
+      : 502;
+    return NextResponse.json({ error: message }, { status });
   }
 
   return NextResponse.json(data, { status: 200 });

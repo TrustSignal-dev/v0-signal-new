@@ -1,4 +1,5 @@
 import { NextResponse } from 'next/server';
+import { sanitizeNextPath } from '@/lib/auth/redirect';
 import { createSupabaseServerClient } from '@/lib/supabase/server';
 
 /**
@@ -9,7 +10,7 @@ import { createSupabaseServerClient } from '@/lib/supabase/server';
 export async function GET(request: Request) {
   const { searchParams, origin } = new URL(request.url);
   const code = searchParams.get('code');
-  const next = searchParams.get('next') ?? '/dashboard';
+  const next = sanitizeNextPath(searchParams.get('next'));
 
   if (!code) {
     return NextResponse.redirect(`${origin}/sign-in?error=missing_code`);
@@ -19,21 +20,9 @@ export async function GET(request: Request) {
   const { error } = await supabase.auth.exchangeCodeForSession(code);
 
   if (error) {
-    console.error('[auth/callback] OAuth exchange failed:', error.message);
+    console.error('[auth/callback] OAuth exchange failed');
     return NextResponse.redirect(`${origin}/sign-in?error=oauth_failed`);
   }
 
-  // Redirect to the intended destination (or /dashboard by default).
-  const forwardedHost = request.headers.get('x-forwarded-host');
-  const isLocalEnv = process.env.NODE_ENV === 'development';
-
-  if (isLocalEnv) {
-    return NextResponse.redirect(`${origin}${next}`);
-  }
-
-  if (forwardedHost) {
-    return NextResponse.redirect(`https://${forwardedHost}${next}`);
-  }
-
-  return NextResponse.redirect(`${origin}${next}`);
+  return NextResponse.redirect(new URL(next, origin));
 }
