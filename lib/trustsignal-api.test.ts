@@ -3,12 +3,10 @@ import { readFileSync } from "node:fs";
 import { join } from "node:path";
 import {
   getTrustSignalApiUrl,
-  getTrustSignalDashboardApiKey,
 } from "./trustsignal-api";
 
 const originalApiUrl = process.env.TRUSTSIGNAL_API_URL;
 const originalLegacyApiUrl = process.env.TRUSTSIGNAL_API_BASE_URL;
-const originalDashboardKey = process.env.TRUSTSIGNAL_DASHBOARD_API_KEY;
 
 afterEach(() => {
   if (originalApiUrl === undefined) delete process.env.TRUSTSIGNAL_API_URL;
@@ -17,8 +15,6 @@ afterEach(() => {
   if (originalLegacyApiUrl === undefined) delete process.env.TRUSTSIGNAL_API_BASE_URL;
   else process.env.TRUSTSIGNAL_API_BASE_URL = originalLegacyApiUrl;
 
-  if (originalDashboardKey === undefined) delete process.env.TRUSTSIGNAL_DASHBOARD_API_KEY;
-  else process.env.TRUSTSIGNAL_DASHBOARD_API_KEY = originalDashboardKey;
 });
 
 describe("TrustSignal API server configuration", () => {
@@ -36,12 +32,7 @@ describe("TrustSignal API server configuration", () => {
     expect(getTrustSignalApiUrl()).toBe("https://legacy.example.test");
   });
 
-  it("fails closed when the dashboard credential is absent", () => {
-    delete process.env.TRUSTSIGNAL_DASHBOARD_API_KEY;
-    expect(getTrustSignalDashboardApiKey()).toBeNull();
-  });
-
-  it("never accepts a browser-supplied upstream API key or request body", () => {
+  it("uses the signed-in bearer identity for receipt verification", () => {
     const route = readFileSync(
       join(process.cwd(), "app/api/receipts/[receiptId]/verify/route.ts"),
       "utf8",
@@ -49,7 +40,23 @@ describe("TrustSignal API server configuration", () => {
 
     expect(route.includes("body.apiKey")).toBe(false);
     expect(route.includes("body: JSON.stringify")).toBe(false);
-    expect(route.includes("getTrustSignalDashboardApiKey()")).toBe(true);
+    expect(route.includes("requireAuthenticatedSession()")).toBe(true);
+    expect(route.includes("authorization: `Bearer ${auth.context.accessToken}`")).toBe(true);
+    expect(route.includes("/api/v1/user/receipts/")).toBe(true);
+    expect(route.includes("getTrustSignalDashboardApiKey()")).toBe(false);
+    expect(route.includes("x-api-key")).toBe(false);
+  });
+
+  it("lists persistent receipts through the signed-in user endpoint", () => {
+    const route = readFileSync(
+      join(process.cwd(), "app/api/receipts/route.ts"),
+      "utf8",
+    );
+
+    expect(route.includes("requireAuthenticatedSession()")).toBe(true);
+    expect(route.includes("authorization: `Bearer ${auth.context.accessToken}`")).toBe(true);
+    expect(route.includes("/api/v1/user/receipts?limit=50")).toBe(true);
+    expect(route.includes("x-api-key")).toBe(false);
   });
 
   it("does not upload generic documents to a nonexistent upstream route", () => {

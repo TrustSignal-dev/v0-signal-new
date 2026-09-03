@@ -62,6 +62,14 @@ describe("RLS enforcement assumptions", () => {
       dashboard.includes("artifactHash"),
       "dashboard must not claim artifact comparison the API cannot perform",
     ).toBe(false);
+    expect(
+      dashboard.includes("fetch('/api/receipts'"),
+      "receipt history must use the guarded tenant endpoint",
+    ).toBe(true);
+    expect(
+      dashboard.includes("Persistent account history will appear here"),
+      "dashboard must not describe tenant receipt history as unavailable",
+    ).toBe(false);
   });
 
   it("keeps user API-key hashing inside the core API trust boundary", () => {
@@ -83,9 +91,14 @@ describe("RLS enforcement assumptions", () => {
 
   it("returns OAuth users to the deployment that initiated sign-in", () => {
     const route = readFileSync(join(process.cwd(), "app/api/auth/oauth/route.ts"), "utf8");
+    const callback = readFileSync(join(process.cwd(), "app/auth/callback/route.ts"), "utf8");
+    const legacyStart = readFileSync(join(process.cwd(), "app/auth/sign-in/route.ts"), "utf8");
 
     expect(route.includes("req.nextUrl.origin")).toBe(true);
     expect(route.includes("NEXT_PUBLIC_APP_URL")).toBe(false);
-    expect(route.includes('!next.startsWith("//")')).toBe(true);
+    expect(route.includes("sanitizeNextPath(next)")).toBe(true);
+    expect(callback.includes("sanitizeNextPath(searchParams.get('next'))")).toBe(true);
+    expect(callback.includes("x-forwarded-host")).toBe(false);
+    expect(legacyStart.includes("sanitizeNextPath(searchParams.get('next'))")).toBe(true);
   });
 });

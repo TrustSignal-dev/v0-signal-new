@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import type { Provider } from "@supabase/supabase-js";
+import { sanitizeNextPath } from "@/lib/auth/redirect";
 import { createSupabaseServerClient } from "@/lib/supabase/server";
 
 const ALLOWED_PROVIDERS = new Set<Provider>(["google", "github"]);
@@ -14,7 +15,7 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ error: "Unsupported OAuth provider" }, { status: 400 });
   }
 
-  const nextPath = next?.startsWith("/") && !next.startsWith("//") ? next : "/dashboard";
+  const nextPath = sanitizeNextPath(next);
   const redirectTo = new URL("/auth/callback", req.nextUrl.origin);
   redirectTo.searchParams.set("next", nextPath);
 

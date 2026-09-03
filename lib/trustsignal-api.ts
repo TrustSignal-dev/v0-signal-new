@@ -8,7 +8,3 @@ export function getTrustSignalApiUrl() {
 
   return configured.replace(/\/$/, "");
 }
-
-export function getTrustSignalDashboardApiKey() {
-  return process.env.TRUSTSIGNAL_DASHBOARD_API_KEY?.trim() || null;
-}
