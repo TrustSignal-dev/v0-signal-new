@@ -1,14 +1,14 @@
-import { NextResponse } from 'next/server';
+import { NextRequest, NextResponse } from 'next/server';
 import { resolveTrustedAppOrigin } from '@/lib/auth/origin';
 import { sanitizeNextPath } from '@/lib/auth/redirect';
-import { createSupabaseServerClient } from '@/lib/supabase/server';
+import { createSupabaseRouteClient } from '@/lib/supabase/route';
 
 /**
  * OAuth callback handler.
  * Supabase redirects here after GitHub (or any OAuth provider) completes.
  * We exchange the code for a session, then redirect to the customer dashboard.
  */
-export async function GET(request: Request) {
+export async function GET(request: NextRequest) {
   const { searchParams } = new URL(request.url);
   const origin = resolveTrustedAppOrigin(request.url);
   const code = searchParams.get('code');
@@ -18,13 +18,22 @@ export async function GET(request: Request) {
     return NextResponse.redirect(`${origin}/sign-in?error=missing_code`);
   }
 
-  const supabase = await createSupabaseServerClient();
+  const { supabase, applyAuthCookies } = createSupabaseRouteClient(request);
   const { error } = await supabase.auth.exchangeCodeForSession(code);
 
   if (error) {
-    console.error('[auth/callback] OAuth exchange failed');
-    return NextResponse.redirect(`${origin}/sign-in?error=oauth_failed`);
+    console.error('[auth/callback] OAuth exchange failed', {
+      code: error.code,
+      name: error.name,
+      status: error.status,
+      verifierCookiePresent: request.cookies
+        .getAll()
+        .some(({ name }) => name.endsWith('-code-verifier')),
+    });
+    const response = NextResponse.redirect(`${origin}/sign-in?error=oauth_failed`);
+    return applyAuthCookies(response);
   }
 
-  return NextResponse.redirect(new URL(next, origin));
+  const response = NextResponse.redirect(new URL(next, origin));
+  return applyAuthCookies(response);
 }
