@@ -1,7 +1,6 @@
 import React from "react";
 import type { Metadata } from "next";
 import { Fraunces, Geist, Montserrat } from "next/font/google";
-import { Analytics } from "@vercel/analytics/next";
 import { SITE_URL } from "@/lib/site";
 import {
   DEFAULT_KEYWORDS,
@@ -91,7 +90,6 @@ export default function RootLayout({
         className={`${fraunces.variable} ${montserrat.variable} ${geist.variable} font-sans antialiased`}
       >
         {children}
-        <Analytics />
       </body>
     </html>
   );
