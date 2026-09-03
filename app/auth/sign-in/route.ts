@@ -1,8 +1,8 @@
-import { NextResponse } from 'next/server';
+import { NextRequest, NextResponse } from 'next/server';
 import type { Provider } from '@supabase/supabase-js';
 import { resolveTrustedAppOrigin } from '@/lib/auth/origin';
 import { sanitizeNextPath } from '@/lib/auth/redirect';
-import { createSupabaseServerClient } from '@/lib/supabase/server';
+import { createSupabaseRouteClient } from '@/lib/supabase/route';
 
 const ALLOWED_PROVIDERS = new Set<Provider>(["google", "github"]);
 
@@ -13,7 +13,7 @@ const ALLOWED_PROVIDERS = new Set<Provider>(["google", "github"]);
  * leaves TrustSignal. After the provider completes, Supabase redirects to
  * /auth/callback?code=...
  */
-export async function GET(request: Request) {
+export async function GET(request: NextRequest) {
   const { searchParams } = new URL(request.url);
   const origin = resolveTrustedAppOrigin(request.url);
   const next = sanitizeNextPath(searchParams.get('next'));
@@ -23,7 +23,7 @@ export async function GET(request: Request) {
     return NextResponse.redirect(`${origin}/sign-in?error=oauth_provider_unsupported`);
   }
 
-  const supabase = await createSupabaseServerClient();
+  const { supabase, applyAuthCookies } = createSupabaseRouteClient(request);
   const { data, error } = await supabase.auth.signInWithOAuth({
     provider: provider as Provider,
     options: {
@@ -34,8 +34,10 @@ export async function GET(request: Request) {
 
   if (error || !data.url) {
     console.error('[auth/sign-in] OAuth initiation failed');
-    return NextResponse.redirect(`${origin}/sign-in?error=oauth_init_failed`);
+    return applyAuthCookies(
+      NextResponse.redirect(`${origin}/sign-in?error=oauth_init_failed`),
+    );
   }
 
-  return NextResponse.redirect(data.url);
+  return applyAuthCookies(NextResponse.redirect(data.url));
 }

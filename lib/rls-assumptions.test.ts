@@ -128,4 +128,28 @@ describe("RLS enforcement assumptions", () => {
     expect(oauthStart.includes('new Set<Provider>(["google", "github"])')).toBe(true);
     expect(oauthStart.includes("ALLOWED_PROVIDERS.has(provider as Provider)")).toBe(true);
   });
+
+  it("preserves PKCE and session cookies on OAuth redirect responses", () => {
+    const projectRoot = process.cwd();
+    const oauthStart = readFileSync(
+      join(projectRoot, "app/auth/sign-in/route.ts"),
+      "utf8",
+    );
+    const callback = readFileSync(
+      join(projectRoot, "app/auth/callback/route.ts"),
+      "utf8",
+    );
+    const routeClient = readFileSync(
+      join(projectRoot, "lib/supabase/route.ts"),
+      "utf8",
+    );
+
+    expect(oauthStart.includes("createSupabaseRouteClient(request)")).toBe(true);
+    expect(oauthStart.includes("applyAuthCookies(NextResponse.redirect(data.url))")).toBe(true);
+    expect(callback.includes("createSupabaseRouteClient(request)")).toBe(true);
+    expect(callback.includes("applyAuthCookies(response)")).toBe(true);
+    expect(routeClient.includes("request.cookies.getAll()")).toBe(true);
+    expect(routeClient.includes("response.cookies.set(name, value, options)")).toBe(true);
+    expect(routeClient.includes("response.headers.set(name, value)")).toBe(true);
+  });
 });
