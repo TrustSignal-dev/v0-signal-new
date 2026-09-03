@@ -7,8 +7,11 @@ describe("GCP web runtime", () => {
     const config = readFileSync(join(process.cwd(), "next.config.mjs"), "utf8");
     const dockerfile = readFileSync(join(process.cwd(), "Dockerfile"), "utf8");
 
-    expect(config).toContain('output: "standalone"');
+    expect(config).toContain(
+      'process.env.TRUSTSIGNAL_BUILD_TARGET === "container" ? "standalone" : undefined',
+    );
     expect(dockerfile).toContain("FROM node:22.22.0-bookworm-slim");
+    expect(dockerfile).toContain("ENV TRUSTSIGNAL_BUILD_TARGET=container");
     expect(dockerfile).toContain("USER nextjs");
     expect(dockerfile).toContain("EXPOSE 8080");
     expect(dockerfile).toContain('CMD ["node", "server.js"]');

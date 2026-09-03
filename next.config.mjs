@@ -19,7 +19,7 @@ const withMDX = createMDX({
 
 /** @type {import('next').NextConfig} */
 const nextConfig = {
-  output: "standalone",
+  output: process.env.TRUSTSIGNAL_BUILD_TARGET === "container" ? "standalone" : undefined,
   poweredByHeader: false,
   turbopack: {
     root: rootDir,

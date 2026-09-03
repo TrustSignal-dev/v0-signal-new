@@ -9,6 +9,7 @@ RUN pnpm install --frozen-lockfile
 FROM node:22.22.0-bookworm-slim AS builder
 ENV PNPM_HOME=/pnpm
 ENV PATH=$PNPM_HOME:$PATH
+ENV TRUSTSIGNAL_BUILD_TARGET=container
 RUN corepack enable
 WORKDIR /app
 COPY --from=dependencies /app/node_modules ./node_modules
