@@ -12,6 +12,14 @@ describe("GCP web runtime", () => {
     );
     expect(dockerfile).toContain("FROM node:22.22.0-bookworm-slim");
     expect(dockerfile).toContain("ENV TRUSTSIGNAL_BUILD_TARGET=container");
+    expect(dockerfile).toContain("ARG NEXT_PUBLIC_SUPABASE_URL");
+    expect(dockerfile).toContain("ARG NEXT_PUBLIC_SUPABASE_ANON_KEY");
+    expect(dockerfile).toContain(
+      "ENV NEXT_PUBLIC_SUPABASE_URL=$NEXT_PUBLIC_SUPABASE_URL",
+    );
+    expect(dockerfile).toContain(
+      "NEXT_PUBLIC_SUPABASE_ANON_KEY=$NEXT_PUBLIC_SUPABASE_ANON_KEY",
+    );
     expect(dockerfile).toContain("USER nextjs");
     expect(dockerfile).toContain("EXPOSE 8080");
     expect(dockerfile).toContain('CMD ["node", "server.js"]');
