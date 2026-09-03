@@ -102,4 +102,30 @@ describe("RLS enforcement assumptions", () => {
     expect(legacyStart.includes("resolveTrustedAppOrigin(request.url)")).toBe(true);
     expect(legacyStart.includes("sanitizeNextPath(searchParams.get('next'))")).toBe(true);
   });
+
+  it("starts browser OAuth through a direct server redirect", () => {
+    const projectRoot = process.cwd();
+    const signInForm = readFileSync(
+      join(projectRoot, "components/sign-in-form.tsx"),
+      "utf8",
+    );
+    const signUpForm = readFileSync(
+      join(projectRoot, "components/sign-up-form.tsx"),
+      "utf8",
+    );
+    const oauthStart = readFileSync(
+      join(projectRoot, "app/auth/sign-in/route.ts"),
+      "utf8",
+    );
+
+    for (const form of [signInForm, signUpForm]) {
+      expect(form.includes('href="/auth/sign-in?provider=google&next=%2Fdashboard"')).toBe(true);
+      expect(form.includes('href="/auth/sign-in?provider=github&next=%2Fdashboard"')).toBe(true);
+      expect(form.includes('fetch("/api/auth/oauth"')).toBe(false);
+      expect(form.includes("window.location.assign")).toBe(false);
+    }
+
+    expect(oauthStart.includes('new Set<Provider>(["google", "github"])')).toBe(true);
+    expect(oauthStart.includes("ALLOWED_PROVIDERS.has(provider as Provider)")).toBe(true);
+  });
 });
