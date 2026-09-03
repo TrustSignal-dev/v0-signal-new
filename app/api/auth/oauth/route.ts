@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import type { Provider } from "@supabase/supabase-js";
+import { resolveTrustedAppOrigin } from "@/lib/auth/origin";
 import { sanitizeNextPath } from "@/lib/auth/redirect";
 import { createSupabaseServerClient } from "@/lib/supabase/server";
 
@@ -16,7 +17,7 @@ export async function POST(req: NextRequest) {
   }
 
   const nextPath = sanitizeNextPath(next);
-  const redirectTo = new URL("/auth/callback", req.nextUrl.origin);
+  const redirectTo = new URL("/auth/callback", resolveTrustedAppOrigin(req.url));
   redirectTo.searchParams.set("next", nextPath);
 
   const supabase = await createSupabaseServerClient();

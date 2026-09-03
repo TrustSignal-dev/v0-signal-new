@@ -89,16 +89,17 @@ describe("RLS enforcement assumptions", () => {
     expect(revokeRoute.includes('.from("api_keys")')).toBe(false);
   });
 
-  it("returns OAuth users to the deployment that initiated sign-in", () => {
+  it("returns OAuth users to a trusted deployment origin", () => {
     const route = readFileSync(join(process.cwd(), "app/api/auth/oauth/route.ts"), "utf8");
     const callback = readFileSync(join(process.cwd(), "app/auth/callback/route.ts"), "utf8");
     const legacyStart = readFileSync(join(process.cwd(), "app/auth/sign-in/route.ts"), "utf8");
 
-    expect(route.includes("req.nextUrl.origin")).toBe(true);
-    expect(route.includes("NEXT_PUBLIC_APP_URL")).toBe(false);
+    expect(route.includes("resolveTrustedAppOrigin(req.url)")).toBe(true);
     expect(route.includes("sanitizeNextPath(next)")).toBe(true);
+    expect(callback.includes("resolveTrustedAppOrigin(request.url)")).toBe(true);
     expect(callback.includes("sanitizeNextPath(searchParams.get('next'))")).toBe(true);
     expect(callback.includes("x-forwarded-host")).toBe(false);
+    expect(legacyStart.includes("resolveTrustedAppOrigin(request.url)")).toBe(true);
     expect(legacyStart.includes("sanitizeNextPath(searchParams.get('next'))")).toBe(true);
   });
 });

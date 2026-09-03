@@ -1,4 +1,5 @@
 import { NextResponse } from 'next/server';
+import { resolveTrustedAppOrigin } from '@/lib/auth/origin';
 import { sanitizeNextPath } from '@/lib/auth/redirect';
 import { createSupabaseServerClient } from '@/lib/supabase/server';
 
@@ -8,7 +9,8 @@ import { createSupabaseServerClient } from '@/lib/supabase/server';
  * We exchange the code for a session, then redirect to the customer dashboard.
  */
 export async function GET(request: Request) {
-  const { searchParams, origin } = new URL(request.url);
+  const { searchParams } = new URL(request.url);
+  const origin = resolveTrustedAppOrigin(request.url);
   const code = searchParams.get('code');
   const next = sanitizeNextPath(searchParams.get('next'));
 
