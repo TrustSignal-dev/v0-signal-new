@@ -19,13 +19,13 @@ const withMDX = createMDX({
 
 /** @type {import('next').NextConfig} */
 const nextConfig = {
+  output: "standalone",
   poweredByHeader: false,
   turbopack: {
     root: rootDir,
   },
   images: {
-    // Enable Vercel's built-in image optimization (WebP/AVIF + resizing) for
-    // better LCP / Core Web Vitals. All <Image> sources are local public assets.
+    // The standalone Node runtime uses sharp for image optimization.
     formats: ["image/avif", "image/webp"],
   },
   async headers() {

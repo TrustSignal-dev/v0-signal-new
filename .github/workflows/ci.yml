@@ -24,7 +24,7 @@ jobs:
       - name: Install pnpm
         uses: pnpm/action-setup@v4
         with:
-          version: latest
+          version: 11.19.0
 
       - name: Setup Node.js
         uses: actions/setup-node@v4
@@ -41,6 +41,9 @@ jobs:
       - name: Build
         run: pnpm build
 
+      - name: Build production container
+        run: docker build --tag trustsignal-web:ci .
+
   security-audit:
     name: Security Audit
     runs-on: ubuntu-latest
@@ -51,7 +54,7 @@ jobs:
       - name: Install pnpm
         uses: pnpm/action-setup@v4
         with:
-          version: latest
+          version: 11.19.0
 
       - name: Setup Node.js
         uses: actions/setup-node@v4

@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
-import { get, list } from "@vercel/blob";
 import { createPageMetadata } from "@/lib/seo";
+import { listSubmissionJson } from "@/lib/submission-storage";
 
 type Submission = {
   pathname: string;
@@ -85,58 +85,19 @@ export default async function ReviewPage({
     );
   }
 
-  const pilotResponse = await list({ prefix: "pilot-requests/" });
-  const pilotBlobs = [...pilotResponse.blobs].sort((a, b) =>
-    b.pathname.localeCompare(a.pathname),
-  );
-
-  const accessResponse = await list({ prefix: "developer-access-requests/" });
-  const accessBlobs = [...accessResponse.blobs].sort((a, b) =>
-    b.pathname.localeCompare(a.pathname),
-  );
-
-  const submissions = await Promise.all(
-    pilotBlobs.slice(0, 50).map(async (blob) => {
-      const result = await get(blob.pathname, { access: "private" });
-
-      if (!result || result.statusCode !== 200 || !result.stream) {
-        return null;
-      }
-
-      const text = await new Response(result.stream).text();
-      const parsed = JSON.parse(text) as Omit<Submission, "pathname">;
-
-      return {
-        pathname: blob.pathname,
-        ...parsed,
-      } satisfies Submission;
-    }),
-  );
-
-  const visibleSubmissions = submissions.filter(
-    (submission): submission is Submission => submission !== null,
-  );
-
-  const developerAccessSubmissions = await Promise.all(
-    accessBlobs.slice(0, 50).map(async (blob) => {
-      const result = await get(blob.pathname, { access: "private" });
-
-      if (!result || result.statusCode !== 200 || !result.stream) {
-        return null;
-      }
-
-      const text = await new Response(result.stream).text();
-      const parsed = JSON.parse(text) as Omit<DeveloperAccessSubmission, "pathname">;
-
-      return {
-        pathname: blob.pathname,
-        ...parsed,
-      } satisfies DeveloperAccessSubmission;
-    }),
-  );
-
-  const visibleDeveloperAccessSubmissions = developerAccessSubmissions.filter(
-    (submission): submission is DeveloperAccessSubmission => submission !== null,
+  const [pilotSubmissions, developerAccessSubmissions] = await Promise.all([
+    listSubmissionJson<Omit<Submission, "pathname">>("pilot-requests", 50),
+    listSubmissionJson<Omit<DeveloperAccessSubmission, "pathname">>(
+      "developer-access-requests",
+      50,
+    ),
+  ]);
+  const visibleSubmissions = pilotSubmissions.map(({ pathname, value }) => ({
+    pathname,
+    ...value,
+  }));
+  const visibleDeveloperAccessSubmissions = developerAccessSubmissions.map(
+    ({ pathname, value }) => ({ pathname, ...value }),
   );
 
   return (
