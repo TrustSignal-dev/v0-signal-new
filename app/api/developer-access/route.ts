@@ -1,5 +1,5 @@
-import { put } from "@vercel/blob";
 import { z } from "zod";
+import { storeSubmissionJson } from "@/lib/submission-storage";
 
 const developerAccessSchema = z
   .object({
@@ -38,35 +38,13 @@ export async function POST(request: Request) {
       );
     }
 
-    const blobReadWriteToken = process.env.BLOB_READ_WRITE_TOKEN;
-
-    if (!blobReadWriteToken) {
-      return Response.json(
-        { error: "Blob storage is not configured." },
-        { status: 503 },
-      );
-    }
-
     const payload = result.data;
     const submittedAt = new Date().toISOString();
-    const slug = `${submittedAt.replaceAll(":", "-")}-${slugify(payload.company)}-${slugify(payload.fullName)}`;
 
-    await put(
-      `developer-access-requests/${slug}.json`,
-      JSON.stringify(
-        {
-          submittedAt,
-          ...payload,
-        },
-        null,
-        2,
-      ),
-      {
-        access: "private",
-        token: blobReadWriteToken,
-        contentType: "application/json",
-      },
-    );
+    await storeSubmissionJson("developer-access-requests", submittedAt, {
+      submittedAt,
+      ...payload,
+    });
 
     return Response.json({ ok: true });
   } catch {
@@ -75,12 +53,4 @@ export async function POST(request: Request) {
       { status: 500 },
     );
   }
-}
-
-function slugify(value: string) {
-  return value
-    .toLowerCase()
-    .replace(/[^a-z0-9]+/g, "-")
-    .replace(/^-+|-+$/g, "")
-    .slice(0, 48);
 }

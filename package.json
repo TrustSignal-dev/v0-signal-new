@@ -2,6 +2,10 @@
   "name": "my-v0-project",
   "version": "0.1.0",
   "private": true,
+  "packageManager": "pnpm@11.19.0",
+  "engines": {
+    "node": "22.x"
+  },
   "scripts": {
     "build": "next build",
     "demo:record": "node scripts/record-demo.js",
@@ -13,6 +17,7 @@
     "test": "vitest run"
   },
   "dependencies": {
+    "@google-cloud/storage": "8.0.1",
     "@hookform/resolvers": "^3.10.0",
     "@mdx-js/loader": "^3.1.1",
     "@mdx-js/react": "^3.1.1",

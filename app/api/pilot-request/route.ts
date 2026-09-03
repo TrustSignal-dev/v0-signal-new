@@ -1,5 +1,5 @@
-import { put } from "@vercel/blob";
 import { z } from "zod";
+import { storeSubmissionJson } from "@/lib/submission-storage";
 
 const pilotRequestSchema = z.object({
   name: z.string().trim().min(2),
@@ -40,18 +40,8 @@ export async function POST(request: Request) {
       );
     }
 
-    const blobReadWriteToken = process.env.BLOB_READ_WRITE_TOKEN;
-
-    if (!blobReadWriteToken) {
-      return Response.json(
-        { error: "Blob storage is not configured." },
-        { status: 503 },
-      );
-    }
-
     const { name, company, address, email, phone } = result.data;
     const submittedAt = new Date().toISOString();
-    const slug = `${submittedAt.replaceAll(":", "-")}-${slugify(company)}-${slugify(name)}`;
 
     const data = {
       submittedAt,
@@ -62,16 +52,7 @@ export async function POST(request: Request) {
       phone,
     };
 
-    // Save to Blob storage
-    await put(
-      `pilot-requests/${slug}.json`,
-      JSON.stringify(data, null, 2),
-      {
-        access: "private",
-        token: blobReadWriteToken,
-        contentType: "application/json",
-      },
-    );
+    await storeSubmissionJson("pilot-requests", submittedAt, data);
 
     // Send email notification
     if (resendApiKey) {
@@ -118,12 +99,4 @@ async function createResendClient(apiKey: string) {
   };
 
   return new resendModule.Resend(apiKey);
-}
-
-function slugify(value: string) {
-  return value
-    .toLowerCase()
-    .replace(/[^a-z0-9]+/g, "-")
-    .replace(/^-+|-+$/g, "")
-    .slice(0, 48);
 }
