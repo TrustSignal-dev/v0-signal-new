@@ -8,7 +8,6 @@ import { Input } from "@/components/ui/input";
 export function SignInForm() {
   const router = useRouter();
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const [oauthSubmitting, setOauthSubmitting] = useState<"google" | "github" | null>(null);
   const [error, setError] = useState<string | null>(null);
 
   async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
@@ -43,31 +42,6 @@ export function SignInForm() {
     } catch {
       setError("Something went wrong. Please try again.");
       setIsSubmitting(false);
-    }
-  }
-
-  async function handleOAuth(provider: "google" | "github") {
-    setError(null);
-    setOauthSubmitting(provider);
-
-    try {
-      const res = await fetch("/api/auth/oauth", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ provider, next: "/dashboard" }),
-      });
-
-      const data = (await res.json()) as { url?: string; error?: string };
-      if (!res.ok || !data.url) {
-        setError(data.error ?? "Could not start OAuth sign-in.");
-        setOauthSubmitting(null);
-        return;
-      }
-
-      window.location.assign(data.url);
-    } catch {
-      setError("Could not start OAuth sign-in. Please try again.");
-      setOauthSubmitting(null);
     }
   }
 
@@ -114,22 +88,22 @@ export function SignInForm() {
 
             <div className="space-y-3 pt-2">
               <Button
-                type="button"
+                asChild
                 variant="outline"
                 className="h-12 w-full rounded-full"
-                disabled={Boolean(oauthSubmitting)}
-                onClick={() => handleOAuth("google")}
               >
-                {oauthSubmitting === "google" ? "Redirecting to Google..." : "Continue with Google"}
+                <a href="/auth/sign-in?provider=google&next=%2Fdashboard">
+                  Continue with Google
+                </a>
               </Button>
               <Button
-                type="button"
+                asChild
                 variant="outline"
                 className="h-12 w-full rounded-full"
-                disabled={Boolean(oauthSubmitting)}
-                onClick={() => handleOAuth("github")}
               >
-                {oauthSubmitting === "github" ? "Redirecting to GitHub..." : "Continue with GitHub"}
+                <a href="/auth/sign-in?provider=github&next=%2Fdashboard">
+                  Continue with GitHub
+                </a>
               </Button>
               <Button
                 type="submit"
