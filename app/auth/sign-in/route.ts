@@ -1,4 +1,5 @@
 import { NextResponse } from 'next/server';
+import { resolveTrustedAppOrigin } from '@/lib/auth/origin';
 import { sanitizeNextPath } from '@/lib/auth/redirect';
 import { createSupabaseServerClient } from '@/lib/supabase/server';
 
@@ -9,7 +10,8 @@ import { createSupabaseServerClient } from '@/lib/supabase/server';
  * After GitHub completes, Supabase redirects to /auth/callback?code=...
  */
 export async function GET(request: Request) {
-  const { origin, searchParams } = new URL(request.url);
+  const { searchParams } = new URL(request.url);
+  const origin = resolveTrustedAppOrigin(request.url);
   const next = sanitizeNextPath(searchParams.get('next'));
 
   const supabase = await createSupabaseServerClient();
