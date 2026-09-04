@@ -30,6 +30,12 @@ import Link from 'next/link';
 import type { FormEvent, ReactNode } from 'react';
 import { useCallback, useEffect, useMemo, useState } from 'react';
 
+import {
+  MAX_ARTIFACT_BYTES,
+  parseArtifactVerificationResult,
+  type ArtifactVerificationResult,
+} from '@/lib/artifact-verification';
+
 type SectionId =
   | 'overview'
   | 'receipts'
@@ -82,12 +88,6 @@ type SessionEvent = {
   detail: string;
   result: 'success' | 'attention' | 'info';
   createdAt: string;
-};
-
-type ArtifactVerificationResult = {
-  status: 'MATCH' | 'MISMATCH' | 'INCONCLUSIVE';
-  matched: boolean;
-  reasonCode: string;
 };
 
 const NAV_ITEMS: Array<{ id: SectionId; label: string; icon: LucideIcon }> = [
@@ -466,6 +466,10 @@ export function CustomerDashboard({ user }: { user: { email: string } }) {
       setVerifyError('Enter a receipt ID and choose the original artifact.');
       return;
     }
+    if (artifactFile.size > MAX_ARTIFACT_BYTES) {
+      setVerifyError('The artifact exceeds the 15 MiB verification limit.');
+      return;
+    }
 
     setVerifyError(null);
     setArtifactResult(null);
@@ -477,23 +481,22 @@ export function CustomerDashboard({ user }: { user: { email: string } }) {
         `/api/receipts/${encodeURIComponent(receiptId)}/verify-artifact`,
         { method: 'POST', body: form },
       );
-      const payload = (await response.json().catch(() => ({}))) as {
-        artifactMatch?: ArtifactVerificationResult;
-      };
-      if (!response.ok || !payload.artifactMatch) {
+      const payload = (await response.json().catch(() => ({}))) as Record<string, unknown>;
+      const artifactMatch = parseArtifactVerificationResult(payload.artifactMatch);
+      if (!response.ok || !artifactMatch) {
         setVerifyError(
           response.status === 413
-            ? 'The artifact exceeds the 20 MB verification limit.'
+            ? 'The artifact exceeds the 15 MiB verification limit.'
             : 'The artifact could not be compared with this receipt.',
         );
         return;
       }
 
-      setArtifactResult(payload.artifactMatch);
+      setArtifactResult(artifactMatch);
       addActivity(
         'Artifact compared',
-        `${receiptId} returned ${payload.artifactMatch.status.toLowerCase()}.`,
-        payload.artifactMatch.matched ? 'success' : 'attention',
+        `${receiptId} returned ${artifactMatch.status.toLowerCase()}.`,
+        artifactMatch.matched ? 'success' : 'attention',
       );
     } catch {
       setVerifyError('The artifact could not be compared with this receipt.');
@@ -894,12 +897,25 @@ export function CustomerDashboard({ user }: { user: { email: string } }) {
                       />
                     </label>
                     <label className="block text-sm font-semibold">
-                      Original artifact <span className="font-normal text-neutral-500">(optional, up to 20 MB)</span>
+                      Original artifact{' '}
+                      <span id="artifact-limit-hint" className="font-normal text-neutral-500">
+                        (optional, up to 15 MiB)
+                      </span>
                       <input
                         type="file"
+                        aria-describedby="artifact-limit-hint"
                         onChange={(event) => {
-                          setArtifactFile(event.target.files?.[0] ?? null);
+                          const selectedFile = event.target.files?.[0] ?? null;
+                          if (selectedFile && selectedFile.size > MAX_ARTIFACT_BYTES) {
+                            setArtifactFile(null);
+                            setArtifactResult(null);
+                            setVerifyError('The artifact exceeds the 15 MiB verification limit.');
+                            event.currentTarget.value = '';
+                            return;
+                          }
+                          setArtifactFile(selectedFile);
                           setArtifactResult(null);
+                          setVerifyError(null);
                         }}
                         className="mt-2 block w-full rounded-xl border border-neutral-300 bg-white px-3 py-3 text-sm font-normal file:mr-3 file:rounded-lg file:border-0 file:bg-neutral-100 file:px-3 file:py-2 file:text-xs file:font-semibold"
                       />
@@ -937,10 +953,14 @@ export function CustomerDashboard({ user }: { user: { email: string } }) {
                     {artifactResult ? (
                       <div
                         role="status"
+                        aria-live="polite"
+                        aria-atomic="true"
                         className={`rounded-xl border p-3 text-sm ${
-                          artifactResult.matched
+                          artifactResult.status === 'MATCH'
                             ? 'border-emerald-300 bg-emerald-50 text-emerald-900'
-                            : 'border-amber-300 bg-amber-50 text-amber-950'
+                            : artifactResult.status === 'MISMATCH'
+                              ? 'border-red-300 bg-red-50 text-red-950'
+                              : 'border-amber-300 bg-amber-50 text-amber-950'
                         }`}
                       >
                         <strong className="block font-semibold">
