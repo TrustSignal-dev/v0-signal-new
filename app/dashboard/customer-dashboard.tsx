@@ -11,6 +11,7 @@ import {
   Copy,
   CreditCard,
   FileClock,
+  FileUp,
   Fingerprint,
   Globe2,
   KeyRound,
@@ -81,6 +82,12 @@ type SessionEvent = {
   detail: string;
   result: 'success' | 'attention' | 'info';
   createdAt: string;
+};
+
+type ArtifactVerificationResult = {
+  status: 'MATCH' | 'MISMATCH' | 'INCONCLUSIVE';
+  matched: boolean;
+  reasonCode: string;
 };
 
 const NAV_ITEMS: Array<{ id: SectionId; label: string; icon: LucideIcon }> = [
@@ -248,6 +255,9 @@ export function CustomerDashboard({ user }: { user: { email: string } }) {
   const [verifyError, setVerifyError] = useState<string | null>(null);
   const [receiptsError, setReceiptsError] = useState<string | null>(null);
   const [verificationResult, setVerificationResult] = useState<ReceiptSummary | null>(null);
+  const [artifactFile, setArtifactFile] = useState<File | null>(null);
+  const [verifyingArtifact, setVerifyingArtifact] = useState(false);
+  const [artifactResult, setArtifactResult] = useState<ArtifactVerificationResult | null>(null);
   const [activity, setActivity] = useState<SessionEvent[]>([]);
 
   const activeKeys = useMemo(() => keys.filter((key) => !key.revoked_at), [keys]);
@@ -447,6 +457,48 @@ export function CustomerDashboard({ user }: { user: { email: string } }) {
       setVerifyError('The receipt could not be verified. Check the ID and try again.');
     } finally {
       setVerifyingReceipt(false);
+    }
+  }
+
+  async function handleVerifyArtifact() {
+    const receiptId = verifyReceiptId.trim();
+    if (!receiptId || !artifactFile) {
+      setVerifyError('Enter a receipt ID and choose the original artifact.');
+      return;
+    }
+
+    setVerifyError(null);
+    setArtifactResult(null);
+    setVerifyingArtifact(true);
+    try {
+      const form = new FormData();
+      form.set('artifact', artifactFile);
+      const response = await fetch(
+        `/api/receipts/${encodeURIComponent(receiptId)}/verify-artifact`,
+        { method: 'POST', body: form },
+      );
+      const payload = (await response.json().catch(() => ({}))) as {
+        artifactMatch?: ArtifactVerificationResult;
+      };
+      if (!response.ok || !payload.artifactMatch) {
+        setVerifyError(
+          response.status === 413
+            ? 'The artifact exceeds the 20 MB verification limit.'
+            : 'The artifact could not be compared with this receipt.',
+        );
+        return;
+      }
+
+      setArtifactResult(payload.artifactMatch);
+      addActivity(
+        'Artifact compared',
+        `${receiptId} returned ${payload.artifactMatch.status.toLowerCase()}.`,
+        payload.artifactMatch.matched ? 'success' : 'attention',
+      );
+    } catch {
+      setVerifyError('The artifact could not be compared with this receipt.');
+    } finally {
+      setVerifyingArtifact(false);
     }
   }
 
@@ -781,7 +833,7 @@ export function CustomerDashboard({ user }: { user: { email: string } }) {
               <SectionHeading
                 eyebrow="Cryptographic receipts"
                 title="Verify signed proof."
-                description="Check a TrustSignal receipt by ID. The API recomputes its canonical hash and verifies its signature and proof status without accepting document content in this dashboard."
+                description="Check the stored receipt and, when needed, compare the original artifact bytes with the document digest committed inside its signed proof."
               />
               <div className="grid gap-5 xl:grid-cols-2">
                 <Panel>
@@ -841,6 +893,17 @@ export function CustomerDashboard({ user }: { user: { email: string } }) {
                         className="mt-2 block w-full rounded-xl border border-neutral-300 bg-white px-3 py-3 font-mono text-sm font-normal outline-none focus:border-neutral-700"
                       />
                     </label>
+                    <label className="block text-sm font-semibold">
+                      Original artifact <span className="font-normal text-neutral-500">(optional, up to 20 MB)</span>
+                      <input
+                        type="file"
+                        onChange={(event) => {
+                          setArtifactFile(event.target.files?.[0] ?? null);
+                          setArtifactResult(null);
+                        }}
+                        className="mt-2 block w-full rounded-xl border border-neutral-300 bg-white px-3 py-3 text-sm font-normal file:mr-3 file:rounded-lg file:border-0 file:bg-neutral-100 file:px-3 file:py-2 file:text-xs file:font-semibold"
+                      />
+                    </label>
                     {verifyError ? (
                       <p role="alert" className="rounded-lg bg-red-50 p-3 text-sm font-normal text-red-700">
                         {verifyError}
@@ -858,6 +921,38 @@ export function CustomerDashboard({ user }: { user: { email: string } }) {
                       )}
                       {verifyingReceipt ? 'Verifying…' : 'Verify integrity'}
                     </button>
+                    <button
+                      type="button"
+                      onClick={() => void handleVerifyArtifact()}
+                      disabled={verifyingArtifact || !artifactFile}
+                      className="inline-flex min-h-11 w-full items-center justify-center gap-2 rounded-lg bg-neutral-900 px-4 text-sm font-semibold text-white hover:bg-neutral-800 disabled:opacity-50"
+                    >
+                      {verifyingArtifact ? (
+                        <RefreshCw className="size-4 animate-spin" aria-hidden="true" />
+                      ) : (
+                        <FileUp className="size-4" aria-hidden="true" />
+                      )}
+                      {verifyingArtifact ? 'Comparing…' : 'Compare artifact to receipt'}
+                    </button>
+                    {artifactResult ? (
+                      <div
+                        role="status"
+                        className={`rounded-xl border p-3 text-sm ${
+                          artifactResult.matched
+                            ? 'border-emerald-300 bg-emerald-50 text-emerald-900'
+                            : 'border-amber-300 bg-amber-50 text-amber-950'
+                        }`}
+                      >
+                        <strong className="block font-semibold">
+                          {artifactResult.status === 'MATCH'
+                            ? 'Artifact matches the signed receipt.'
+                            : artifactResult.status === 'MISMATCH'
+                              ? 'Artifact does not match the signed receipt.'
+                              : 'Artifact comparison is inconclusive.'}
+                        </strong>
+                        <span className="mt-1 block font-mono text-xs">{artifactResult.reasonCode}</span>
+                      </div>
+                    ) : null}
                   </form>
                 </Panel>
               </div>
