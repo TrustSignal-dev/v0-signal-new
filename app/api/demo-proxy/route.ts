@@ -1,7 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { enforceRateLimit } from "@/lib/rate-limit";
-
-const API_BASE = "https://api.trustsignal.dev";
+import { getTrustSignalApiUrl } from "@/lib/trustsignal-api";
 
 // API paths confirmed against openapi.yaml (TrustSignal/openapi.yaml):
 //
@@ -80,7 +79,7 @@ export async function POST(req: NextRequest) {
   if (action === "anchor") {
     let upstream: Response;
     try {
-      upstream = await fetch(`${API_BASE}/api/v1/verify`, {
+      upstream = await fetch(`${getTrustSignalApiUrl()}/api/v1/verify`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -109,7 +108,7 @@ export async function POST(req: NextRequest) {
   let upstream: Response;
   try {
     upstream = await fetch(
-      `${API_BASE}/api/v1/receipt/${encodeURIComponent(receiptId)}/verify`,
+      `${getTrustSignalApiUrl()}/api/v1/receipt/${encodeURIComponent(receiptId)}/verify`,
       {
         method: "POST",
         headers: { "x-api-key": demoApiKey },

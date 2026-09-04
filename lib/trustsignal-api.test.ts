@@ -1,4 +1,4 @@
-import { afterEach, describe, expect, it } from "vitest";
+import { afterEach, describe, expect, it, vi } from "vitest";
 import { readFileSync } from "node:fs";
 import { join } from "node:path";
 import {
@@ -15,6 +15,8 @@ afterEach(() => {
   if (originalLegacyApiUrl === undefined) delete process.env.TRUSTSIGNAL_API_BASE_URL;
   else process.env.TRUSTSIGNAL_API_BASE_URL = originalLegacyApiUrl;
 
+  vi.unstubAllEnvs();
+
 });
 
 describe("TrustSignal API server configuration", () => {
@@ -30,6 +32,14 @@ describe("TrustSignal API server configuration", () => {
     process.env.TRUSTSIGNAL_API_BASE_URL = "https://legacy.example.test/";
 
     expect(getTrustSignalApiUrl()).toBe("https://legacy.example.test");
+  });
+
+  it("fails closed in production instead of silently targeting the live API", () => {
+    delete process.env.TRUSTSIGNAL_API_URL;
+    delete process.env.TRUSTSIGNAL_API_BASE_URL;
+    vi.stubEnv("NODE_ENV", "production");
+
+    expect(() => getTrustSignalApiUrl()).toThrow("TRUSTSIGNAL_API_URL is required");
   });
 
   it("uses the signed-in bearer identity for receipt verification", () => {
@@ -57,6 +67,29 @@ describe("TrustSignal API server configuration", () => {
     expect(route.includes("authorization: `Bearer ${auth.context.accessToken}`")).toBe(true);
     expect(route.includes("/api/v1/user/receipts?limit=50")).toBe(true);
     expect(route.includes("x-api-key")).toBe(false);
+  });
+
+  it("uses the signed-in user endpoint for later artifact verification", () => {
+    const route = readFileSync(
+      join(process.cwd(), "app/api/receipts/[receiptId]/verify-artifact/route.ts"),
+      "utf8",
+    );
+
+    expect(route.includes("requireAuthenticatedSession()")).toBe(true);
+    expect(route.includes("authorization: `Bearer ${auth.context.accessToken}`")).toBe(true);
+    expect(route.includes("/api/v1/user/receipts/")).toBe(true);
+    expect(route.includes("/verify-artifact")).toBe(true);
+    expect(route.includes("x-api-key")).toBe(false);
+  });
+
+  it("does not hardcode the production API in the demo proxy", () => {
+    const route = readFileSync(
+      join(process.cwd(), "app/api/demo-proxy/route.ts"),
+      "utf8",
+    );
+
+    expect(route.includes('const API_BASE = "https://api.trustsignal.dev"')).toBe(false);
+    expect(route.includes("getTrustSignalApiUrl()")).toBe(true);
   });
 
   it("does not upload generic documents to a nonexistent upstream route", () => {
