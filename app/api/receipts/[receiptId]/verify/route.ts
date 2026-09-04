@@ -27,7 +27,7 @@ export async function POST(
           accept: "application/json",
           authorization: `Bearer ${auth.context.accessToken}`,
         },
-        signal: AbortSignal.timeout(5_000),
+        signal: AbortSignal.timeout(35_000),
       },
     );
   } catch {
