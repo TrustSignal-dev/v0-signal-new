@@ -1,8 +1,23 @@
 import { NextResponse } from "next/server";
 import { requireAuthenticatedSession } from "@/lib/auth/require-user";
+import { MAX_ARTIFACT_BYTES } from "@/lib/artifact-verification";
 import { getTrustSignalApiUrl } from "@/lib/trustsignal-api";
 
-const MAX_ARTIFACT_BYTES = 20 * 1024 * 1024;
+const FORWARDED_ERROR_CODES_BY_STATUS: Partial<Record<number, ReadonlySet<string>>> = {
+  400: new Set(["invalid_artifact_verification_payload", "invalid_receipt_id"]),
+  401: new Set(["unauthorized"]),
+  404: new Set(["receipt_not_found"]),
+  503: new Set(["artifact_verification_unavailable", "identity_provider_unavailable"]),
+};
+
+const ERROR_FALLBACK_BY_STATUS: Record<number, string> = {
+  400: "Invalid artifact verification request",
+  401: "Not authenticated",
+  404: "Receipt not found",
+  413: "Artifact exceeds the verification limit",
+  429: "Artifact verification rate limit exceeded",
+  503: "Artifact verification service is unavailable",
+};
 
 export async function POST(
   request: Request,
@@ -28,7 +43,7 @@ export async function POST(
     return NextResponse.json({ error: "An artifact file is required" }, { status: 400 });
   }
   if (artifact.size > MAX_ARTIFACT_BYTES) {
-    return NextResponse.json({ error: "Artifact exceeds the 20 MB limit" }, { status: 413 });
+    return NextResponse.json({ error: "Artifact exceeds the 15 MiB limit" }, { status: 413 });
   }
 
   let response: Response;
@@ -55,13 +70,23 @@ export async function POST(
     );
   }
 
-  const data = (await response.json().catch(() => ({}))) as Record<string, unknown>;
+  const parsedData: unknown = await response.json().catch(() => ({}));
+  const data: Record<string, unknown> = parsedData !== null
+    && typeof parsedData === "object"
+    && !Array.isArray(parsedData)
+    ? parsedData as Record<string, unknown>
+    : {};
   if (!response.ok) {
-    const message = typeof data.error === "string" ? data.error : "Artifact verification failed";
-    const status = [400, 401, 404, 413, 429, 503].includes(response.status)
-      ? response.status
-      : 502;
-    return NextResponse.json({ error: message }, { status });
+    const status = ERROR_FALLBACK_BY_STATUS[response.status] ? response.status : 502;
+    if (status === 502) {
+      return NextResponse.json({ error: "Artifact verification failed" }, { status });
+    }
+
+    const upstreamError = typeof data.error === "string" ? data.error : undefined;
+    const error = upstreamError && FORWARDED_ERROR_CODES_BY_STATUS[status]?.has(upstreamError)
+      ? upstreamError
+      : ERROR_FALLBACK_BY_STATUS[status];
+    return NextResponse.json({ error }, { status });
   }
 
   return NextResponse.json(data, { status: 200 });
