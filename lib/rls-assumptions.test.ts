@@ -43,7 +43,7 @@ describe("RLS enforcement assumptions", () => {
     expect(page.includes("supabase.auth.getUser()"), "dashboard must verify the session").toBe(
       true,
     );
-    expect(page.includes("redirect('/sign-in')"), "unauthenticated users must be redirected").toBe(
+    expect(page.includes('redirect(`/sign-in?next=${encodeURIComponent(nextPath)}`)'), "unauthenticated users must be redirected with their destination").toBe(
       true,
     );
     expect(dashboard.includes("fetch('/api/keys'"), "key operations must use guarded routes").toBe(
@@ -119,10 +119,12 @@ describe("RLS enforcement assumptions", () => {
     );
 
     for (const form of [signInForm, signUpForm]) {
-      expect(form.includes('href="/auth/sign-in?provider=google&next=%2Fdashboard"')).toBe(true);
-      expect(form.includes('href="/auth/sign-in?provider=github&next=%2Fdashboard"')).toBe(true);
+      expect(form.includes('href={`/auth/sign-in?provider=google&next=${encodedNext}`}')).toBe(true);
+      expect(form.includes('href={`/auth/sign-in?provider=github&next=${encodedNext}`}')).toBe(true);
+      expect(form.includes('sanitizeNextPath(nextPath)')).toBe(true);
       expect(form.includes('fetch("/api/auth/oauth"')).toBe(false);
-      expect(form.includes("window.location.assign")).toBe(false);
+      expect(form.includes("window.location.assign(destination)")).toBe(true);
+      expect(form.includes("window.location.assign(data.url)")).toBe(false);
     }
 
     expect(oauthStart.includes('new Set<Provider>(["google", "github"])')).toBe(true);

@@ -89,6 +89,11 @@ export default function RootLayout({
       <body
         className={`${fraunces.variable} ${montserrat.variable} ${geist.variable} font-sans antialiased`}
       >
+        {process.env.NODE_ENV === "development" && process.env.TRUSTSIGNAL_LOCAL_REVIEW === "synthetic" && (
+          <aside aria-label="Local review environment" style={{ position: "sticky", top: 0, zIndex: 10000, padding: "12px 20px", background: "#fef3c7", color: "#422006", fontSize: 14 }}>
+            <strong>Local synthetic review.</strong> Test account and local development signing. Use test files only. These receipts are not production attestations.
+          </aside>
+        )}
         {children}
       </body>
     </html>

@@ -25,4 +25,9 @@ describe("sanitizeNextPath", () => {
     expect(sanitizeNextPath(null)).toBe("/dashboard");
     expect(sanitizeNextPath("  ")).toBe("/dashboard");
   });
+
+  it("rejects repeated query parameters and non-string destinations", () => {
+    expect(sanitizeNextPath(["/dashboard", "//attacker.example"])).toBe("/dashboard");
+    expect(sanitizeNextPath({ next: "/dashboard" })).toBe("/dashboard");
+  });
 });

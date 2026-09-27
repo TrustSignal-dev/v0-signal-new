@@ -29,7 +29,7 @@ import Link from 'next/link';
 import type { FormEvent, ReactNode } from 'react';
 import { useCallback, useEffect, useMemo, useState } from 'react';
 
-type SectionId =
+export type SectionId =
   | 'overview'
   | 'receipts'
   | 'api-keys'
@@ -228,8 +228,8 @@ function SectionHeading({
   );
 }
 
-export function CustomerDashboard({ user }: { user: { email: string } }) {
-  const [activeSection, setActiveSection] = useState<SectionId>('overview');
+export function CustomerDashboard({ user, initialSection = 'overview' }: { user: { email: string }; initialSection?: SectionId }) {
+  const [activeSection, setActiveSection] = useState<SectionId>(initialSection);
   const [keys, setKeys] = useState<CustomerApiKey[]>([]);
   const [billing, setBilling] = useState<BillingStatus | null>(null);
   const [loadingKeys, setLoadingKeys] = useState(true);
@@ -504,11 +504,10 @@ export function CustomerDashboard({ user }: { user: { email: string } }) {
             const Icon = item.icon;
             const active = activeSection === item.id;
             return (
-              <button
+              <Link
                 key={item.id}
-                type="button"
+                href={`/dashboard?section=${item.id}`}
                 aria-current={active ? 'page' : undefined}
-                onClick={() => setActiveSection(item.id)}
                 className={`flex min-h-11 shrink-0 items-center gap-3 rounded-xl px-3 py-2.5 text-left text-sm font-medium transition-colors lg:w-full ${
                   active
                     ? 'bg-neutral-900 text-white'
@@ -517,7 +516,7 @@ export function CustomerDashboard({ user }: { user: { email: string } }) {
               >
                 <Icon className="size-[18px]" strokeWidth={1.8} aria-hidden="true" />
                 <span>{item.label}</span>
-              </button>
+              </Link>
             );
           })}
         </nav>

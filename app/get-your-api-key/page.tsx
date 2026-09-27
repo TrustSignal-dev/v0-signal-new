@@ -1,29 +1,16 @@
 import type { Metadata } from "next";
 import { redirect } from "next/navigation";
 import { createPageMetadata } from "@/lib/seo";
-import { createSupabaseServerClient } from "@/lib/supabase/server";
-import { ApiKeyGenerator } from "@/components/api-key-generator";
 
 export const metadata: Metadata = createPageMetadata({
-  title: "Get API Access",
+  title: "Get an API Key",
   description:
-    "Generate an Ed25519 key pair and register your TrustSignal machine client to start making API calls.",
+    "Sign in to create and manage your TrustSignal API keys.",
   path: "/get-your-api-key",
-  keywords: ["TrustSignal API access", "machine clients", "short-lived access tokens"],
+  keywords: ["TrustSignal API access", "API keys"],
 });
 
 export default async function GetYourApiKeyPage() {
-  const supabase = await createSupabaseServerClient();
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
-
-  if (!user) {
-    redirect("/sign-in");
-  }
-
-  const displayName =
-    user.user_metadata?.full_name ?? user.user_metadata?.name ?? undefined;
-
-  return <ApiKeyGenerator email={user.email ?? ""} displayName={displayName} />;
+  // The dashboard and its API routes enforce the authenticated session.
+  redirect("/dashboard?section=api-keys");
 }
