@@ -19,6 +19,7 @@ export type ReportOptions = { generatedAt?: Date; localReview?: boolean; artifac
 const artifactSchema = z.object({
   sha256: z.string().regex(/^[a-f0-9]{64}$/), sizeBytes: z.number().int().min(0).max(25 * 1024 * 1024),
   mediaType: z.string().max(100).regex(/^[a-z0-9.+-]+\/[a-z0-9.+-]+$/i).optional(),
+  name: z.string().min(1).max(255).optional(),
 }).strict();
 
 export function buildDocumentReport(value: unknown, options: ReportOptions = {}): DocumentReport {

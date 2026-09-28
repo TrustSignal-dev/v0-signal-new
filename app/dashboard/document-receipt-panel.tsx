@@ -2,7 +2,7 @@
 import { useEffect, useRef, useState, type ChangeEvent, type FormEvent } from 'react';
 import { DashboardSessionError } from '@/lib/dashboard-api';
 import { documentReportFilename, documentReportJson, loadDocumentReport } from '@/lib/document-report';
-import { receiptPresentation, type ArtifactObservation } from '@/lib/document-receipt-status';
+import { fileMetadata, receiptPresentation, type ArtifactObservation } from '@/lib/document-receipt-status';
 import { ArtifactReceiptView } from './artifact-receipt-view';
 import { SavedReceiptStatus } from './saved-receipt-status';
 import {
@@ -84,7 +84,7 @@ export function DocumentReceiptPanel({ onSessionExpired, initialReceiptId }: { o
       const result = await issueDocumentReceipt({ sha256: selected.sha256, sizeBytes: selected.sizeBytes, requestId: selected.requestId });
       if (current !== generation.current) return;
       setReceipt(result);
-      setArtifact({ sha256: selected.sha256, sizeBytes: selected.sizeBytes, ...(artifactFile.current?.type ? { mediaType: artifactFile.current.type } : {}) });
+      setArtifact({ sha256: selected.sha256, sizeBytes: selected.sizeBytes, ...(artifactFile.current ? fileMetadata(artifactFile.current) : {}) });
       setHistory((rows) => [{ receiptId: result.receipt.receiptId, createdAt: result.receipt.createdAt, revoked: result.revoked }, ...rows.filter((row) => row.receiptId !== result.receipt.receiptId)].slice(0, 50));
       setLoaded(true); setListError('');
     } catch (problem) { if (current === generation.current) fail(problem); }
@@ -122,7 +122,7 @@ export function DocumentReceiptPanel({ onSessionExpired, initialReceiptId }: { o
       const fresh = receiptResult.value;
       setReceipt(fresh);
       artifactFile.current = file;
-      setArtifact({ ...fingerprint, ...(file.type ? { mediaType: file.type } : {}) });
+      setArtifact({ ...fingerprint, ...fileMetadata(file) });
     } catch (problem) { if (current === generation.current) fail(problem); }
     finally { if (current === generation.current) { locked.current = false; setBusy(false); } }
   }
@@ -133,7 +133,7 @@ export function DocumentReceiptPanel({ onSessionExpired, initialReceiptId }: { o
     locked.current = true; setBusy(true); setError(''); setReceipt(null); setArtifact(undefined);
     try {
       const file = artifactFile.current;
-      const freshArtifact = file ? { ...await fingerprintFile(file), ...(file.type ? { mediaType: file.type } : {}) } : undefined;
+      const freshArtifact = file ? { ...await fingerprintFile(file), ...fileMetadata(file) } : undefined;
       const report = await loadDocumentReport(receiptId, {
         localReview: ['localhost', '127.0.0.1', '[::1]'].includes(window.location.hostname),
         artifact: freshArtifact,

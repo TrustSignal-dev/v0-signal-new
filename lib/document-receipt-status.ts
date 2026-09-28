@@ -1,6 +1,12 @@
 import type { DocumentEnvelope } from './document-receipts';
 
-export type ArtifactObservation = { sha256: string; sizeBytes: number; mediaType?: string };
+/** Local observation of the compared file. Display metadata only: none of these fields are signed. */
+export type ArtifactObservation = { sha256: string; sizeBytes: number; mediaType?: string; name?: string };
+/** File metadata the browser reports for a selected file, bounded before it enters a report. */
+export function fileMetadata(file: Pick<File, 'type' | 'name'>) {
+  const name = file.name?.trim().slice(0, 255);
+  return { ...(file.type ? { mediaType: file.type.slice(0, 100) } : {}), ...(name ? { name } : {}) };
+}
 export type ReceiptStatus = 'VERIFIED MATCH' | 'MISMATCH' | 'INVALID RECEIPT' | 'REVOKED' | 'SUPERSEDED' | 'EXPIRED' | 'UNAVAILABLE' | 'NOT CHECKED';
 export const SANDBOX_MESSAGE = 'This receipt was issued in a test environment and is not for production reliance.';
 export const CLAIM_LIMITATION = 'It does not certify that the original content was true, complete, authorized, compliant, or legally admissible. Unless an independent timestamp proof is explicitly shown, the receipt records TrustSignal’s service issue time and is not an independently trusted proof of when the underlying artifact was created.';

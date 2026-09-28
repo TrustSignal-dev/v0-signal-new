@@ -70,7 +70,7 @@ describe('human PDF report', () => {
     const pdf = await PDFDocument.load(await renderDocumentReportPdf(report));
     expect(pdf.getPageCount()).toBe(1);
     expect(pdf.getPage(0).getSize()).toEqual({ width: 612, height: 792 });
-    expect(pdf.getTitle()).toBe('TrustSignal | Artifact integrity receipt');
+    expect(pdf.getTitle()).toBe('TrustSignal | Evidence attestation receipt');
     const names = pdf.catalog.lookup(PDFName.of('Names'), PDFDict);
     const attachments = names.lookup(PDFName.of('EmbeddedFiles'), PDFDict).lookup(PDFName.of('Names'), PDFArray);
     const spec = attachments.lookup(1, PDFDict);
