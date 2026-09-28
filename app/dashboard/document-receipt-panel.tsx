@@ -4,6 +4,7 @@ import { DashboardSessionError } from '@/lib/dashboard-api';
 import { documentReportFilename, documentReportJson, loadDocumentReport } from '@/lib/document-report';
 import { receiptPresentation, type ArtifactObservation } from '@/lib/document-receipt-status';
 import { ArtifactReceiptView } from './artifact-receipt-view';
+import { SavedReceiptStatus } from './saved-receipt-status';
 import {
   fingerprintFile, issueDocumentReceipt, listDocumentReceipts, readDocumentReceipt,
   type DocumentEnvelope, type DocumentSummary,
@@ -14,6 +15,7 @@ export function DocumentReceiptPanel({ onSessionExpired, initialReceiptId }: { o
   const [receipt, setReceipt] = useState<DocumentEnvelope | null>(null);
   const [history, setHistory] = useState<DocumentSummary[]>([]);
   const [busy, setBusy] = useState(false);
+  const [checkingReceipt, setCheckingReceipt] = useState(Boolean(initialReceiptId));
   const [error, setError] = useState('');
   const [listError, setListError] = useState('');
   const [artifact, setArtifact] = useState<ArtifactObservation>();
@@ -26,12 +28,19 @@ export function DocumentReceiptPanel({ onSessionExpired, initialReceiptId }: { o
   useEffect(() => {
     let cancelled = false;
     if (initialReceiptId) {
+      const current = ++generation.current;
+      locked.current = true; setBusy(true); setCheckingReceipt(true);
+      setReceipt(null); setArtifact(undefined); artifactFile.current = null; setError('');
       void readDocumentReceipt(initialReceiptId).then(value => { if (!cancelled) setReceipt(value); }).catch(problem => {
         if (cancelled) return;
         if (problem instanceof DashboardSessionError) onSessionExpired();
         else setError(receiptPresentation(null).message);
+      }).finally(() => {
+        if (!cancelled && current === generation.current) {
+          locked.current = false; setBusy(false); setCheckingReceipt(false);
+        }
       });
-      return () => { cancelled = true; generation.current += 1; };
+      return () => { cancelled = true; generation.current += 1; locked.current = false; setBusy(false); setCheckingReceipt(false); };
     }
     void listDocumentReceipts().then((rows) => {
       if (!cancelled) {
@@ -45,7 +54,7 @@ export function DocumentReceiptPanel({ onSessionExpired, initialReceiptId }: { o
       if (problem instanceof DashboardSessionError) onSessionExpired();
       else setListError('Document receipt history could not be loaded.');
     });
-    return () => { cancelled = true; generation.current += 1; };
+    return () => { cancelled = true; generation.current += 1; locked.current = false; setBusy(false); setCheckingReceipt(false); };
   }, [onSessionExpired, initialReceiptId]);
   function fail(problem: unknown) {
     if (problem instanceof DashboardSessionError) onSessionExpired();
@@ -84,12 +93,13 @@ export function DocumentReceiptPanel({ onSessionExpired, initialReceiptId }: { o
   async function openReceipt(id: string) {
     if (locked.current) return;
     locked.current = true; setBusy(true); setReceipt(null); setArtifact(undefined); artifactFile.current = null; setError(''); setSelected(null);
+    setCheckingReceipt(true);
     if (fileInput.current) fileInput.current.value = '';
     if (compareInput.current) compareInput.current.value = '';
     const current = ++generation.current;
     try { const result = await readDocumentReceipt(id); if (current === generation.current) setReceipt(result); }
     catch (problem) { if (current === generation.current) fail(problem); }
-    finally { if (current === generation.current) { locked.current = false; setBusy(false); } }
+    finally { if (current === generation.current) { locked.current = false; setBusy(false); setCheckingReceipt(false); } }
   }
   async function compareFile(event: ChangeEvent<HTMLInputElement>) {
     const file = event.target.files?.[0];
@@ -157,9 +167,10 @@ export function DocumentReceiptPanel({ onSessionExpired, initialReceiptId }: { o
     </>}
     {error && <p role="alert" className="ops-error">{error}</p>}
     {initialReceiptId && error && <button type="button" disabled={busy} onClick={() => void openReceipt(initialReceiptId)}>Retry verification</button>}
-    {receipt && <div role="status" className={presentation.status === 'VERIFIED MATCH' ? 'ops-result' : 'ops-warning'}>
+    {(checkingReceipt || receipt || error) && <SavedReceiptStatus value={receipt} checking={checkingReceipt} unavailable={Boolean(error)} />}
+    {receipt && <div className={presentation.status === 'VERIFIED MATCH' ? 'ops-result' : 'ops-warning'}>
       {initialReceiptId ? <ArtifactReceiptView receipt={receipt} artifact={artifact} /> : <>
-        <strong>{presentation.status}</strong>
+        <strong>{presentation.status === 'NOT CHECKED' ? 'Document not checked' : presentation.status}</strong>
         <p><code>{receipt.receipt.receiptId}</code> · {new Date(receipt.receipt.createdAt).toLocaleString()}</p>
         <p className="ops-hash">SHA-256: <code>{receipt.document.sha256}</code></p>
         <p>{presentation.message}</p>
@@ -172,7 +183,6 @@ export function DocumentReceiptPanel({ onSessionExpired, initialReceiptId }: { o
       </div>
       <div className="ops-form"><label htmlFor="compare-document">Check a file against this receipt</label><input ref={compareInput} id="compare-document" type="file" disabled={busy} onChange={(event) => void compareFile(event)} /></div>
     </div>}
-    {initialReceiptId && !receipt && !error && <p role="status">{busy ? 'Verifying receipt…' : 'Loading receipt…'}</p>}
     {!initialReceiptId && <>
     <h3>Your document receipts</h3>
     <p className="ops-muted">Latest 50. Select a receipt to recheck its signature, download it, or compare a file.</p>

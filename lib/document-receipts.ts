@@ -29,6 +29,7 @@ export const documentEnvelopeSchema = z.object({
   verification: z.object({
     verified: z.boolean(), integrityVerified: z.boolean(), signatureVerified: z.boolean(),
     signatureStatus: z.string(), proofStatus: z.literal('not-applicable'),
+    checkedAt: z.string().datetime().optional(),
   }).strict(),
   replayed: z.boolean().optional(),
 }).refine((value) => value.document.sha256 === value.receipt.inputsCommitment);
