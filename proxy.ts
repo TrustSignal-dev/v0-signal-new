@@ -5,7 +5,7 @@ const SUPABASE_URL = process.env.NEXT_PUBLIC_SUPABASE_URL;
 const SUPABASE_ANON_KEY = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
 
 /**
- * Edge middleware — refresh Supabase session cookies on every request
+ * Refresh Supabase session cookies on every request
  * and protect /dashboard routes from unauthenticated access.
  */
 export async function proxy(request: NextRequest) {
@@ -19,7 +19,8 @@ export async function proxy(request: NextRequest) {
     if (pathname.startsWith("/dashboard")) {
       const signInUrl = request.nextUrl.clone();
       signInUrl.pathname = "/sign-in";
-      signInUrl.searchParams.set("next", pathname);
+      signInUrl.search = "";
+      signInUrl.searchParams.set("next", pathname + request.nextUrl.search);
       return NextResponse.redirect(signInUrl);
     }
     return NextResponse.next({ request });
@@ -32,13 +33,16 @@ export async function proxy(request: NextRequest) {
       getAll() {
         return request.cookies.getAll();
       },
-      setAll(cookiesToSet) {
+      setAll(cookiesToSet, headers) {
         for (const { name, value } of cookiesToSet) {
           request.cookies.set(name, value);
         }
         supabaseResponse = NextResponse.next({ request });
         for (const { name, value, options } of cookiesToSet) {
           supabaseResponse.cookies.set(name, value, options);
+        }
+        for (const [name, value] of Object.entries(headers)) {
+          supabaseResponse.headers.set(name, value);
         }
       }
     },
@@ -52,8 +56,17 @@ export async function proxy(request: NextRequest) {
   if (pathname.startsWith("/dashboard") && !user) {
     const signInUrl = request.nextUrl.clone();
     signInUrl.pathname = "/sign-in";
-    signInUrl.searchParams.set("next", pathname);
-    return NextResponse.redirect(signInUrl);
+    signInUrl.search = "";
+    signInUrl.searchParams.set("next", pathname + request.nextUrl.search);
+    const response = NextResponse.redirect(signInUrl);
+    for (const cookie of supabaseResponse.cookies.getAll()) {
+      response.cookies.set(cookie);
+    }
+    for (const name of ['cache-control', 'expires', 'pragma']) {
+      const value = supabaseResponse.headers.get(name);
+      if (value) response.headers.set(name, value);
+    }
+    return response;
   }
 
   return supabaseResponse;

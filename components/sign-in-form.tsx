@@ -1,14 +1,17 @@
 "use client";
 
 import { useState } from "react";
-import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { sanitizeNextPath } from "@/lib/auth/redirect";
 
-export function SignInForm() {
-  const router = useRouter();
+export function SignInForm({ nextPath = "/dashboard", initialError = null }: {
+  nextPath?: string; initialError?: string | null;
+} = {}) {
+  const destination = sanitizeNextPath(nextPath);
+  const encodedNext = encodeURIComponent(destination);
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const [error, setError] = useState<string | null>(null);
+  const [error, setError] = useState<string | null>(initialError);
 
   async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
@@ -24,23 +27,20 @@ export function SignInForm() {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ email, password }),
+        signal: AbortSignal.timeout(15_000),
       });
 
       if (!res.ok) {
         const data = await res.json() as { error?: string };
-        if (res.status === 401 || res.status === 403) {
-          setError("Invalid email or password.");
-        } else {
-          setError(data.error ?? "Sign in failed. Please try again.");
-        }
+        setError(data.error ?? "Sign in failed. Please try again.");
         setIsSubmitting(false);
         return;
       }
 
-      router.refresh();
-      router.push("/dashboard");
+      // A new document request avoids a prefetched, unauthenticated dashboard.
+      window.location.assign(destination);
     } catch {
-      setError("Something went wrong. Please try again.");
+      setError("Sign-in service is temporarily unavailable. Please try again shortly.");
       setIsSubmitting(false);
     }
   }
@@ -56,12 +56,12 @@ export function SignInForm() {
             Sign in to TrustSignal.
           </h1>
           <p className="max-w-2xl text-lg leading-relaxed text-muted-foreground lg:text-xl">
-            Sign in to manage your API keys and machine clients.
+            Sign in to manage your API keys and verification receipts.
           </p>
         </div>
 
         <div className="border border-foreground/10 bg-background p-8 shadow-[0_24px_80px_rgba(0,0,0,0.06)] lg:p-10">
-          <form className="space-y-5" onSubmit={handleSubmit} noValidate>
+          <form className="space-y-5" onSubmit={handleSubmit}>
             <Field label="Email">
               <Input
                 name="email"
@@ -84,7 +84,7 @@ export function SignInForm() {
               />
             </Field>
 
-            {error ? <p className="text-sm text-red-700">{error}</p> : null}
+            {error ? <p role="alert" className="text-sm text-red-700">{error}</p> : null}
 
             <div className="space-y-3 pt-2">
               <Button
@@ -92,7 +92,7 @@ export function SignInForm() {
                 variant="outline"
                 className="h-12 w-full rounded-full"
               >
-                <a href="/auth/sign-in?provider=google&next=%2Fdashboard">
+                <a href={`/auth/sign-in?provider=google&next=${encodedNext}`}>
                   Continue with Google
                 </a>
               </Button>
@@ -101,7 +101,7 @@ export function SignInForm() {
                 variant="outline"
                 className="h-12 w-full rounded-full"
               >
-                <a href="/auth/sign-in?provider=github&next=%2Fdashboard">
+                <a href={`/auth/sign-in?provider=github&next=${encodedNext}`}>
                   Continue with GitHub
                 </a>
               </Button>
@@ -114,7 +114,7 @@ export function SignInForm() {
               </Button>
               <p className="text-center text-sm text-muted-foreground">
                 No account?{" "}
-                <a href="/sign-up" className="underline underline-offset-4">
+                <a href={`/sign-up?next=${encodedNext}`} className="underline underline-offset-4">
                   Create one
                 </a>
               </p>

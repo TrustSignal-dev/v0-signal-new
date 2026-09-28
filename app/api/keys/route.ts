@@ -3,6 +3,8 @@ import { requireAuthenticatedSession } from "@/lib/auth/require-user";
 import { enforceRateLimit } from "@/lib/rate-limit";
 import { getTrustSignalApiUrl } from "@/lib/trustsignal-api";
 
+const privateHeaders = { "cache-control": "private, no-store" };
+
 type CoreApiKeyRecord = {
   id: string;
   name: string;
@@ -82,7 +84,7 @@ export async function GET() {
     );
   }
 
-  return NextResponse.json({ keys: payload.keys.map(normalizeApiKey) });
+  return NextResponse.json({ keys: payload.keys.map(normalizeApiKey) }, { headers: privateHeaders });
 }
 
 export async function POST(req: NextRequest) {
@@ -101,8 +103,10 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ error: "Rate limit exceeded" }, { status: 429 });
   }
 
-  const body = (await req.json()) as { name?: string; scopes?: string[] };
-  const name = body.name?.trim();
+  const body: unknown = await req.json().catch(() => null);
+  const name = body && typeof body === "object" && "name" in body && typeof body.name === "string"
+    ? body.name.trim()
+    : "";
 
   if (!name || name.length < 3 || name.length > 64) {
     return NextResponse.json({ error: "Name must be 3-64 characters" }, { status: 400 });
@@ -151,6 +155,6 @@ export async function POST(req: NextRequest) {
         plaintext: payload.key,
       },
     },
-    { status: 201 },
+    { status: 201, headers: privateHeaders },
   );
 }

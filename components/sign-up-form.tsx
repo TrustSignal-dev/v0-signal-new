@@ -1,12 +1,13 @@
 "use client";
 
 import { useState } from "react";
-import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { sanitizeNextPath } from "@/lib/auth/redirect";
 
-export function SignUpForm() {
-  const router = useRouter();
+export function SignUpForm({ nextPath = "/dashboard" }: { nextPath?: string } = {}) {
+  const destination = sanitizeNextPath(nextPath);
+  const encodedNext = encodeURIComponent(destination);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [message, setMessage] = useState<string | null>(null);
@@ -33,7 +34,8 @@ export function SignUpForm() {
       const reg = await fetch("/api/auth/register", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ email, password, displayName }),
+        body: JSON.stringify({ email, password, displayName, next: destination }),
+        signal: AbortSignal.timeout(15_000),
       });
 
       if (!reg.ok) {
@@ -57,23 +59,10 @@ export function SignUpForm() {
         return;
       }
 
-      // Auto-login after successful registration
-      const login = await fetch("/api/auth/login", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ email, password }),
-      });
-
-      if (!login.ok) {
-        setError("Account created — please sign in.");
-        router.push("/sign-in");
-        return;
-      }
-
-      router.refresh();
-      router.push("/dashboard");
+      // The signup route has already committed the authenticated session.
+      window.location.assign(destination);
     } catch {
-      setError("Something went wrong. Please try again.");
+      setError("Sign-in service is temporarily unavailable. Please try again shortly.");
       setIsSubmitting(false);
     }
   }
@@ -89,18 +78,17 @@ export function SignUpForm() {
             Create your TrustSignal account.
           </h1>
           <p className="max-w-2xl text-lg leading-relaxed text-muted-foreground lg:text-xl">
-            Sign up instantly to get API access. Up to 100 artifact verifications
-            per month are included in the free tier.
+            Create your account to manage API access and verification receipts.
           </p>
           <div className="mt-10 space-y-4 text-sm text-muted-foreground">
             <p>Enter your email and choose a password to create your account.</p>
-            <p>After signing up you will generate an Ed25519 key pair and register your machine client.</p>
-            <p>Use short-lived access tokens minted with your private key to call the TrustSignal API.</p>
+            <p>After confirming your email, create a named API key from your dashboard.</p>
+            <p>Your full API key is shown only once. Store it securely.</p>
           </div>
         </div>
 
         <div className="border border-foreground/10 bg-background p-8 shadow-[0_24px_80px_rgba(0,0,0,0.06)] lg:p-10">
-          <form className="space-y-5" onSubmit={handleSubmit} noValidate>
+          <form className="space-y-5" onSubmit={handleSubmit}>
             <Field label="Display name (optional)">
               <Input
                 name="displayName"
@@ -142,8 +130,8 @@ export function SignUpForm() {
               />
             </Field>
 
-            {error ? <p className="text-sm text-red-700">{error}</p> : null}
-            {message ? <p className="text-sm text-emerald-700">{message}</p> : null}
+            {error ? <p role="alert" className="text-sm text-red-700">{error}</p> : null}
+            {message ? <p role="status" className="text-sm text-emerald-700">{message}</p> : null}
 
             <div className="space-y-3 pt-2">
               <Button
@@ -151,7 +139,7 @@ export function SignUpForm() {
                 variant="outline"
                 className="h-12 w-full rounded-full"
               >
-                <a href="/auth/sign-in?provider=google&next=%2Fdashboard">
+                <a href={`/auth/sign-in?provider=google&next=${encodedNext}`}>
                   Continue with Google
                 </a>
               </Button>
@@ -160,7 +148,7 @@ export function SignUpForm() {
                 variant="outline"
                 className="h-12 w-full rounded-full"
               >
-                <a href="/auth/sign-in?provider=github&next=%2Fdashboard">
+                <a href={`/auth/sign-in?provider=github&next=${encodedNext}`}>
                   Continue with GitHub
                 </a>
               </Button>
@@ -173,7 +161,7 @@ export function SignUpForm() {
               </Button>
               <p className="text-center text-sm text-muted-foreground">
                 Already have an account?{" "}
-                <a href="/sign-in" className="underline underline-offset-4">
+                <a href={`/sign-in?next=${encodedNext}`} className="underline underline-offset-4">
                   Sign in
                 </a>
               </p>

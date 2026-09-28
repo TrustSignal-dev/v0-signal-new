@@ -59,13 +59,13 @@ describe("TrustSignal API server configuration", () => {
     expect(route.includes("x-api-key")).toBe(false);
   });
 
-  it("does not upload generic documents to a nonexistent upstream route", () => {
+  it("delegates generic document receipts to the authenticated digest-only proxy", () => {
     const route = readFileSync(
       join(process.cwd(), "app/api/receipts/create/route.ts"),
       "utf8",
     );
 
     expect(route.includes("/api/v1/receipts")).toBe(false);
-    expect(route.includes("generic_receipt_contract_unavailable")).toBe(true);
+    expect(route.includes("documentReceiptProxy(request)")).toBe(true);
   });
 });

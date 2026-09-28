@@ -1,8 +1,8 @@
 const DEFAULT_AUTH_DESTINATION = "/dashboard";
 const CONTROL_CHARACTER_PATTERN = /[\u0000-\u001f\u007f]/;
 
-export function sanitizeNextPath(value: string | null | undefined): string {
-  if (!value || value !== value.trim()) return DEFAULT_AUTH_DESTINATION;
+export function sanitizeNextPath(value: unknown): string {
+  if (typeof value !== "string" || !value || value !== value.trim()) return DEFAULT_AUTH_DESTINATION;
   if (!value.startsWith("/") || value.startsWith("//")) return DEFAULT_AUTH_DESTINATION;
   if (value.includes("\\") || CONTROL_CHARACTER_PATTERN.test(value)) {
     return DEFAULT_AUTH_DESTINATION;

@@ -48,8 +48,8 @@ export default function TrustSignalNav() {
             </Link>
           ))}
         </div>
-        <Link href="/#pilot-request" style={navStyles.cta} className="ts-navcta">
-          Request a Pilot
+        <Link href="/get-your-api-key" style={navStyles.cta} className="ts-navcta">
+          Get an API key
         </Link>
       </div>
     </nav>
@@ -104,5 +104,9 @@ const navCss = `
   .ts-navcta:hover { background: #3A46D8 !important; }
   @media (max-width: 820px) {
     .ts-navlinks { display: none !important; }
+  }
+  @media (max-width: 480px) {
+    .ts-navcta { font-size: 0.8rem !important; padding: 0.6rem 0.7rem !important; }
+    nav img { max-width: 140px !important; }
   }
 `;
