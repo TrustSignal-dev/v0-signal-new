@@ -46,7 +46,7 @@ export default function TrustSignalNav() {
       }}
     >
       <style>{navCss}</style>
-      <div style={navStyles.inner}>
+      <div style={navStyles.inner} className="ts-navinner">
         <Link href="/" style={navStyles.wordmark}>
           <img src="/brand/lockup-horizontal.svg" alt="TrustSignal Logo" style={navStyles.logo} />
         </Link>
@@ -57,7 +57,7 @@ export default function TrustSignalNav() {
             </Link>
           ))}
         </div>
-        <div style={navStyles.actions}>
+        <div style={navStyles.actions} className="ts-navactions">
           <Link href={signedIn ? "/dashboard" : "/sign-in"} style={navStyles.signIn} className="ts-navsignin">
             {signedIn ? "Dashboard" : "Sign in"}
           </Link>
@@ -100,7 +100,7 @@ const navStyles = {
     textDecoration: "none",
     transition: "color 0.15s ease",
   },
-  actions: { display: "flex", alignItems: "center", gap: "1.1rem" },
+  actions: { display: "flex", alignItems: "center", justifyContent: "flex-end", gap: "1.1rem", minWidth: 0 },
   signIn: {
     fontFamily: "'DM Sans', sans-serif",
     fontSize: "0.92rem",
@@ -126,12 +126,14 @@ const navCss = `
   .ts-navlink:hover { color: #121316 !important; }
   .ts-navcta:hover { background: #3A46D8 !important; }
   .ts-navsignin:hover { text-decoration: underline !important; text-underline-offset: 4px; }
-  @media (max-width: 820px) {
+  @media (max-width: 1050px) {
     .ts-navlinks { display: none !important; }
   }
   @media (max-width: 480px) {
-    .ts-navcta { font-size: 0.8rem !important; padding: 0.6rem 0.7rem !important; }
+    .ts-navinner { padding: 0.75rem !important; gap: 0.75rem !important; }
+    .ts-navactions { flex-wrap: wrap; gap: 0.5rem !important; }
+    .ts-navcta { font-size: 0.8rem !important; padding: 0.6rem 0.7rem !important; white-space: normal !important; text-align: center; }
     .ts-navsignin { font-size: 0.8rem !important; }
-    nav img { max-width: 140px !important; }
+    nav img[alt="TrustSignal Logo"] { max-width: 120px !important; height: auto !important; }
   }
 `;
