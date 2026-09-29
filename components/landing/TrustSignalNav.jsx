@@ -20,6 +20,15 @@ const NAV_LINKS = [
 
 export default function TrustSignalNav() {
   const [scrolled, setScrolled] = useState(false);
+  // undefined while loading, null when signed out. Only the presence of a session is used here.
+  const [signedIn, setSignedIn] = useState(undefined);
+  useEffect(() => {
+    let active = true;
+    fetch("/api/auth/me", { credentials: "same-origin", cache: "no-store" })
+      .then((r) => { if (active) setSignedIn(r.ok); })
+      .catch(() => { if (active) setSignedIn(false); });
+    return () => { active = false; };
+  }, []);
   useEffect(() => {
     const onScroll = () => setScrolled(window.scrollY > 8);
     window.addEventListener("scroll", onScroll, { passive: true });
@@ -48,9 +57,14 @@ export default function TrustSignalNav() {
             </Link>
           ))}
         </div>
-        <Link href="/get-your-api-key" style={navStyles.cta} className="ts-navcta">
-          Get an API key
-        </Link>
+        <div style={navStyles.actions}>
+          <Link href={signedIn ? "/dashboard" : "/sign-in"} style={navStyles.signIn} className="ts-navsignin">
+            {signedIn ? "Dashboard" : "Sign in"}
+          </Link>
+          <Link href="/get-your-api-key" style={navStyles.cta} className="ts-navcta">
+            Get an API key
+          </Link>
+        </div>
       </div>
     </nav>
   );
@@ -86,6 +100,15 @@ const navStyles = {
     textDecoration: "none",
     transition: "color 0.15s ease",
   },
+  actions: { display: "flex", alignItems: "center", gap: "1.1rem" },
+  signIn: {
+    fontFamily: "'DM Sans', sans-serif",
+    fontSize: "0.92rem",
+    fontWeight: 500,
+    color: PALETTE.ink,
+    textDecoration: "none",
+    whiteSpace: "nowrap",
+  },
   cta: {
     background: PALETTE.blue,
     color: "#FFFFFF",
@@ -102,11 +125,13 @@ const navStyles = {
 const navCss = `
   .ts-navlink:hover { color: #121316 !important; }
   .ts-navcta:hover { background: #3A46D8 !important; }
+  .ts-navsignin:hover { text-decoration: underline !important; text-underline-offset: 4px; }
   @media (max-width: 820px) {
     .ts-navlinks { display: none !important; }
   }
   @media (max-width: 480px) {
     .ts-navcta { font-size: 0.8rem !important; padding: 0.6rem 0.7rem !important; }
+    .ts-navsignin { font-size: 0.8rem !important; }
     nav img { max-width: 140px !important; }
   }
 `;

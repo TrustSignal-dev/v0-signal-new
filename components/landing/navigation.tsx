@@ -304,6 +304,19 @@ export function Navigation() {
             </div>
           </div>
           
+          {!navUser ? (
+            <Link
+              href={ACCOUNT_LINKS.signIn}
+              onClick={() => setIsMobileMenuOpen(false)}
+              className={`pb-6 text-lg text-foreground/80 underline-offset-4 hover:underline transition-all duration-500 ${
+                isMobileMenuOpen ? "opacity-100 translate-y-0" : "opacity-0 translate-y-4"
+              }`}
+              style={{ transitionDelay: isMobileMenuOpen ? "300ms" : "0ms" }}
+            >
+              Sign in
+            </Link>
+          ) : null}
+
           {/* Bottom CTAs */}
           <div className={`flex gap-4 pt-8 border-t border-foreground/10 transition-all duration-500 ${
             isMobileMenuOpen
